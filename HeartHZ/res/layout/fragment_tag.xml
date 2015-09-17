@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.heart.tag.MyLinearLayout
+        android:id="@+id/tagroot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+        <FrameLayout
+            android:layout_width="940px"
+            android:layout_height="860px"
+            android:background="@color/background_base" >
+
+            <ImageView
+                android:id="@+id/tagcontent"
+                android:layout_width="940px"
+                android:layout_height="860px"
+                android:background="@android:color/transparent"
+                android:src="@drawable/simul_emotion_joy_00000" >
+            </ImageView>
+
+            <RelativeLayout
+                android:layout_width="940px"
+                android:layout_height="860px" >
+
+                <LinearLayout
+                    android:id="@+id/container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="394px"
+                    android:orientation="horizontal"
+                    android:visibility="invisible" >
+
+                    <EditText
+                        android:id="@+id/et_tag_date1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:cursorVisible="false"
+                        android:textSize="116px" >
+                    </EditText>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / "
+                        android:textSize="116px" >
+                    </TextView>
+
+                    <EditText
+                        android:id="@+id/et_tag_date2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:cursorVisible="false"
+                        android:textSize="116px" >
+                    </EditText>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / "
+                        android:textSize="116px" >
+                    </TextView>
+
+                    <EditText
+                        android:id="@+id/et_tag_date3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:cursorVisible="false"
+                        android:textSize="116px" >
+                    </EditText>
+                </LinearLayout>
+            </RelativeLayout>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="940px"
+            android:layout_height="290px"
+            android:background="@drawable/shape_tag_view_bg" >
+
+            <TextView
+                android:id="@+id/tv_tag_view1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="67px"
+                android:layout_marginTop="74px"
+                android:text="Send your message"
+                android:textColor="#000000"
+                android:textSize="55px" >
+            </TextView>
+
+            <TextView
+                android:id="@+id/tv_tag_view2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="80px"
+                android:layout_marginLeft="67px"
+                android:text="on &apos;Sunny day&apos;"
+                android:textColor="#000000"
+                android:textSize="55px" >
+            </TextView>
+
+            <ToggleButton
+                android:id="@+id/tgn_select_tag"
+                android:layout_width="120px"
+                android:layout_height="120px"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="90px"
+                android:layout_marginTop="85px"
+                android:background="@drawable/selecter_select_on_off"
+                android:textOff=""
+                android:textOn="" >
+            </ToggleButton>
+        </RelativeLayout>
+    </com.heart.tag.MyLinearLayout>
+
+</LinearLayout>

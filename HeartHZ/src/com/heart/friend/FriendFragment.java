@@ -1,0 +1,156 @@
+package com.heart.friend;
+
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.example.heart.R;
+import com.heart.activity.MainActivity;
+import com.heart.activity.SignInActivity;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+public class FriendFragment extends Fragment {
+
+	private ImageView ivPic;
+	private ImageView add_plus;
+	private TextView tvId;
+	private TextView tvName;
+	private TextView tvPhone;
+	private TextView days;
+	private TextView daysOver;
+
+	public static Fragment newInstance(MainActivity context, int pos,
+			float scale, Friend item) {
+		Log.i("FRAGMENT", "NEWINSTANCE : " + String.valueOf(pos));
+
+		Bundle b = new Bundle();
+		b.putInt("POS", pos);
+		b.putFloat("SCALE", scale);
+		b.putString("ID", item.getId());
+		b.putString("NAME", item.getName());
+		b.putString("PHONE", item.getPhone());
+		b.putString("PIC", item.getPicPath());
+
+		return Fragment.instantiate(context, FriendFragment.class.getName(), b);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		int pos = this.getArguments().getInt("POS");
+		if (pos == MainActivity.PAGES - 1) {
+			add_plus.setBackground(new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.add3_btn)));
+		}
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		int pos = this.getArguments().getInt("POS");
+		if (pos == MainActivity.PAGES - 1) {
+			SignInActivity.recycleBgBitmap(add_plus);
+		}
+
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		if (container == null)
+			return null;
+
+		LinearLayout l = null;
+
+		int pos = this.getArguments().getInt("POS");
+		if (pos == MainActivity.PAGES - 1) {
+			// 마지막인 경우에는 Add하는 경우를 올려야함
+			l = (LinearLayout) inflater.inflate(R.layout.fragment_add,
+					container, false);
+
+			TextView add_tv = (TextView) l.findViewById(R.id.add_friend_text);
+			add_tv.setTypeface(Typeface.createFromAsset(getActivity()
+					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
+			add_plus = (ImageView) l.findViewById(R.id.add_friend);
+
+			FriendLinearLayout addroot = (FriendLinearLayout) l
+					.findViewById(R.id.addroot);
+			float scale = this.getArguments().getFloat("SCALE");
+			addroot.setScaleBoth(scale);
+		}
+
+		else {
+			l = (LinearLayout) inflater.inflate(R.layout.fragment_friend,
+					container, false);
+
+			String id = getArguments().getString("ID");
+			String name = this.getArguments().getString("NAME");
+			String phone = this.getArguments().getString("PHONE");
+			String pic = this.getArguments().getString("PIC");
+
+			tvId = (TextView) l.findViewById(R.id.tv_home_id);
+			tvName = (TextView) l.findViewById(R.id.tv_home_name);
+			tvPhone = (TextView) l.findViewById(R.id.tv_home_phone);
+			ivPic = (ImageView) l.findViewById(R.id.iv_home_pic);
+
+			days = (TextView) l.findViewById(R.id.tv_days_over);
+			daysOver = (TextView) l.findViewById(R.id.tv_days_text);
+
+			tvId.setText(id);
+			tvName.setText(name);
+			tvPhone.setText(phone);
+
+			if (pos == 0) {
+				days.setText("178");
+				days.setTextColor(getResources().getColor(
+						R.color.page2_text_color1));
+			} else if (pos == 1) {
+				days.setText("85");
+				days.setTextColor(getResources().getColor(
+						R.color.page2_text_color2));
+			} else if (pos == 2) {
+				days.setText("32");
+				days.setTextColor(getResources().getColor(
+						R.color.page2_text_color3));
+			} else {
+				days.setText("11");
+				days.setTextColor(getResources().getColor(
+						R.color.page2_text_color4));
+			}
+			daysOver.setText("days over");
+
+			ImageLoader imgloder = ImageLoader.getInstance();
+			DisplayImageOptions options = new DisplayImageOptions.Builder()
+					.cacheInMemory().cacheOnDisc().resetViewBeforeLoading()
+					.showImageForEmptyUri(R.drawable.default_profile)
+					.showImageOnFail(R.drawable.default_profile).build();
+			imgloder.displayImage(pic, ivPic, options);
+
+			// FONT
+			days.setTypeface(Typeface.createFromAsset(
+					getActivity().getAssets(), "fonts/DINPRO-REGULAR.ttf"));
+			daysOver.setTypeface(Typeface.createFromAsset(getActivity()
+					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
+
+			FriendLinearLayout root = (FriendLinearLayout) l
+					.findViewById(R.id.root);
+			float scale = this.getArguments().getFloat("SCALE");
+			root.setScaleBoth(scale);
+		}
+		return l;
+	}
+
+}

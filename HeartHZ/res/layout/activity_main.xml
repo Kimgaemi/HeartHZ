@@ -1,0 +1,72 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true" >
+
+    <!-- ActionBar Layout -->
+
+    <LinearLayout
+        android:id="@+id/nav_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/main_menu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/include_menu" />
+
+        <!-- InformationBar Layout -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="190px"
+            android:background="@color/infor_bar_base" >
+
+            <TextView
+                android:id="@+id/tv_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="HOME"
+                android:textColor="@color/infor_text_base"
+                android:textSize="72px" />
+        </RelativeLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/myviewpager"
+            android:layout_width="match_parent"
+            android:layout_height="1830px"
+            android:layout_gravity="center"
+            android:overScrollMode="never" />
+
+        <Button
+            android:id="@+id/btn_select"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="250px"
+            android:background="@color/page2_btn_color1"
+            android:gravity="center"
+            android:onClick="mainClick"
+            android:text="SELECT"
+            android:textColor="@color/select_btn_color"
+            android:textSize="70px" >
+        </Button>
+    </LinearLayout>
+
+    <!-- Navigation MENU -->
+
+    <ListView
+        android:id="@+id/nav_list"
+        android:layout_width="464px"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#262626"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:listSelector="#00000000" />
+
+</android.support.v4.widget.DrawerLayout>

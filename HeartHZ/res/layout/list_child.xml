@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="416px"
+    android:background="@color/messagelist_grpitem_bg"
+    android:focusable="false"
+    android:listSelector="#00000000" >
+
+    <RelativeLayout
+        android:id="@+id/child_container1"
+        android:layout_width="434px"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true" >
+
+        <ImageView
+            android:id="@+id/iv_messagechild_sender"
+            android:layout_width="225px"
+            android:layout_height="225px"
+            android:layout_centerInParent="true" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/child_container2"
+        android:layout_width="1006px"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@id/child_container1"
+        android:gravity="left"
+        android:orientation="vertical" >
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="74px"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/tv_messagechild_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:text="From "
+                android:textColor="@color/messagelist_childitem_from_color"
+                android:textSize="53px" />
+
+            <TextView
+                android:id="@+id/tv_messagechild_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="18px"
+                android:layout_toRightOf="@id/tv_messagechild_from"
+                android:text="Gloomy / Sunset"
+                android:textColor="@color/messagelist_childitem_tag_color"
+                android:textSize="53px" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="120px"
+            android:layout_marginTop="45px"
+            android:gravity="left"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/iv_messagechild_play"
+                android:layout_width="71px"
+                android:layout_height="71px"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/play_btn" />
+
+            <ImageView
+                android:id="@+id/iv_messagechild_pause"
+                android:layout_width="71px"
+                android:layout_height="71px"
+                android:layout_marginLeft="84px"
+                android:layout_toRightOf="@id/iv_messagechild_play"
+                android:src="@drawable/pause2_btn" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+             >
+
+            <TextView
+                android:id="@+id/tv_messagechild_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="center"
+                android:text="00:00"
+                android:textColor="@color/messagelist_childitem_time_color"
+                android:textSize="40px" />
+
+            <SeekBar
+                android:id="@+id/child_seekbar"
+                android:layout_width="539px"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16px"
+                android:layout_toRightOf="@id/tv_messagechild_current"
+                android:focusable="false"
+                android:layoutDirection="ltr"
+                android:progressDrawable="@drawable/seekbar_progress"
+                android:thumb="@drawable/thumb" />
+
+            <TextView
+                android:id="@+id/tv_messagechild_finish"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/child_seekbar"
+                android:text="00:00"
+                android:textColor="@color/messagelist_childitem_time_color"
+                android:textSize="40px" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

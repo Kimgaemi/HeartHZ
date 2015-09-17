@@ -1,0 +1,183 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true" >
+
+    <!-- ActionBar Layout -->
+
+    <LinearLayout
+        android:id="@+id/nav_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/send1_menu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/include_menu" />
+
+        <!-- InformationBar Layout -->
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="190px"
+            android:background="@color/infor_bar_base" >
+
+            <TextView
+                android:id="@+id/tv_sending_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="SENDING MESSAGE"
+                android:textColor="@color/infor_text_base"
+                android:textSize="72px" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="1830px"
+            android:background="@color/send1_bg" >
+
+            <LinearLayout
+                android:layout_width="860px"
+                android:layout_height="1460px"
+                android:layout_centerInParent="true"
+                android:orientation="vertical" >
+
+                <RelativeLayout
+                    android:layout_width="860px"
+                    android:layout_height="756px"
+                    android:background="@drawable/shape_confirm_view_top_bg" >
+
+                    <ImageView
+                        android:id="@+id/iv_friend"
+                        android:layout_width="430px"
+                        android:layout_height="430px"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="100px" />
+
+                    <TextView
+                        android:id="@+id/tv_friend_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/iv_friend"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="35px"
+                        android:text="Time Tadder"
+                        android:textColor="@color/send1_tv_reciver_name"
+                        android:textSize="62px" />
+
+                    <ImageView
+                        android:id="@+id/iv_dot"
+                        android:layout_width="27px"
+                        android:layout_height="27px"
+                        android:layout_marginRight="15px"
+                        android:layout_marginTop="592px"
+                        android:layout_toLeftOf="@id/tv_friend_name"
+                        android:src="@drawable/dot4_icon" />
+
+                    <TextView
+                        android:id="@+id/tv_friend_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/tv_friend_name"
+                        android:layout_centerInParent="true"
+                        android:text="01056614226"
+                        android:textColor="@color/send1_tv_reciver_phone"
+                        android:textSize="42px" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="860px"
+                    android:layout_height="2px"
+                    android:background="@color/send1_view_wall" >
+                </View>
+
+                <RelativeLayout
+                    android:layout_width="860px"
+                    android:layout_height="243px"
+                    android:background="@color/send1_view_bg" >
+
+                    <EditText
+                        android:id="@+id/edit_message_title"
+                        android:layout_width="860px"
+                        android:layout_height="243px"
+                        android:layout_centerInParent="true"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:hint="Message Title"
+                        android:maxLength="24"
+                        android:paddingLeft="76px"
+                        android:paddingRight="76px"
+                        android:textColor="@color/send1_tv_hint_color"
+                        android:textColorHint="@color/send1_tv_hint_color"
+                        android:textSize="64px" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="860px"
+                    android:layout_height="2px"
+                    android:background="@color/send1_view_wall" >
+                </View>
+
+                <LinearLayout
+                    android:layout_width="860px"
+                    android:layout_height="457px"
+                    android:background="@drawable/shape_confirm_view_bottom_bg"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingLeft="76px"
+                    android:paddingRight="76px" >
+
+                    <ImageView
+                        android:id="@+id/iv_conf_im1"
+                        android:layout_width="186px"
+                        android:layout_height="300px"
+                        android:layout_marginLeft="76px"
+                        android:layout_marginTop="20px" />
+
+                    <ImageView
+                        android:id="@+id/iv_conf_im2"
+                        android:layout_width="186px"
+                        android:layout_height="300px"
+                        android:layout_marginTop="20px" />
+
+                    <ImageView
+                        android:id="@+id/iv_conf_im3"
+                        android:layout_width="186px"
+                        android:layout_height="300px"
+                        android:layout_marginRight="76px"
+                        android:layout_marginTop="20px" />
+                </LinearLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btn_send1"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="250px"
+            android:background="@drawable/basic_button_style"
+            android:onClick="send1Button"
+            android:text="SEND"
+            android:textColor="@color/select_btn_color"
+            android:textSize="70px" >
+        </Button>
+    </LinearLayout>
+
+    <!-- Navigation MENU -->
+
+    <ListView
+        android:id="@+id/nav_list"
+        android:layout_width="464px"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#262626"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:listSelector="#00000000" />
+
+</android.support.v4.widget.DrawerLayout>

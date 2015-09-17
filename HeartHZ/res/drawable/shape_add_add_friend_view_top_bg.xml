@@ -1,0 +1,11 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <solid android:color="@color/add_box" />
+
+    <corners
+        android:bottomLeftRadius="0px"
+        android:bottomRightRadius="0px"
+        android:topLeftRadius="15px"
+        android:topRightRadius="15px" />
+
+</shape>

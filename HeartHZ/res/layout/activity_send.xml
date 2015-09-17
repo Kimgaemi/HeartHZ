@@ -1,0 +1,97 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true" >
+
+    <!-- ActionBar Layout -->
+
+    <LinearLayout
+        android:id="@+id/nav_lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/send_menu"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/include_menu" />
+
+        <!-- InformationBar Layout -->
+
+        <TextView
+            android:id="@+id/send_message_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:text="Message Title" />
+
+        <EditText
+            android:id="@+id/send_edit_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/send_message_title" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/send_situation_tag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/send_edit_title"
+            android:text="Situation Tag" />
+
+        <TextView
+            android:id="@+id/send_selected_tag"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_below="@id/send_situation_tag"
+            android:background="#DDDDDD" />
+
+        <TextView
+            android:id="@+id/send_music_tag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/send_selected_tag"
+            android:text="Music Tag" />
+
+        <Button
+            android:id="@+id/send_browser_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/send_music_tag"
+            android:onClick="mOnClick"
+            android:text="File_browser" >
+        </Button>
+
+        <Button
+            android:id="@+id/send_mixing_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/send_browser_btn"
+            android:onClick="mOnClick"
+            android:text="MIXING" >
+        </Button>
+
+        <Button
+            android:id="@+id/send_message_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:onClick="mOnClick"
+            android:text="SEND" >
+        </Button>
+    </LinearLayout>
+    
+    <!-- Navigation MENU -->
+    <ListView
+        android:id="@+id/nav_list"
+        android:layout_width="464px"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#262626"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
+
+</android.support.v4.widget.DrawerLayout>

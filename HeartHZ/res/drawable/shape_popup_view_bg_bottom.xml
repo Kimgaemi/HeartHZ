@@ -1,0 +1,11 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <solid android:color="@color/popup_footer_bg" />
+
+    <corners
+        android:bottomLeftRadius="12px"
+        android:bottomRightRadius="12px"
+        android:topLeftRadius="0px"
+        android:topRightRadius="0px" />
+
+</shape>

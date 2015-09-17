@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="805px"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="805px" >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="805px" >
+
+            <ImageView
+                android:id="@+id/iv_image_musictag"
+                android:layout_width="match_parent"
+                android:layout_height="805px"
+                android:src="@drawable/album3_image" >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/iv_image_dim"
+                android:layout_width="match_parent"
+                android:layout_height="805px"
+                android:src="@drawable/musictag_dim_play"
+                android:visibility="visible" >
+            </ImageView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="805px" >
+
+                <ImageView
+                    android:id="@+id/iv_image_musictag_add"
+                    android:layout_width="318px"
+                    android:layout_height="318px"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="130px"
+                    android:src="@drawable/add2_btn"
+                    android:visibility="invisible" >
+                </ImageView>
+            </RelativeLayout>
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="805px" >
+
+            <RelativeLayout
+                android:layout_width="105px"
+                android:layout_height="82px"
+                android:layout_marginRight="45px"
+                android:layout_marginTop="650px" >
+
+                <ImageView
+                    android:id="@+id/iv_image_musictag_play"               
+                    android:layout_width="105px"
+                    android:layout_height="82px"
+                    android:src="@drawable/equal_30fps"
+                    android:visibility="invisible" >
+                </ImageView>
+            </RelativeLayout>
+        </RelativeLayout>
+    </FrameLayout>
+
+</LinearLayout>

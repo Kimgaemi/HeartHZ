@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="202px"
+    android:background="@color/messagelist_childitem_bg"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="202px" >
+
+        <RelativeLayout
+            android:id="@+id/messagelist_container1"
+            android:layout_width="287px"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true" >
+
+            <TextView
+                android:id="@+id/tv_messagelist_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="125px"
+                android:text="NO"
+                android:textColor="@color/messagelist_grpitem_num_color"
+                android:textSize="65px" />
+
+            <TextView
+                android:id="@+id/tv_secret_path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:visibility="visible" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/messagelist_container2"
+            android:layout_width="936px"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/messagelist_container1"
+            android:gravity="left"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/tv_messagelist_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25px"
+                android:text="TITLE"
+                android:textColor="@color/messagelist_grpitem_title_color"
+                android:textSize="61px" />
+
+            <TextView
+                android:id="@+id/tv_messagelist_sender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10px"
+                android:text="singer"
+                android:textColor="@color/messagelist_grpitem_sender_color"
+                android:textSize="49px" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="217px"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/messagelist_container2" >
+
+            <RelativeLayout
+                android:layout_width="217px"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/tv_messagelist_maxtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:text="00:00"
+                    android:textColor="@color/messagelist_grpitem_time_color"
+                    android:textSize="53px" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="217px"
+                android:layout_height="match_parent" >
+
+                <ToggleButton
+                    android:id="@+id/tv_messagelist_cb"
+                    android:layout_width="100px"
+                    android:layout_height="100px"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/selector_messagelist_on_off"
+                    android:textOff=""
+                    android:textOn=""
+                    android:visibility="invisible" >
+                </ToggleButton>
+            </RelativeLayout>
+        </FrameLayout>
+    </RelativeLayout>
+
+</LinearLayout>

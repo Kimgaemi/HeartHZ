@@ -1,0 +1,11 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <solid android:color="@color/send1_view_bg" />
+
+    <corners
+        android:bottomLeftRadius="15px"
+        android:bottomRightRadius="15px"
+        android:topLeftRadius="0px"
+        android:topRightRadius="0px" />
+
+</shape>

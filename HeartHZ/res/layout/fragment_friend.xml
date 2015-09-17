@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="320px"
+    android:background="#00000000"
+    android:orientation="vertical" >
+
+    <com.heart.friend.FriendLinearLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <FrameLayout
+            android:layout_width="969px"
+            android:layout_height="1230px" >
+
+            <LinearLayout
+                android:layout_width="933px"
+                android:layout_height="1194px"
+                android:layout_marginBottom="30px"
+                android:layout_marginRight="30px"
+                android:orientation="vertical" >
+
+                <FrameLayout
+                    android:id="@+id/fl_home"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="mainClick" >
+
+                    <TextView
+                        android:id="@+id/tv_home_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/iv_home_pic"
+                        android:layout_width="933px"
+                        android:layout_height="872px"
+                        android:scaleType="fitXY" >
+                    </ImageView>
+
+                    <TextView
+                        android:id="@+id/tv_home_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="650px"
+                        android:text="days over"
+                        android:textSize="100px"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/tv_home_phone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="760px"
+                        android:text="days over"
+                        android:textSize="50px"
+                        android:visibility="gone" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="310px"
+                    android:background="@drawable/shape_friend_view_bg"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/tv_days_over"
+                        android:layout_width="wrap_content"
+                        android:layout_height="143px"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="18px"
+                        android:text="days over"
+                        android:textColor="@color/day_num_color"
+                        android:textSize="143px" />
+
+                    <TextView
+                        android:id="@+id/tv_days_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="6px"
+                        android:includeFontPadding="false"
+                        android:text="days over"
+                        android:textColor="@color/daysover_text_color"
+                        android:textSize="65px" />
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+    </com.heart.friend.FriendLinearLayout>
+
+</LinearLayout>

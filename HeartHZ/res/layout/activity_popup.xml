@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="922px"
+    android:layout_height="1240px"
+    android:background="@drawable/shape_popup_view_bg_top"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="960px" >
+
+        <ImageView
+            android:id="@+id/iv_popup_sender"
+            android:layout_width="264px"
+            android:layout_height="264px"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="146px"
+            android:src="@drawable/profile1_image" />
+
+        <TextView
+            android:id="@+id/tv_popup_file_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_popup_sender"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="40px"
+            android:text="Dear My Dad"
+            android:textColor="@color/popup_file_title"
+            android:textSize="53px" />
+
+        <ImageView
+            android:id="@+id/iv_popup_dot"
+            android:layout_width="23px"
+            android:layout_height="23px"
+            android:layout_marginRight="18px"
+            android:layout_marginTop="474px"
+            android:layout_toLeftOf="@id/tv_popup_file_name"
+            android:src="@drawable/dot1_icon" />
+
+        <TextView
+            android:id="@+id/tv_popup_sender_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_popup_file_name"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="14px"
+            android:text="Tim Tadder"
+            android:textColor="@color/popup_sender_name"
+            android:textSize="50px" />
+
+        <TextView
+            android:id="@+id/tv_popup_ment1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_popup_sender_name"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="82px"
+            android:text="Do you want to"
+            android:textColor="@color/popup_ment"
+            android:textSize="72px" />
+
+        <TextView
+            android:id="@+id/tv_popup_ment2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="115px"
+            android:text="save this Message?"
+            android:textColor="@color/popup_ment"
+            android:textSize="72px" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/popup_bg_wall" >
+    </View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="278px"
+        android:background="@drawable/shape_popup_view_bg_bottom"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/iv_popup_cancel"
+            android:layout_width="460px"
+            android:layout_height="match_parent"
+            android:onClick="popupClick" >
+
+            <ImageView
+                android:layout_width="150px"
+                android:layout_height="150px"
+                android:layout_centerInParent="true"
+                android:src="@drawable/cancle_btn" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="2px"
+            android:layout_height="208px"
+            android:layout_gravity="center_vertical"
+            android:background="@color/popup_bg_wall" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/iv_popup_ok"
+            android:layout_width="460px"
+            android:layout_height="match_parent"
+            android:onClick="popupClick" >
+
+            <ImageView
+                android:layout_width="150px"
+                android:layout_height="150px"
+                android:layout_centerInParent="true"
+                android:src="@drawable/check_btn" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

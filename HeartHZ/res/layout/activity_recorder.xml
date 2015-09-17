@@ -1,0 +1,230 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer"
+    android:layout_width="1440px"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true" >
+
+    <!-- ActionBar Layout -->
+
+    <LinearLayout
+        android:id="@+id/nav_lv"
+        android:layout_width="1440px"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <include
+            android:id="@+id/record_menu"
+            android:layout_width="1440px"
+            android:layout_height="wrap_content"
+            layout="@layout/include_menu" />
+
+        <!-- InformationBar Layout -->
+
+        <RelativeLayout
+            android:layout_width="1440px"
+            android:layout_height="190px"
+            android:background="@color/infor_bar_base" >
+
+            <TextView
+                android:id="@+id/tv_record"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="RECORD"
+                android:textColor="@color/infor_text_base"
+                android:textSize="72px" />
+        </RelativeLayout>
+        <!-- WaveView Layout -->
+
+        <FrameLayout
+            android:layout_width="1440px"
+            android:layout_height="1236px" >
+
+            <LinearLayout
+                android:layout_width="1440px"
+                android:layout_height="238px"
+                android:background="@color/record_time_line" >
+
+                <ImageView
+                    android:id="@+id/iv_scale_time"
+                    android:layout_width="1728px"
+                    android:layout_height="80px"
+                    android:layout_marginTop="158px" >
+                </ImageView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="998px"
+                android:layout_marginTop="238px"
+                android:alpha="0.5"
+                android:orientation="vertical" >
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="332px"
+                    android:alpha="0.5"
+                    android:background="@color/record_wave_house" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="@color/record_wave_wall" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="332px"
+                    android:alpha="0.5"
+                    android:background="@color/record_wave_house" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="2px"
+                    android:background="@color/record_wave_wall" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="332px"
+                    android:alpha="0.5"
+                    android:background="@color/record_wave_house" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/displayView"
+                android:layout_width="fill_parent"
+                android:layout_height="998px"
+                android:layout_marginTop="238px"
+                android:orientation="vertical"
+                android:padding="1dip" >
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_cutline"
+                android:layout_width="38px"
+                android:layout_height="1026px"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="210px" />
+        </FrameLayout>
+
+        <!-- Time And Record Layout -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="594px"
+            android:background="@color/record_tool_bg"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="280px" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="70px" >
+
+                    <TextView
+                        android:id="@+id/time1"
+                        android:layout_width="134px"
+                        android:layout_height="wrap_content"
+                        android:text="00"
+                        android:textSize="106px" />
+
+                    <TextView
+                        android:id="@+id/time2"
+                        android:layout_width="84px"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=":"
+                        android:textSize="106px" />
+
+                    <TextView
+                        android:id="@+id/time3"
+                        android:layout_width="134px"
+                        android:layout_height="wrap_content"
+                        android:text="00"
+                        android:textSize="106px" />
+
+                    <TextView
+                        android:id="@+id/time4"
+                        android:layout_width="84px"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=":"
+                        android:textSize="106px" />
+
+                    <TextView
+                        android:id="@+id/time5"
+                        android:layout_width="134px"
+                        android:layout_height="wrap_content"
+                        android:text="00"
+                        android:textSize="106px" />
+                </LinearLayout>
+
+                <ToggleButton
+                    android:id="@+id/trimbtn"
+                    android:layout_width="89px"
+                    android:layout_height="89px"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="75px"
+                    android:layout_marginTop="72px"
+                    android:background="@drawable/selector_trim_on_off"
+                    android:textOff=""
+                    android:textOn="" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="314px" >
+
+                <ToggleButton
+                    android:id="@+id/pausebtn"
+                    android:layout_width="193px"
+                    android:layout_height="193px"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="469px"
+                    android:background="@drawable/selector_pause_resume"
+                    android:textOff=""
+                    android:textOn="" />
+
+                <ToggleButton
+                    android:id="@+id/startbtn"
+                    android:layout_width="193px"
+                    android:layout_height="193px"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="469px"
+                    android:background="@drawable/selector_record_save"
+                    android:textOff=""
+                    android:textOn="" />
+            </RelativeLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/record_nextbtn"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="250px"
+            android:background="@drawable/basic_button_style"
+            android:onClick="mOnClick"
+            android:text="NEXT"
+            android:textColor="@color/login_btn_text_color"
+            android:textSize="70px" >
+        </Button>
+    </LinearLayout>
+
+    <!-- Navigation MENU -->
+
+    <ListView
+        android:id="@+id/nav_list"
+        android:layout_width="464px"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="#262626"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:listSelector="#00000000" />
+
+</android.support.v4.widget.DrawerLayout>

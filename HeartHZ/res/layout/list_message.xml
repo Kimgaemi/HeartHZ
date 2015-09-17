@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="300dp"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/iv_message_pic"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="90dp"
+        android:layout_marginLeft="15dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/tv_message_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TITLE"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="FROM : " />
+
+            <TextView
+                android:id="@+id/tv_message_friend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Message Nam"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_message_tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Situation Tags" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:focusable="false"
+            android:progressDrawable="@drawable/seekbar_progress"
+            android:thumb="@drawable/thumb" />
+    </LinearLayout>
+
+</LinearLayout>
