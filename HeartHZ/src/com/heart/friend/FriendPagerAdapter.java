@@ -3,9 +3,6 @@ package com.heart.friend;
 import java.util.ArrayList;
 
 import android.animation.ArgbEvaluator;
-import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,6 +12,7 @@ import android.widget.Button;
 
 import com.example.heart.R;
 import com.heart.activity.MainActivity;
+import com.heart.util.CustomViewPager;
 
 public class FriendPagerAdapter extends FragmentPagerAdapter implements
 		ViewPager.OnPageChangeListener {
@@ -30,14 +28,14 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 	private ArrayList<Friend> item;
 	private ArrayList<FriendFragment> mFragments;
 
-	private ViewPager vp = null;
+	private CustomViewPager vp = null;
 	private Button btn = null;
 	private Integer[] bgColor = null;
 	private Integer[] btnColor = null;
 	private ArgbEvaluator argbEvaluator = new ArgbEvaluator();
 
 	public FriendPagerAdapter(MainActivity context, FragmentManager fm,
-			ViewPager vp, ArrayList<Friend> item, Button btn,
+			CustomViewPager vp, ArrayList<Friend> item, Button btn,
 			Integer[] bgColor, Integer[] btnColor) {
 
 		super(fm);
@@ -54,7 +52,6 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 
 	@Override
 	public Fragment getItem(int position) {
-
 		FriendFragment mf;
 		Log.i("FRAGMENT", "getItem : " + String.valueOf(position));
 
@@ -74,7 +71,7 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 
 	@Override
 	public int getCount() {
-		return MainActivity.PAGES;
+		return MainActivity.maxPeople;
 	}
 
 	// CLICK EVENT
@@ -102,7 +99,7 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 							fpositionOffset, btnColor[fposition],
 							btnColor[fposition + 1]));
 
-					if (fposition < MainActivity.PAGES - 1) {
+					if (fposition < MainActivity.maxPeople - 1) {
 						next = getRootView(fposition + 1);
 						next.setScaleBoth(MainActivity.SMALL_SCALE
 								+ MainActivity.DIFF_SCALE * fpositionOffset);
@@ -120,7 +117,7 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 
 	@Override
 	public void onPageSelected(int position) {
-		if (position == MainActivity.PAGES - 1)
+		if (position == MainActivity.maxPeople - 1)
 			btn.setText("+ New RECEIVER");
 		else {
 			btn.setText("SELECT");
@@ -133,11 +130,12 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 	}
 
 	private FriendLinearLayout getRootView(int position) {
-		if (position == MainActivity.PAGES - 1) {
+		if (position == MainActivity.maxPeople - 1) {
 			// LAST PAGE
 			return (FriendLinearLayout) fm
 					.findFragmentByTag(this.getFragmentTag(position)).getView()
 					.findViewById(R.id.addroot);
+
 		} else {
 			return (FriendLinearLayout) fm
 					.findFragmentByTag(this.getFragmentTag(position)).getView()

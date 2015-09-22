@@ -50,7 +50,7 @@ public class FriendFragment extends Fragment {
 	public void onStart() {
 		super.onStart();
 		int pos = this.getArguments().getInt("POS");
-		if (pos == MainActivity.PAGES - 1) {
+		if (pos == MainActivity.maxPeople - 1) {
 			add_plus.setBackground(new BitmapDrawable(getResources(),
 					BitmapFactory.decodeResource(getResources(),
 							R.drawable.add3_btn)));
@@ -61,7 +61,7 @@ public class FriendFragment extends Fragment {
 	public void onStop() {
 		super.onStop();
 		int pos = this.getArguments().getInt("POS");
-		if (pos == MainActivity.PAGES - 1) {
+		if (pos == MainActivity.maxPeople - 1) {
 			SignInActivity.recycleBgBitmap(add_plus);
 		}
 
@@ -76,7 +76,7 @@ public class FriendFragment extends Fragment {
 		LinearLayout l = null;
 
 		int pos = this.getArguments().getInt("POS");
-		if (pos == MainActivity.PAGES - 1) {
+		if (pos == MainActivity.maxPeople - 1) {
 			// 마지막인 경우에는 Add하는 경우를 올려야함
 			l = (LinearLayout) inflater.inflate(R.layout.fragment_add,
 					container, false);

@@ -19,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
@@ -45,24 +46,29 @@ public class AddNewFriendActivity extends AppCompatActivity {
 	private JSONParser jsonParser = new JSONParser();
 
 	// VARIABLE
-	private String 	strName;
-	private String 	strPic;
-	private String 	strPhone;
-	private int 	iUserId;
+	private String strName;
+	private String strPic;
+	private String strPhone;
+	private int iUserId;
 
 	private AcquAdapter adapter;
 	private ArrayList<Friend> item = new ArrayList<Friend>();
 
 	public ListView listView;
-	Uri mBaseUri; 
-
-
+	Uri mBaseUri;
+	
+	TextView tvId;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_popup_listview);
-
+		
+		Log.d("tag","AsdasdasD1");
+		iUserId = SignInActivity.iUserId;
 		listView = (ListView) findViewById(R.id.acqu_list);
+		Log.d("tag","AsdasdasD2");
+		
 		new LoadAllAcqu().execute();
 
 	}
@@ -72,41 +78,54 @@ public class AddNewFriendActivity extends AppCompatActivity {
 		protected String doInBackground(String... args) {
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer.toString(iUserId)));
+			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer
+					.toString(iUserId)));
 
-			JSONObject json = jsonParser.makeHttpRequest(Config.URL_GET_USER_LIST, "POST", params);
+			JSONObject json = jsonParser.makeHttpRequest(
+					Config.URL_GET_USER_LIST, "POST", params);
 
-			if(json != null) {
-				Log.d(CURRENT_ACTIVITY+"_all_acqu", json.toString());
+			if (json != null) {
+				Log.d(CURRENT_ACTIVITY + "_all_acqu", json.toString());
 
 				try {
 					int success = json.getInt(Config.TAG_SUCCESS);
 
 					if (success == 0) {
 
-						JSONArray userObj = json.getJSONArray(Config.TAG_FRIENDS); 	
-						Log.d(CURRENT_ACTIVITY+"_num_of_Frineds", userObj.length()+"");
+						JSONArray userObj = json
+								.getJSONArray(Config.TAG_FRIENDS);
+						Log.d(CURRENT_ACTIVITY + "_num_of_Frineds",
+								userObj.length() + "");
 
 						for (int i = 0; i < userObj.length(); i++) {
 							JSONObject c = userObj.getJSONObject(i);
 
-							String strFriendPhone = c.getString(Config.TAG_PHONE);
+							String strFriendPhone = c
+									.getString(Config.TAG_PHONE);
 							String contactName = getContactName(strFriendPhone);
 							Log.d("Tag_name", contactName);
-							if(contactName != null) {	// 전화번호 부 일치하는지
-								String strFriendId	 	= c.getString(Config.TAG_USER_ID);
-								String strFriendName	= c.getString(Config.TAG_NAME);
-								String strFriendPicPath = c.getString(Config.TAG_PIC_PATH);
+							if (!(contactName.equals(""))) { // 전화번호 부 일치하는지
+								String strFriendId = c
+										.getString(Config.TAG_USER_ID);
+								String strFriendName = c
+										.getString(Config.TAG_NAME);
+								String strFriendPicPath = c
+										.getString(Config.TAG_PIC_PATH);
 
-								Log.d("temp", strFriendName + ": "+ strFriendPicPath);
-								Friend friend = new Friend(strFriendId, strFriendName, strFriendPhone, strFriendPicPath, null, null);
+								Log.d("temp", strFriendName + ": "
+										+ strFriendPicPath);
+								Friend friend = new Friend(strFriendId,
+										strFriendName, strFriendPhone,
+										strFriendPicPath, null, null);
 								item.add(friend);
 							}
 						}
 					} else {
 						// no friends found
 						// Launch Add New friends Activity
-						// MainActivity.Intent i = new Intent(getApplicationContext(), NewfriendActivity.class);
+						// MainActivity.Intent i = new
+						// Intent(getApplicationContext(),
+						// NewfriendActivity.class);
 
 						// Closing all previous activities
 						// i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -118,28 +137,34 @@ public class AddNewFriendActivity extends AppCompatActivity {
 			}
 			return null;
 		}
+
 		protected void onPostExecute(String file_url) {
 
-			//	runOnUiThread(new Runnable() {
-			//	public void run() {
+			// runOnUiThread(new Runnable() {
+			// public void run() {
 
-			adapter = new AcquAdapter(getBaseContext(), R.layout.list_friend, item);
+			adapter = new AcquAdapter(getBaseContext(), R.layout.list_friend,
+					item);
 			listView.setAdapter(adapter);
-			listView.setOnItemClickListener(onClickListner);
-			//		}
-			//	});
+			
+			listView.setOnItemClickListener(addFriendListener);
+			
+			// }
+			// });
 		}
 	}
 
-	private OnItemClickListener onClickListner = new OnItemClickListener() {
-		public void onItemClick(android.widget.AdapterView<?> parent, View view, int pos, long id) {
+	private OnItemClickListener addFriendListener = new OnItemClickListener() {
+		public void onItemClick(android.widget.AdapterView<?> parent,
+				View view, int pos, long id) {
+			Log.d("tag", "itemclick");
 			Button btnAdd = (Button) view.findViewById(R.id.list_btn_add);
+			 tvId = (TextView) view.findViewById(R.id.list_tv_uid);
 			btnAdd.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-
-					TextView tvId = (TextView) v.findViewById(R.id.list_tv_uid);
+					Log.d("tag", "button click"+ tvId.getText().toString());
 					new AddNewFriend().execute(tvId.getText().toString());
 				}
 			});
@@ -148,31 +173,33 @@ public class AddNewFriendActivity extends AppCompatActivity {
 	};
 
 	class AddNewFriend extends AsyncTask<String, String, String> {
+		
 		protected String doInBackground(String... args) {
 			if (args == null) // NO FRIEND ID
 				return null;
 
 			String iNewFirendId = args[0];
+			Log.d("i",iNewFirendId);
 			// BEFORE ADD THE RELATION
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer.toString(iUserId)));
+			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer
+					.toString(iUserId)));
 			params.add(new BasicNameValuePair(NEW_FRIEND_ID, iNewFirendId));
 
-			JSONObject json = jsonParser.makeHttpRequest(Config.URL_SET_RELATION, "POST", params);
+			JSONObject json = jsonParser.makeHttpRequest(
+					Config.URL_SET_RELATION, "POST", params);
 			Log.d(CURRENT_ACTIVITY + "_relations", json.toString());
 
 			try {
 				int success = json.getInt(Config.TAG_SUCCESS);
 				if (success == 0) {
 					publishProgress(TAG_NO_NEW_FRIEND);
-					Log.d(CURRENT_ACTIVITY,
-							"RELATION SUCCESSFULLY CREATED");
-				} /*else if (success == 1) {
-					publishProgress(TAG_ALREADY_FRIEND);
-					Log.d(CURRENT_ACTIVITY,
-							"RELATION ALREADY CREATED");
-				}*/
+					Log.d(CURRENT_ACTIVITY, "RELATION SUCCESSFULLY CREATED");
+				} /*
+				 * else if (success == 1) { publishProgress(TAG_ALREADY_FRIEND);
+				 * Log.d(CURRENT_ACTIVITY, "RELATION ALREADY CREATED"); }
+				 */
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -188,42 +215,40 @@ public class AddNewFriendActivity extends AppCompatActivity {
 				Toast.makeText(AddNewFriendActivity.this, "COMPLETE!",
 						Toast.LENGTH_SHORT).show();
 
-				Intent intent = getIntent();
-				finish();
-				startActivity(intent);
-			} 
+				
+				AddNewFriendActivity.this.finish();
+			}
 		}
 	}
 
-
-	public String getContactName(String phoneNumber) {  
+	public String getContactName(String phoneNumber) {
 		Uri uri;
 		String[] projection;
-		projection = new String[] { android.provider.Contacts.People.NAME }; 
+		projection = new String[] { android.provider.Contacts.People.NAME };
 		mBaseUri = Contacts.Phones.CONTENT_FILTER_URL;
-		
+
 		try {
-			Class<?> c =Class.forName("android.provider.ContactsContract$PhoneLookup");
+			Class<?> c = Class
+					.forName("android.provider.ContactsContract$PhoneLookup");
 			mBaseUri = (Uri) c.getField("CONTENT_FILTER_URI").get(mBaseUri);
 			projection = new String[] { "display_name" };
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-
-		uri = Uri.withAppendedPath(mBaseUri, Uri.encode(phoneNumber)); 
-		Cursor cursor = this.getContentResolver().query(uri, projection, null, null, null); 
+		uri = Uri.withAppendedPath(mBaseUri, Uri.encode(phoneNumber));
+		Cursor cursor = this.getContentResolver().query(uri, projection, null,
+				null, null);
 
 		String contactName = "";
 
-		if (cursor.moveToFirst()) { 
+		if (cursor.moveToFirst()) {
 			contactName = cursor.getString(0);
-		} 
+		}
 
 		cursor.close();
 		cursor = null;
-		
 
-		return contactName; 
+		return contactName;
 	}
 }

@@ -9,10 +9,35 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.example.heart.R;
 import com.heart.friend.Friend;
 import com.heart.friend.FriendPagerAdapter;
 import com.heart.util.Config;
+import com.heart.util.CustomViewPager;
 import com.heart.util.DownloadService;
 import com.heart.util.JSONParser;
 import com.heart.util.SlidingMenu;
@@ -22,36 +47,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.preference.Preference;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.text.InputType;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -87,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
 
-	public final static int PAGES = 5;
+	public final int PAGES = 100;
+	public static int maxPeople = 0;
 	public final static int FIRST_PAGE = 0;
 	public final static float BIG_SCALE = 1.0f;
 	public final static float SMALL_SCALE = 0.7851f;
@@ -97,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 	public Integer[] btnColors = null;
 
 	public FriendPagerAdapter mpadapter;
-	public ViewPager pager;
+	public CustomViewPager pager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +111,8 @@ public class MainActivity extends AppCompatActivity {
 		strPic = SignInActivity.strPic;
 		strEmail = SignInActivity.strEmail;
 
-		Log.d(CURRENT_ACTIVITY, "USER ID : " + iUserId + "/" + strName + "/" + strPic);
+		Log.d(CURRENT_ACTIVITY, "USER ID : " + iUserId + "/" + strName + "/"
+				+ strPic);
 
 		// CHANGING MENU CENTER ICON
 		menu.findViewById(R.id.iv_toolbar_logo).setBackgroundResource(
@@ -123,19 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
 		menu.findViewById(R.id.iv_toolbar_back).setVisibility(View.INVISIBLE);
 
-		// CALL LoadAllFriends()
-		new LoadAllFriends().execute();
+
 
 		imageInit(this); // IMAGE LOADER SETUP
-		setUpColors(); // SET COLOR
 		menuInit(); // SET MENU BAR
-
-		// VIEW PAGER
-		pager = (ViewPager) findViewById(R.id.myviewpager);
-		pager.setCurrentItem(FIRST_PAGE);
-		pager.setBackgroundColor(bgColors[0]);
-		pager.setOffscreenPageLimit(3);
-		pager.setPageMargin(-450);
 
 		// FONT
 		tvHome.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -150,7 +138,14 @@ public class MainActivity extends AppCompatActivity {
 					R.color.status_bar_base));
 		}
 	}
-
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		// CALL LoadAllFriends()
+		new LoadAllFriends().execute();
+	}
+	
 	/**
 	 * WHEN A FRIEND PROFILE VIEW IS CLICKED ADD A FRIEND / SELECT A RECEIVER
 	 * 
@@ -163,59 +158,47 @@ public class MainActivity extends AppCompatActivity {
 		String strFriendName = item.get(mpadapter.getCurPosition()).getName();
 		String strFriendPhone = item.get(mpadapter.getCurPosition()).getPhone();
 		String strFriendPic = item.get(mpadapter.getCurPosition()).getPicPath();
-		String strFriendCPic = item.get(mpadapter.getCurPosition()).getCPicPath();
+		String strFriendCPic = item.get(mpadapter.getCurPosition())
+				.getCPicPath();
 		String strFriendEmail = item.get(mpadapter.getCurPosition()).getEmail();
 
 		Log.d(CURRENT_ACTIVITY, "CLICK : " + strFriendName);
 
-		
-		 // ADD FRIEND
+		// ADD FRIEND
 		if (strFriendId.equals(ADD_FRIEND)) {
 
-			/*AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-			alert.setTitle("WRITE DOWN THE FRIEND'S CONTACT NUMBER.");
+			/*
+			 * AlertDialog.Builder alert = new
+			 * AlertDialog.Builder(MainActivity.this);
+			 * alert.setTitle("WRITE DOWN THE FRIEND'S CONTACT NUMBER.");
+			 * 
+			 * // SET AN EDITTEXT VIEW TO GET USER INPUT final EditText
+			 * editInput = new EditText(MainActivity.this);
+			 * editInput.setInputType(InputType.TYPE_CLASS_PHONE);
+			 * 
+			 * alert.setView(editInput); alert.setPositiveButton("OK", new
+			 * DialogInterface.OnClickListener() { public void
+			 * onClick(DialogInterface dialog, int whichButton) { // OK BUTTON
+			 * String strValue = editInput.getText().toString();
+			 * 
+			 * if (strValue.equals("") || strValue == null) { // NO INPUT VALUE
+			 * Toast.makeText(MainActivity.this,
+			 * "WRITE DOWN CONNECT NUMBER TO ADD", Toast.LENGTH_SHORT).show(); }
+			 * else { if (strValue.substring(1).equals(strPhone)) {
+			 * Toast.makeText(MainActivity.this, "YOU CAN'T ADD YOURSELF",
+			 * Toast.LENGTH_SHORT).show(); } else { new
+			 * AddNewFriend().execute(strValue); } } } });
+			 * 
+			 * alert.setNegativeButton("CANCEL", new
+			 * DialogInterface.OnClickListener() { public void
+			 * onClick(DialogInterface dialog, int whichButton) { // CANCELED. }
+			 * }); alert.show();
+			 */
 
-			// SET AN EDITTEXT VIEW TO GET USER INPUT
-			final EditText editInput = new EditText(MainActivity.this);
-			editInput.setInputType(InputType.TYPE_CLASS_PHONE);
-
-			alert.setView(editInput);
-			alert.setPositiveButton("OK",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// OK BUTTON
-							String strValue = editInput.getText().toString();
-
-							if (strValue.equals("") || strValue == null) {
-								// NO INPUT VALUE
-								Toast.makeText(MainActivity.this,
-										"WRITE DOWN CONNECT NUMBER TO ADD",
-										Toast.LENGTH_SHORT).show();
-							} else {
-								if (strValue.substring(1).equals(strPhone)) {
-									Toast.makeText(MainActivity.this,
-											"YOU CAN'T ADD YOURSELF",
-											Toast.LENGTH_SHORT).show();
-								} else {
-									new AddNewFriend().execute(strValue);
-								}
-							}
-						}
-					});
-
-			alert.setNegativeButton("CANCEL",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// CANCELED.
-						}
-					});
-			alert.show();*/
-
-			Intent in = new Intent(MainActivity.this, AddNewFriendActivity.class);
+			Intent in = new Intent(MainActivity.this,
+					AddNewFriendActivity.class);
 			startActivity(in);
-			
+
 		} else {
 			// SELECT THE RECEIVER
 			// TO RECORD ACTIVITY HAVING USER ID, FRIEND ID AND FRIEND NAME
@@ -236,7 +219,8 @@ public class MainActivity extends AppCompatActivity {
 		protected String doInBackground(String... args) {
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer.toString(iUserId)));
+			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer
+					.toString(iUserId)));
 
 			JSONObject json = jsonParser.makeHttpRequest(
 					Config.URL_GET_FIRENDS_LIST, "GET", params);
@@ -250,6 +234,8 @@ public class MainActivity extends AppCompatActivity {
 					if (success == 0) {
 						JSONArray userObj = json
 								.getJSONArray(Config.TAG_FRIENDS);
+						maxPeople = userObj.length() + 1;
+
 						Log.d(CURRENT_ACTIVITY + "_NUM_OF_FRINEDS",
 								userObj.length() + "");
 
@@ -293,10 +279,20 @@ public class MainActivity extends AppCompatActivity {
 			Friend friend = new Friend(ADD_FRIEND, "", "", null, null, "");
 			item.add(friend);
 
+			setUpColors(maxPeople); // SET COLOR
+
+			// VIEW PAGER
+			pager = (CustomViewPager) findViewById(R.id.myviewpager);
+			pager.setCurrentItem(FIRST_PAGE);
+			pager.setBackgroundColor(bgColors[0]);
+			pager.setOffscreenPageLimit(3);
+			pager.setPageMargin(-450);
+
 			mpadapter = new FriendPagerAdapter(MainActivity.this,
 					MainActivity.this.getSupportFragmentManager(), pager, item,
 					btnSelect, bgColors, btnColors);
 			pager.setAdapter(mpadapter);
+			
 			pager.setOnPageChangeListener(mpadapter);
 		}
 	}
@@ -411,27 +407,36 @@ public class MainActivity extends AppCompatActivity {
 		ImageLoader.getInstance().init(config);
 	}
 
-	private void setUpColors() {
+	private void setUpColors(int num) {
 		// BG
+		Integer[] bg_colors_temp = new Integer[100];
+		Integer[] btn_colors_temp = new Integer[100];
 		Integer color1 = getResources().getColor(R.color.page2_bg_color1);
-		Integer color2 = getResources().getColor(R.color.page2_bg_color2);
-		Integer color3 = getResources().getColor(R.color.page2_bg_color3);
-		Integer color4 = getResources().getColor(R.color.page2_bg_color4);
-		Integer color5 = getResources().getColor(R.color.background_base);
+		Integer color2 = getResources().getColor(R.color.page2_btn_color1);
+		for (int i = 0; i < num; i++) {
+			bg_colors_temp[i] = color1;
+			btn_colors_temp[i] = color2;
+		}
+		bg_colors_temp[num] = color1;
+		btn_colors_temp[num] = color2;
+		// Integer color2 = getResources().getColor(R.color.page2_bg_color2);
+		// Integer color3 = getResources().getColor(R.color.page2_bg_color3);
+		// Integer color4 = getResources().getColor(R.color.page2_bg_color4);
+		// Integer color5 = getResources().getColor(R.color.background_base);
 
-		Integer[] bg_colors_temp = { color1, color2, color3, color4, color5,
-				color5 };
-		bgColors = bg_colors_temp;
+		// Integer[] bg_colors_temp = { color5, color1, color2, color3, color4,
+		// color4 };
 
 		// BTN
-		color1 = getResources().getColor(R.color.page2_btn_color1);
-		color2 = getResources().getColor(R.color.page2_btn_color2);
-		color3 = getResources().getColor(R.color.page2_btn_color3);
-		color4 = getResources().getColor(R.color.page2_btn_color4);
-		color5 = getResources().getColor(R.color.button_base);
-
-		Integer[] btn_colors_temp = { color1, color2, color3, color4, color5,
-				color5 };
+		// color1 = getResources().getColor(R.color.page2_btn_color1);
+		// color2 = getResources().getColor(R.color.page2_btn_color2);
+		// color3 = getResources().getColor(R.color.page2_btn_color3);
+		// color4 = getResources().getColor(R.color.page2_btn_color4);
+		// color5 = getResources().getColor(R.color.button_base);
+		//
+		// Integer[] btn_colors_temp = { color5, color1, color2, color3, color4,
+		// color4, };
+		bgColors = bg_colors_temp;
 		btnColors = btn_colors_temp;
 	}
 
@@ -514,19 +519,19 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {/*
-
-		if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
-			backKeyPressedTime = System.currentTimeMillis();
-			toast = Toast.makeText(MainActivity.this,
-					"Press back one more time to exit", Toast.LENGTH_SHORT);
-			toast.show();
-			return;
-		}
-		if (System.currentTimeMillis() <= backKeyPressedTime + 2000) {
-			finish();
-			toast.cancel();
-		}
-	*/}
+								 * 
+								 * if (System.currentTimeMillis() >
+								 * backKeyPressedTime + 2000) {
+								 * backKeyPressedTime =
+								 * System.currentTimeMillis(); toast =
+								 * Toast.makeText(MainActivity.this,
+								 * "Press back one more time to exit",
+								 * Toast.LENGTH_SHORT); toast.show(); return; }
+								 * if (System.currentTimeMillis() <=
+								 * backKeyPressedTime + 2000) { finish();
+								 * toast.cancel(); }
+								 */
+	}
 
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);

@@ -9,7 +9,7 @@
         android:id="@+id/list_tv_uid"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -43,6 +43,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:text="Add"
+             android:focusable="false"
             android:layout_gravity="center_vertical" />
     </LinearLayout>
 

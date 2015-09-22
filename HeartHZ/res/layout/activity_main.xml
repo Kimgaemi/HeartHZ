@@ -35,7 +35,7 @@
                 android:textSize="72px" />
         </RelativeLayout>
 
-        <android.support.v4.view.ViewPager
+        <com.heart.util.CustomViewPager
             android:id="@+id/myviewpager"
             android:layout_width="match_parent"
             android:layout_height="1830px"
