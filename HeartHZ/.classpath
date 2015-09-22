@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="E:/desktop/Example/Android-Universal-Image-Loader-master/downloads/universal-image-loader-1.8.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Jangs/Desktop/universal-image-loader-1.8.3.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry exported="true" kind="lib" path="E:/desktop/httpclient-4.3.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="E:/desktop/httpcore-4.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="E:/desktop/httpmime-4.3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Jangs/Desktop/httpclient-4.3.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Jangs/Desktop/httpcore-4.3.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Users/Jangs/Desktop/httpmime-4.3.6.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

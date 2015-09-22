@@ -61,8 +61,8 @@ public class SignInActivity extends Activity {
 	public static int iUserId;
 	public static String strName;
 	public static String strPhone;
-	public String strModel;
-	public String strPw;
+	public static String strModel;
+	public static String strPw;
 	public static String strPic;
 	public static String strCPic;
 	public static String strEmail;
@@ -180,29 +180,27 @@ public class SignInActivity extends Activity {
 						Log.d(CURRENT_ACTIVITY + "_USER", user.toString());
 
 						if(!isNotFirst) {
-							int userId = user.getInt(Config.TAG_USER_ID);
-							String userName = user.getString(Config.TAG_NAME);
-							String userPhone = user.getString(Config.TAG_PHONE);
-							String userPw = user.getString(Config.TAG_PW);
-							String userModel = user.getString(Config.TAG_MODEL);
-							String userPic = user.getString(Config.TAG_PIC_PATH);
-							String userCPic = user.getString(Config.TAG_CPIC_PATH);
+							iUserId = user.getInt(Config.TAG_USER_ID);
+							strName = user.getString(Config.TAG_NAME);
+							strPhone = user.getString(Config.TAG_PHONE);
+							strPw = user.getString(Config.TAG_PW);
+							strModel = user.getString(Config.TAG_MODEL);
+							strPic = user.getString(Config.TAG_PIC_PATH);
+							// strCPic = user.getString(Config.TAG_CPIC_PATH);
 	
 							pref.put("first", true);
-							pref.put(Config.TAG_USER_ID, userId);
-							pref.put(Config.TAG_PW, userPw);
-							pref.put(Config.TAG_MODEL, userModel);
-							pref.put(Config.TAG_NAME, userName);
-							pref.put(Config.TAG_PHONE, userPhone);
-							pref.put(Config.TAG_PIC_PATH, userPic);
+							pref.put(Config.TAG_USER_ID, iUserId);
+							pref.put(Config.TAG_PW, strPw);
+							pref.put(Config.TAG_MODEL, strModel);
+							pref.put(Config.TAG_NAME, strName);
+							pref.put(Config.TAG_PHONE, strPhone);
+							pref.put(Config.TAG_PIC_PATH, strPic);
 						}
 						
 						// TO MAINACTIVITY HAVING USER ID AND USER PHONE
 						Intent i = new Intent(SignInActivity.this, MainActivity.class);
 						
-						
-						/* Áö¿ï °Í
-						iUserId = userId;
+						/*iUserId = userId;
 						strName = userName;
 						strPhone = userPhone;
 						strPic = userPic;

@@ -9,12 +9,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.heart.R;
-import com.heart.friend.AcquAdapter;
-import com.heart.friend.Friend;
-import com.heart.util.Config;
-import com.heart.util.JSONParser;
-
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,6 +24,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.heart.R;
+import com.heart.friend.AcquAdapter;
+import com.heart.friend.Friend;
+import com.heart.util.Config;
+import com.heart.util.JSONParser;
 
 public class AddNewFriendActivity extends AppCompatActivity {
 
