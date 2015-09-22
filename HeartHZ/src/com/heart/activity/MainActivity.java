@@ -213,7 +213,8 @@ public class MainActivity extends AppCompatActivity {
 					});
 			alert.show();*/
 
-			
+			Intent in = new Intent(MainActivity.this, AddNewFriendActivity.class);
+			startActivity(in);
 			
 		} else {
 			// SELECT THE RECEIVER

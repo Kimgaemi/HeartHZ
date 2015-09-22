@@ -66,32 +66,31 @@ public class SignInActivity extends Activity {
 	public static String strPic;
 	public static String strCPic;
 	public static String strEmail;
-	
+
 	public static SharedPreferenceUtil pref;
-	public Boolean isNotFirst = false;	// true: 재방문
+	public Boolean isNotFirst = false; // true: 재방문
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
 
-		
 		editPhone = (EditText) findViewById(R.id.edit_signin_phone);
 		pref = new SharedPreferenceUtil(this);
-		
+
 		isNotFirst = pref.getValue("first", false);
-		
-		if(isNotFirst) {
-			iUserId =  pref.getValue(Config.TAG_USER_ID, 0);
+
+		if (isNotFirst) {
+			iUserId = pref.getValue(Config.TAG_USER_ID, 0);
 			strPhone = pref.getValue(Config.TAG_PHONE, null);
-			strName =  pref.getValue(Config.TAG_NAME, null);
+			strName = pref.getValue(Config.TAG_NAME, null);
 			strPic = pref.getValue(Config.TAG_PIC_PATH, null);
-			strPw =  pref.getValue(Config.TAG_PW, null);
+			strPw = pref.getValue(Config.TAG_PW, null);
 			strModel = pref.getValue(Config.TAG_MODEL, null);
 			editPhone.setText(strPhone);
 			new GetUserDetails().execute();
 		}
-		
+
 		btnLogin = (Button) findViewById(R.id.login_btn);
 		editPassword = (EditText) findViewById(R.id.edit_signin_pw);
 		tvForgotAccount = (TextView) findViewById(R.id.tv_forgot_account);
@@ -128,10 +127,14 @@ public class SignInActivity extends Activity {
 				// CALL GetUserDetails() CLASS
 				strPhone = editPhone.getText().toString();
 				strPw = editPassword.getText().toString();
-				if(strPhone.equals("")) Toast.makeText(SignInActivity.this, "Enter your ID!", Toast.LENGTH_SHORT).show();
-				else if (strPw.equals("")) Toast.makeText(SignInActivity.this, "Enter your Password!", Toast.LENGTH_SHORT).show();
+				if (strPhone.equals(""))
+					Toast.makeText(SignInActivity.this, "Enter your ID!",
+							Toast.LENGTH_SHORT).show();
+				else if (strPw.equals(""))
+					Toast.makeText(SignInActivity.this, "Enter your Password!",
+							Toast.LENGTH_SHORT).show();
 				else
-					new GetUserDetails().execute();				
+					new GetUserDetails().execute();
 				break;
 
 			case R.id.tv_create_account:
@@ -164,7 +167,8 @@ public class SignInActivity extends Activity {
 				params.add(new BasicNameValuePair(Config.TAG_PW, strPw));
 
 				// GETTING USER DETAILS BY MAKING HTTP REQUEST (POST)
-				JSONObject json = jsonParser.makeHttpRequest(Config.URL_SIGN_IN, "POST", params);
+				JSONObject json = jsonParser.makeHttpRequest(
+						Config.URL_SIGN_IN, "POST", params);
 
 				if (json != null) {
 					// CHECK YOUR LOG FOR JSON RESPONSE
@@ -179,7 +183,7 @@ public class SignInActivity extends Activity {
 						JSONObject user = userObj.getJSONObject(0);
 						Log.d(CURRENT_ACTIVITY + "_USER", user.toString());
 
-						if(!isNotFirst) {
+						if (!isNotFirst) {
 							iUserId = user.getInt(Config.TAG_USER_ID);
 							strName = user.getString(Config.TAG_NAME);
 							strPhone = user.getString(Config.TAG_PHONE);
@@ -187,7 +191,7 @@ public class SignInActivity extends Activity {
 							strModel = user.getString(Config.TAG_MODEL);
 							strPic = user.getString(Config.TAG_PIC_PATH);
 							// strCPic = user.getString(Config.TAG_CPIC_PATH);
-	
+
 							pref.put("first", true);
 							pref.put(Config.TAG_USER_ID, iUserId);
 							pref.put(Config.TAG_PW, strPw);
@@ -196,15 +200,15 @@ public class SignInActivity extends Activity {
 							pref.put(Config.TAG_PHONE, strPhone);
 							pref.put(Config.TAG_PIC_PATH, strPic);
 						}
-						
+
 						// TO MAINACTIVITY HAVING USER ID AND USER PHONE
-						Intent i = new Intent(SignInActivity.this, MainActivity.class);
-						
-						/*iUserId = userId;
-						strName = userName;
-						strPhone = userPhone;
-						strPic = userPic;
-						strCPic = userCPic;*/
+						Intent i = new Intent(SignInActivity.this,
+								MainActivity.class);
+
+						/*
+						 * iUserId = userId; strName = userName; strPhone =
+						 * userPhone; strPic = userPic; strCPic = userCPic;
+						 */
 						Log.d("tag", iUserId + ";");
 						startActivity(i);
 						finish();
@@ -213,8 +217,8 @@ public class SignInActivity extends Activity {
 						// NO USER FOUND
 						publishProgress(TAG_NO_USER);
 						Log.e(CURRENT_ACTIVITY, "NO USER FOUND");
-						
-					} 
+
+					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -229,8 +233,8 @@ public class SignInActivity extends Activity {
 			if (values[0].equals(TAG_NO_USER)) {
 				editPhone.setText("");
 				Toast.makeText(SignInActivity.this,
-						"The username or password you entered is incorrect.", Toast.LENGTH_SHORT)
-						.show();
+						"The username or password you entered is incorrect.",
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 

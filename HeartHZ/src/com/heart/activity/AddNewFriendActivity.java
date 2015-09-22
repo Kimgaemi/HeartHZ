@@ -77,7 +77,7 @@ public class AddNewFriendActivity extends AppCompatActivity {
 			JSONObject json = jsonParser.makeHttpRequest(Config.URL_GET_USER_LIST, "POST", params);
 
 			if(json != null) {
-				Log.d(CURRENT_ACTIVITY+"_all_friends", json.toString());
+				Log.d(CURRENT_ACTIVITY+"_all_acqu", json.toString());
 
 				try {
 					int success = json.getInt(Config.TAG_SUCCESS);
@@ -91,7 +91,9 @@ public class AddNewFriendActivity extends AppCompatActivity {
 							JSONObject c = userObj.getJSONObject(i);
 
 							String strFriendPhone = c.getString(Config.TAG_PHONE);
-							if(getContactName(strFriendPhone) != null) {	// 전화번호 부 일치하는지
+							String contactName = getContactName(strFriendPhone);
+							Log.d("Tag_name", contactName);
+							if(contactName != null) {	// 전화번호 부 일치하는지
 								String strFriendId	 	= c.getString(Config.TAG_USER_ID);
 								String strFriendName	= c.getString(Config.TAG_NAME);
 								String strFriendPicPath = c.getString(Config.TAG_PIC_PATH);
@@ -194,7 +196,7 @@ public class AddNewFriendActivity extends AppCompatActivity {
 	}
 
 
-	public String getContactName(final String phoneNumber) {  
+	public String getContactName(String phoneNumber) {  
 		Uri uri;
 		String[] projection;
 		projection = new String[] { android.provider.Contacts.People.NAME }; 
@@ -220,6 +222,7 @@ public class AddNewFriendActivity extends AppCompatActivity {
 
 		cursor.close();
 		cursor = null;
+		
 
 		return contactName; 
 	}
