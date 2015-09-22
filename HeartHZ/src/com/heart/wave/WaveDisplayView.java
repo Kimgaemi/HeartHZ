@@ -3,8 +3,6 @@ package com.heart.wave;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
-import com.heart.activity.RecordActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,6 +14,8 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.heart.activity.RecordActivity;
 
 public class WaveDisplayView extends View implements WaveDataStore,
 		OnGestureListener {
@@ -34,9 +34,8 @@ public class WaveDisplayView extends View implements WaveDataStore,
 	boolean ismoving = false;
 	int movingPoint = 0;
 
-	public static int startPoint = 0;
-	public static int finishPoint = 0;
 	int trimParameter = 0;
+	int trimNum = 2;
 
 	float x;
 
@@ -68,12 +67,20 @@ public class WaveDisplayView extends View implements WaveDataStore,
 		markerLine.setStrokeCap(Paint.Cap.ROUND);
 
 		gestureDetector = new GestureDetector(context, this);
-
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
 		// super.onDraw(canvas);
+		// Trim mode 구분용
+		if (RecordActivity.isTrim) {
+			unitSize = 2 * 3584;
+			trimNum = 1;
+		} else {
+			trimNum = 2;
+			unitSize = 3584;
+		}
+
 		byte[] cbs = waveData.toByteArray();
 		Log.d("ONDRAW", "WaveDate Size : " + String.valueOf(cbs.length)
 				+ " Cur position : " + String.valueOf(cur));
@@ -94,8 +101,8 @@ public class WaveDisplayView extends View implements WaveDataStore,
 			}
 		}
 
-		final int margin = 2;
-		int width = this.getWidth() / 2;
+		final int margin = 1;
+		int width = this.getWidth() / trimNum;
 		int height = this.getHeight() - margin * 2;
 
 		double[] ds = NormalizeWaveData.convertWaveData(bs);
@@ -129,34 +136,18 @@ public class WaveDisplayView extends View implements WaveDataStore,
 				}
 			}
 		}
-		// StartMarkerPrinting
-		if (startPoint >= movingPoint
-				&& startPoint < movingPoint + unitSize * BoxSize && ismoving) {
-			// canvas.drawLine()
-			int xpoint = (int) (((double) (startPoint - movingPoint) * 1440) / (double) (unitSize * BoxSize));
-			canvas.drawLine(xpoint, 50, xpoint, 1280 + 600, markerLine);
-			Log.i("GESTURE", "ONLONGPRESS : " + String.valueOf(xpoint));
-		}
-		// FinishMarkerPrinting
-		if (finishPoint >= movingPoint
-				&& finishPoint < movingPoint + unitSize * BoxSize && ismoving) {
-			// canvas.drawLine()
-			int xpoint = (int) (((double) (finishPoint - movingPoint) * 1440) / (double) (unitSize * BoxSize));
-			canvas.drawLine(xpoint, 50, xpoint, 1280 + 600, markerLine);
-			Log.i("GESTURE", "ONLONGPRESS : " + String.valueOf(xpoint));
-		}
 	}
 
 	private float drawWaveLine(Canvas canvas, double value, float x, float y,
 			int height, int margin) {
+		// Trim 시에는 음성 원음이 표시가 되어야함
 		float nextY = height * -1 * (float) (value - 1.0) / 2.0f;
-		if (count++ == 50) {
+		if (count++ == 28) {
 			canvas.drawLine(x + margin, y + margin, x + 1 + margin, nextY
 					+ margin, waveBaseLine);
 			count = 0;
 		}
 		return nextY;
-
 	}
 
 	@Override
@@ -172,12 +163,26 @@ public class WaveDisplayView extends View implements WaveDataStore,
 	@Override
 	public void addWaveData(byte[] data, int offset, int length) {
 		waveData.write(data, offset, length);
-		if (flag) {
+		// Trim 모드일때는 2의 배수마다 뿌릴 필요가 없기 때문에
+		if (RecordActivity.isTrim) {
 			fireInvalidate();
-			flag = false;
 		} else {
-			flag = true;
+			if (flag) {
+				fireInvalidate();
+				flag = false;
+			} else {
+				flag = true;
+			}
 		}
+	}
+
+	// Trim을 위한
+	public int getMovingCur() {
+		return movingPoint;
+	}
+
+	public int getBoxSize() {
+		return BoxSize;
 	}
 
 	@Override
@@ -194,7 +199,15 @@ public class WaveDisplayView extends View implements WaveDataStore,
 		fireInvalidate();
 	}
 
-	private void fireInvalidate() {
+	public boolean isData() {
+		byte[] bs = waveData.toByteArray();
+		if (bs.length > 0)
+			return true;
+		else
+			return false;
+	}
+
+	public void fireInvalidate() {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
@@ -207,18 +220,30 @@ public class WaveDisplayView extends View implements WaveDataStore,
 	@Override
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY) {
-		if (e2.getX() - e1.getX() > 10) {
-			Log.i("GESTURE", "FRONT : " + String.valueOf(movingPoint));
-			movingPoint = movingPoint - unitSize * BoxSize / 10;
-			if (movingPoint < 0)
-				movingPoint = 0;
-			fireInvalidate();
-		} else if (e1.getX() - e2.getX() > 10) {
-			Log.i("GESTURE", "REAR : " + String.valueOf(movingPoint));
-			movingPoint = movingPoint + unitSize * BoxSize / 10;
-			if (movingPoint > waveData.toByteArray().length)
-				movingPoint = waveData.toByteArray().length;
-			fireInvalidate();
+		// GESTURE ACTION 은 TRIM 모드에서만
+		if (RecordActivity.isTrim) {
+			if (e2.getX() - e1.getX() > 120) {
+				Log.i("GESTURE", "FRONT : " + String.valueOf(movingPoint));
+				movingPoint = movingPoint - unitSize * BoxSize / 10;
+				if (movingPoint < 0)
+					movingPoint = 0;
+				// 마지막이면 더이상 그리지 않는다
+				if (movingPoint != 0)
+					fireInvalidate();
+			} else if (e1.getX() - e2.getX() > 120) {
+				Log.i("GESTURE", "REAR : " + String.valueOf(movingPoint));
+				movingPoint = movingPoint + unitSize * BoxSize / 10;
+				if (movingPoint > waveData.toByteArray().length - unitSize
+						* BoxSize) {
+					// 커서는 박스크기만큼은 작아야함
+					movingPoint = waveData.toByteArray().length - unitSize
+							* BoxSize;
+				}
+				// 마지막이면 더이상 그리지 않는다
+				if (movingPoint != waveData.toByteArray().length - unitSize
+						* BoxSize)
+					fireInvalidate();
+			}
 		}
 		return false;
 	}
@@ -227,49 +252,58 @@ public class WaveDisplayView extends View implements WaveDataStore,
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		int action = event.getAction();
-		switch (action & MotionEvent.ACTION_MASK) {
-		case MotionEvent.ACTION_POINTER_DOWN:
-			Log.i("GESTURE1", "ACTION_POINTER_DOWN");
-			oldDist = spacing(event);
-			if (oldDist > 50f) {
-				mode = ZOOM;
-			}
-			break;
-		case MotionEvent.ACTION_DOWN:
-			Log.i("GESTURE1", "ACTION_POINTER_UP");
-			x = event.getX();
-			mode = DRAG;
-			break;
-
-		case MotionEvent.ACTION_MOVE:
-			if (mode == ZOOM) {
-				Log.i("GESTURE1", "ZOOMING");
-				float newDist = spacing(event);
-				if (newDist > oldDist) {
-					// 커지기
-					if (movingPoint + unitSize * BoxSize <= waveData
-							.toByteArray().length) {
-						BoxSize += 5;
-					}
-				} else {
-					// 작아지기
-					if (BoxSize >= 25) {
-						BoxSize -= 5;
-					}
+		// GESTURE ACTION 은 TRIM 모드에서만
+		if (RecordActivity.isTrim) {
+			switch (action & MotionEvent.ACTION_MASK) {
+			case MotionEvent.ACTION_POINTER_DOWN:
+				Log.i("GESTURE1", "ACTION_POINTER_DOWN");
+				oldDist = spacing(event);
+				if (oldDist > 50f) {
+					mode = ZOOM;
 				}
-				fireInvalidate();
+				break;
+			case MotionEvent.ACTION_DOWN:
+				Log.i("GESTURE1", "ACTION_POINTER_UP");
+				x = event.getX();
+				mode = DRAG;
+				break;
+
+			case MotionEvent.ACTION_MOVE:
+				if (mode == ZOOM) {
+					Log.i("GESTURE1", "ZOOMING");
+					float newDist = spacing(event);
+					if (newDist > oldDist) {
+						// 커지기 - 문제 발생
+						if (movingPoint + unitSize * (BoxSize + 5) <= waveData
+								.toByteArray().length) {
+							BoxSize += 5;
+						} else if (movingPoint > 0) {
+							if (movingPoint - unitSize * (BoxSize + 5) > 0) {
+								movingPoint -= unitSize * (BoxSize + 5);
+							} else {
+								movingPoint = 0;
+							}
+						}
+					} else {
+						// 작아지기
+						if (BoxSize >= 25) {
+							BoxSize -= 5;
+						}
+					}
+					fireInvalidate();
+				}
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				Log.i("GESTURE1", "ACTION_POINTER_UP");
+				mode = NONE;
+				break;
 			}
-			break;
-		case MotionEvent.ACTION_POINTER_UP:
-			Log.i("GESTURE1", "ACTION_POINTER_UP");
-			mode = NONE;
-			break;
-		}
-		if (mode == DRAG) {
-			if (gestureDetector.onTouchEvent(event))
-				return true;
-			else
-				return super.onTouchEvent(event);
+			if (mode == DRAG) {
+				if (gestureDetector.onTouchEvent(event))
+					return true;
+				else
+					return super.onTouchEvent(event);
+			}
 		}
 		return true;
 	}
@@ -291,7 +325,9 @@ public class WaveDisplayView extends View implements WaveDataStore,
 
 	public boolean onDown(MotionEvent event) {
 		Log.i("GESTURE", "DOWN");
+		// GESTURE ACTION 은 TRIM 모드에서만
 		if (RecordActivity.isTrim) {
+			Log.i("GESTURE_IS_TRIM", "DOWN");
 			if (!ismoving) {
 				ismoving = true;
 				movingPoint = cur;
@@ -310,23 +346,7 @@ public class WaveDisplayView extends View implements WaveDataStore,
 	}
 
 	public void onLongPress(MotionEvent e) {
-		// if (mode != ZOOM) {
-		// if (trimParameter == 0) {
-		// startPoint = movingPoint
-		// + (int) (unitSize * BoxSize * ((double) x / (double) 1440));
-		// Log.i("GESTURE",
-		// "ONLONGPRESS : " + "STARING POINT : "
-		// + String.valueOf(startPoint));
-		// trimParameter++;
-		// } else if (trimParameter == 1) {
-		// finishPoint = movingPoint
-		// + (int) (unitSize * BoxSize * ((double) x / (double) 1440));
-		// Log.i("GESTURE", "ONLONGPRESS : " + "FINISHING POINT : "
-		// + String.valueOf(finishPoint));
-		// }
-		// fireInvalidate();
-		// Log.i("GESTURE", "ONLONGPRESS : " + String.valueOf(x));
-		// }
+		Log.i("GESTURE", "ONLONGPRESS");
 	}
 
 }

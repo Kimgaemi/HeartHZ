@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.heart.R;
@@ -74,6 +75,8 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private ActionBarDrawerToggle dtToggle;
 
 	public static TagKind resultTagKind;
+	// 추가부분
+	private static final int REQUEST_CODE = 6384;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -214,6 +217,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		for (int i = 0; i < musicNum; i++)
 			if (mp[i] != null)
 				mp[i].stop();
+
 	}
 
 	@Override
@@ -405,6 +409,11 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				View view, int pos, long id) {
 			// MusicTag
 			int what = musicRightImageResource.get(pos).pos;
+			// fileManager 실행
+			if (what == -1) {
+				Toast.makeText(MusicImageTagActivity.this, "Click",
+						Toast.LENGTH_SHORT).show();
+			}
 			// Data
 			boolean isFocusState = musicRightImageResource.get(pos).focus;
 			if (isFocusState) {
@@ -442,6 +451,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			}
 			adapterRight.notifyDataSetChanged();
 			adapterLeft.notifyDataSetChanged();
+
 		}
 	};
 

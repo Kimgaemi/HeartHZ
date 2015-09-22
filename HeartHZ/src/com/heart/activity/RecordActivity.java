@@ -25,11 +25,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsoluteLayout;
+import android.widget.AbsoluteLayout.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,6 +59,8 @@ public class RecordActivity extends AppCompatActivity {
 	// LAYOUT
 	Context mRecordActivity;
 	private Window window = null;
+	private AbsoluteLayout trimBox1;
+	private AbsoluteLayout trimBox2;
 	private TextView record_tv;
 	private TextView time_tv1;
 	private TextView time_tv2;
@@ -62,7 +68,9 @@ public class RecordActivity extends AppCompatActivity {
 	private TextView time_tv4;
 	private TextView time_tv5;
 	private ImageView scaleTime;
-	private ImageView cutLine;
+	private ImageView cutLine0;
+	private ImageView cutLine1;
+	private ImageView cutLine2;
 	private LinearLayout displayLayout;
 	private WaveDisplayView displayView;
 	private Button btnNext;
@@ -83,7 +91,9 @@ public class RecordActivity extends AppCompatActivity {
 	protected Converter convert;
 
 	// MODE
-	public static boolean isTrim = false;
+	public static boolean isTrim;
+	private boolean startTrim;
+	private boolean finishTrim;
 
 	// VARIABLE
 	private String strFriendId;
@@ -98,12 +108,16 @@ public class RecordActivity extends AppCompatActivity {
 	private ActionBarDrawerToggle dtToggle;
 	private DrawerLayout dlDrawer;
 
+	// TRIM
+	private int startPoint;
+	private int finishPoint;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mRecordActivity = this;
 		setContentView(R.layout.activity_recorder);
-
+		isTrim = false;
 		Intent i = getIntent();
 		strFriendId = i.getStringExtra(Config.TAG_FRIEND_ID);
 		strFriendPic = i.getStringExtra(Config.TAG_FIREND_PIC);
@@ -114,8 +128,13 @@ public class RecordActivity extends AppCompatActivity {
 
 		// LAYOUT
 		displayLayout = (LinearLayout) findViewById(R.id.displayView);
+		trimBox1 = (AbsoluteLayout) findViewById(R.id.trimContainer1);
+		trimBox2 = (AbsoluteLayout) findViewById(R.id.trimContainer2);
 
-		cutLine = (ImageView) findViewById(R.id.iv_cutline);
+		cutLine0 = (ImageView) findViewById(R.id.iv_cutline);
+		cutLine1 = (ImageView) findViewById(R.id.iv_cutline1);
+		cutLine2 = (ImageView) findViewById(R.id.iv_cutline2);
+
 		scaleTime = (ImageView) findViewById(R.id.iv_scale_time);
 		animation = AnimationUtils.loadAnimation(RecordActivity.this,
 				R.anim.ani);
@@ -134,13 +153,21 @@ public class RecordActivity extends AppCompatActivity {
 			public void onClick(View v) {
 				if (pr_tgn.isChecked()) {
 					Log.i("MAINACTIVITY", "PAUSE");
-					if (Recorder.isRecording) {
-						animation.cancel();
-						recorder.audioPause();
-					} else {
-						Toast.makeText(RecordActivity.this, "녹음을 먼저 실행해 주세요",
+					// Trim 중이라면 Trim 닫고 시작하기
+					if (isTrim) {
+						Toast.makeText(mRecordActivity, "Trim 작업을 먼저 끝내주세요",
 								Toast.LENGTH_SHORT).show();
 						pr_tgn.setChecked(false);
+					} else {
+						if (Recorder.isRecording) {
+							animation.cancel();
+							recorder.audioPause();
+						} else {
+							Toast.makeText(RecordActivity.this,
+									"녹음을 먼저 실행해 주세요", Toast.LENGTH_SHORT)
+									.show();
+							pr_tgn.setChecked(false);
+						}
 					}
 				} else {
 					Log.i("MAINACTIVITY", "RESUME");
@@ -158,16 +185,23 @@ public class RecordActivity extends AppCompatActivity {
 		ps_tgn.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				if (ps_tgn.isChecked()) {
-					Log.i("MAINACTIVITY", "START RECORDING");
-					startRecord();
+				// Trim 중이라면 Trim 닫고 시작하기
+				if (isTrim) {
+					Toast.makeText(mRecordActivity, "Trim 작업을 먼저 끝내주세요",
+							Toast.LENGTH_SHORT).show();
+					ps_tgn.setChecked(false);
 				} else {
-					Log.i("MAINACTIVITY", "STOP RECORDING");
-					if (recorder.isPause()) {
-						recorder.audioResume();
-						stopRecord();
+					if (ps_tgn.isChecked()) {
+						Log.i("MAINACTIVITY", "START RECORDING");
+						startRecord();
 					} else {
-						stopRecord();
+						Log.i("MAINACTIVITY", "STOP RECORDING");
+						if (recorder.isPause()) {
+							recorder.audioResume();
+							stopRecord();
+						} else {
+							stopRecord();
+						}
 					}
 				}
 			}
@@ -178,36 +212,171 @@ public class RecordActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				if (tc_tgn.isChecked()) {
-					Log.i("MAINACTIVITY", "TRIM MODE");
-					isTrim = true;
-					// INITIALIZING
-					WaveDisplayView.startPoint = 0;
-					WaveDisplayView.finishPoint = -1;
+					// RECORD 중이면 TOAST
+					if (Recorder.isRecording) {
+						Toast.makeText(mRecordActivity, "녹음을 먼저 중지해주세요",
+								Toast.LENGTH_SHORT).show();
+						tc_tgn.setChecked(false);
+					} else {
+						Log.i("MAINACTIVITY", "TRIM MODE");
+						if (displayView != null) {
+							if (displayView.isData()) {
+								isTrim = true;
+								displayView.fireInvalidate();
+
+								cutLine0.setVisibility(View.INVISIBLE);
+								cutLine1.setVisibility(View.VISIBLE);
+								LayoutParams lp = new LayoutParams(69, 55,
+										(int) 720, (int) 238);
+								cutLine1.setLayoutParams(lp);
+								cutLine2.setVisibility(View.VISIBLE);
+								lp = new LayoutParams(69, 55, (int) 720,
+										(int) 0);
+								cutLine2.setLayoutParams(lp);
+
+								// INITIALIZING
+								startPoint = 0;
+								finishPoint = -1;
+
+							} else {
+								Toast.makeText(mRecordActivity,
+										"녹음한 데이터가 없습니다.", Toast.LENGTH_SHORT)
+										.show();
+								tc_tgn.setChecked(false);
+							}
+						} else {
+							Toast.makeText(mRecordActivity, "녹음한 데이터가 없습니다.",
+									Toast.LENGTH_SHORT).show();
+							tc_tgn.setChecked(false);
+						}
+					}
 				} else {
 					// TRIM MODE 해제
 					isTrim = false;
+
+					cutLine0.setVisibility(View.VISIBLE);
+					cutLine1.setVisibility(View.INVISIBLE);
+					cutLine2.setVisibility(View.INVISIBLE);
+
+					// 좌표 가져오기
+					Log.i("TRIM",
+							"CUTTING POINTER : "
+									+ String.valueOf(cutLine1.getX()) + " "
+									+ String.valueOf(cutLine2.getX()));
+
+					float BoxSize = (float) displayView.getBoxSize();
+					int MovingCur = displayView.getMovingCur();
+
+					float sRate = cutLine1.getX() / 1440.0f;
+					float fRate = cutLine2.getX() / 1440.0f;
+
+					startPoint = (int) (BoxSize * 3584.0f * (sRate))
+							+ MovingCur;
+					finishPoint = (int) (BoxSize * 3584.0f * (fRate))
+							+ MovingCur;
+
+					Log.i("TRIM",
+							"CUTTING POINTER : " + String.valueOf(BoxSize)
+									+ " " + String.valueOf(MovingCur));
+
+					Log.i("TRIM", "CUTTING POINTER : " + String.valueOf(sRate)
+							+ " " + String.valueOf(fRate));
+					Log.i("TRIM",
+							"CUTTING POINTER : " + String.valueOf(startPoint)
+									+ " " + String.valueOf(finishPoint));
+
 					byte[] data = displayView.getAllWaveData();
-					if (WaveDisplayView.finishPoint == -1)
-						WaveDisplayView.finishPoint = data.length;
 
 					// Short 이기 때문에 짝수 Index만 받음
-					if (WaveDisplayView.startPoint % 2 != 0)
-						WaveDisplayView.startPoint += 1;
-					if (WaveDisplayView.finishPoint % 2 != 0)
-						WaveDisplayView.finishPoint += 1;
+					if (startPoint % 2 != 0)
+						startPoint += 1;
+					if (finishPoint % 2 != 0)
+						finishPoint += 1;
 
-					byte[] trimData = Arrays.copyOfRange(data,
-							WaveDisplayView.startPoint,
-							WaveDisplayView.finishPoint);
-					Log.i("MAINACTIVITY",
-							"CUTTING POINTER"
-									+ String.valueOf(WaveDisplayView.startPoint)
-									+ " "
-									+ String.valueOf(WaveDisplayView.finishPoint));
+					byte[] trimData = Arrays.copyOfRange(data, startPoint * 2,
+							finishPoint * 2);
+
 					final File file = new File(
 							convert.getTempFilename(Converter.AUDIO_RECORDER_TEMP_FILE));
 					saveSoundPcmFile(file, trimData);
+					convert.convertPcmToWav();
+					// 트림 끝난뒤의 View는 어떻게?
+					displayView.clearWaveData();
+					displayView.fireInvalidate();
 				}
+			}
+		});
+
+		// Trim Mode
+		startTrim = false;
+		finishTrim = false;
+
+		cutLine1.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				Log.i("TRIM_IMAGE1_CLICK", "START");
+				startTrim = true;
+				return false;
+			}
+		});
+
+		cutLine2.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				Log.i("TRIM_IMAGE2_CLICK", "START");
+				finishTrim = true;
+				return false;
+			}
+		});
+
+		trimBox1.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				// Trim 중 일때만 작
+				if (isTrim) {
+					if (startTrim) // any event from down and move
+					{
+						if (cutLine2.getX() > event.getX()) {
+							LayoutParams lp = new LayoutParams(69, 55,
+									(int) event.getX(), (int) 238);
+							cutLine1.setLayoutParams(lp);
+						}
+
+					}
+					if (event.getAction() == MotionEvent.ACTION_UP) {
+						startTrim = false;
+						// cutLine1.setBackgroundColor(Color.TRANSPARENT);
+					}
+
+				}
+				return true;
+			}
+		});
+
+		trimBox2.setOnTouchListener(new OnTouchListener() {
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				// TODO Auto-generated method stub
+				// Trim 중 일때만 작
+				if (isTrim) {
+					if (finishTrim) // any event from down and move
+					{
+						// start 브분의 위치를 못 넘도록 만든다.
+						if (cutLine1.getX() < event.getX()
+								&& event.getX() < 1371) {
+							// y를 고정하면 y축은 고정됩니다.
+							LayoutParams lp = new LayoutParams(69, 55,
+									(int) event.getX(), (int) 0);
+							cutLine2.setLayoutParams(lp);
+						}
+					}
+					if (event.getAction() == MotionEvent.ACTION_UP) {
+						finishTrim = false;
+						// cutLine1.setBackgroundColor(Color.TRANSPARENT);
+					}
+				}
+				return true;
 			}
 		});
 
@@ -251,8 +420,12 @@ public class RecordActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
-		cutLine.setBackground(new BitmapDrawable(getResources(), BitmapFactory
+		cutLine0.setBackground(new BitmapDrawable(getResources(), BitmapFactory
 				.decodeResource(getResources(), R.drawable.cutline2_btn_01)));
+		cutLine1.setBackground(new BitmapDrawable(getResources(), BitmapFactory
+				.decodeResource(getResources(), R.drawable.cut_start)));
+		cutLine2.setBackground(new BitmapDrawable(getResources(), BitmapFactory
+				.decodeResource(getResources(), R.drawable.cut_finish)));
 		scaleTime.setBackground(new BitmapDrawable(getResources(),
 				BitmapFactory.decodeResource(getResources(),
 						R.drawable.time_scale)));
@@ -261,7 +434,9 @@ public class RecordActivity extends AppCompatActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		SignInActivity.recycleBgBitmap(cutLine);
+		SignInActivity.recycleBgBitmap(cutLine0);
+		SignInActivity.recycleBgBitmap(cutLine1);
+		SignInActivity.recycleBgBitmap(cutLine2);
 		SignInActivity.recycleBgBitmap(scaleTime);
 		if (Recorder.isRecording)
 			stopRecord();
@@ -282,7 +457,9 @@ public class RecordActivity extends AppCompatActivity {
 		time_tv3 = null;
 		time_tv4 = null;
 		time_tv5 = null;
-		cutLine = null;
+		cutLine0 = null;
+		cutLine1 = null;
+		cutLine2 = null;
 		scaleTime = null;
 		displayLayout = null;
 		displayView = null;

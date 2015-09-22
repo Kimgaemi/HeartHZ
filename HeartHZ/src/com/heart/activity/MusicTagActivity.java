@@ -30,7 +30,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.heart.R;
@@ -60,6 +62,7 @@ public class MusicTagActivity extends AppCompatActivity {
 
 	// VIEW
 	private Window window = null;
+	private RelativeLayout add_musictag;
 	private TextView musictag;
 	private ToggleButton tagToggle;
 	private Button btnNext;
@@ -78,6 +81,7 @@ public class MusicTagActivity extends AppCompatActivity {
 		musictag = (TextView) findViewById(R.id.tv_music_tag);
 		btnNext = (Button) findViewById(R.id.musictag1_nextbtn);
 		listView = (ListView) findViewById(R.id.music_list);
+		add_musictag = (RelativeLayout) findViewById(R.id.new_tag_music);
 
 		Intent i = getIntent();
 		strFriendId = i.getStringExtra(Config.TAG_FRIEND_ID);
@@ -102,6 +106,14 @@ public class MusicTagActivity extends AppCompatActivity {
 					MusicTagActivity.this.startActivity(intent);
 					finish();
 				}
+			}
+		});
+		// new Music Tag
+		add_musictag.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Toast.makeText(MusicTagActivity.this, "Click",
+						Toast.LENGTH_SHORT).show();
 			}
 		});
 

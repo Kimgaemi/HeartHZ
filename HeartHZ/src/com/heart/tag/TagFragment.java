@@ -68,20 +68,20 @@ public class TagFragment extends Fragment {
 
 		if (pos == 0) {
 			tvTagView2.setText("in 'Joy'");
-			iv.setImageResource(R.drawable.simul_emotion_joy_00000);
+			iv.setImageResource(R.drawable.back_joy);
 			startAnimation(TaggingActivity.cur, 0);
 		} else if (pos == 1) {
 			tvTagView2.setText("in 'Gloomy'");
-			iv.setImageResource(R.drawable.simul_emotion_gloomy_00000);
+			iv.setImageResource(R.drawable.back_gloomy);
 		} else if (pos == 2) {
 			tvTagView2.setText("in 'Relaxed'");
-			iv.setImageResource(R.drawable.simul_emotion_relaxed_00000);
+			iv.setImageResource(R.drawable.back_relaxed);
 		} else if (pos == 3) {
 			tvTagView2.setText("in 'Tired'");
-			iv.setImageResource(R.drawable.simul_emotion_tired_00000);
+			iv.setImageResource(R.drawable.back_tired);
 		} else {
 			tvTagView2.setText("in 'Tired'");
-			iv.setImageResource(R.drawable.simul_emotion_tired_00000);
+			iv.setImageResource(R.drawable.back_tired);
 		}
 
 		// fonts

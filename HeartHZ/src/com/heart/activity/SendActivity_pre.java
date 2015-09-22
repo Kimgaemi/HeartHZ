@@ -205,6 +205,8 @@ public class SendActivity_pre extends AppCompatActivity {
 		if (MusicImageTagActivity.resultTagKind.getMusicCur() >= 0) {
 			convert.convertWavToPcm(musicPath);
 			convert.mixingWav();
+		}else{
+			convert.convertPcmToWav();
 		}
 	}
 

@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 public class CustomViewPager extends ViewPager {
 
 	private boolean isPagingEnabled = true;
+	private boolean isMax = false;
 	private final int SWIPE_MIN_DISTANCE = 100;
 	float downX; // initialized at the start of the swipe action
 	float upX; // initialized at the end of the swipe action
@@ -33,9 +34,13 @@ public class CustomViewPager extends ViewPager {
 			if (deltaX < 0 && -deltaX > SWIPE_MIN_DISTANCE) {
 				Log.i("SWIPE", "LEFT");
 				this.isPagingEnabled = true;
+			} else {
+				if (this.isMax)
+					this.isPagingEnabled = false;
 			}
 			break;
 		}
+
 		if (this.isPagingEnabled)
 			return super.onTouchEvent(event);
 		else
@@ -49,6 +54,10 @@ public class CustomViewPager extends ViewPager {
 
 	public void setPagingEnabled(boolean b) {
 		this.isPagingEnabled = b;
+	}
+
+	public void setPagingMax(boolean b) {
+		this.isMax = b;
 	}
 
 }

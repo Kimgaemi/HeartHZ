@@ -99,6 +99,37 @@
                 android:padding="1dip" >
             </LinearLayout>
 
+            <!-- START CUT LINE -->
+
+            <AbsoluteLayout
+                android:id="@+id/trimContainer1"
+                android:layout_width="fill_parent"
+                android:layout_height="293px" >
+
+                <ImageView
+                    android:id="@+id/iv_cutline1"
+                    android:layout_width="69px"
+                    android:layout_height="55px"
+                    android:layout_x="720px"
+                    android:layout_y="238px"
+                    android:visibility="invisible" />
+            </AbsoluteLayout>
+            <!-- FINISH CUT LINE -->
+
+            <AbsoluteLayout
+                android:id="@+id/trimContainer2"
+                android:layout_width="fill_parent"
+                android:layout_height="55px"
+                android:layout_marginTop="1181px" >
+
+                <ImageView
+                    android:id="@+id/iv_cutline2"
+                    android:layout_width="69px"
+                    android:layout_height="55px"
+                    android:layout_x="720px"
+                    android:visibility="invisible" />
+            </AbsoluteLayout>
+
             <ImageView
                 android:id="@+id/iv_cutline"
                 android:layout_width="38px"
@@ -123,7 +154,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="70px" >
+                    android:layout_marginTop="42px" >
 
                     <TextView
                         android:id="@+id/time1"

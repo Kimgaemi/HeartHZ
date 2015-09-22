@@ -104,8 +104,12 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 		Log.i("FRAGMENT", "OnPageSelected " + String.valueOf(position));
 		justOneAnimation(position);
 		fourSwipe(TaggingActivity.cur, position);
-		if (position == maxFragment(TaggingActivity.cur))
+		if (position == maxFragment(TaggingActivity.cur)) {
 			pager.setPagingEnabled(false);
+			pager.setPagingMax(true);
+		} else {
+			pager.setPagingMax(false);
+		}
 	}
 
 	@Override
@@ -165,7 +169,15 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 
 			break;
 		case 3:
+
+			result = MusicImageTagActivity.resultTagKind.getCDate();
+			if (result == -1)
+				TagPagerAdapter.mFragments.get(0).tgn.setChecked(false);
+			else
+				TagPagerAdapter.mFragments.get(0).tgn.setChecked(true);
+
 			String str = MusicImageTagActivity.resultTagKind.getDate();
+
 			TagPagerAdapter.mFragments.get(0).etTag2.setText(str
 					.substring(2, 4));
 			TagPagerAdapter.mFragments.get(0).etTag1.setText(str
@@ -196,9 +208,9 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 	}
 
 	public void tagContextSwithing(int pos) {
-
 		pager.setCurrentItem(0);
 		pager.setPagingEnabled(true);
+		pager.setPagingMax(false);
 		FragmentTransaction fragmentTransaction;
 		fragmentTransaction = fm.beginTransaction();
 		SelectTag(TaggingActivity.cur);
@@ -209,17 +221,13 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			fragmentTransaction.hide(mFragments.get(4));
 			fragmentTransaction.commit();
 
-			mFragments.get(0).iv
-					.setImageResource(R.drawable.simul_emotion_joy_00000);
+			mFragments.get(0).iv.setImageResource(R.drawable.back_joy);
 			mFragments.get(0).tvTagView2.setText("in 'Joy'");
-			mFragments.get(1).iv
-					.setImageResource(R.drawable.simul_emotion_gloomy_00000);
+			mFragments.get(1).iv.setImageResource(R.drawable.back_gloomy);
 			mFragments.get(1).tvTagView2.setText("in 'Gloomy'");
-			mFragments.get(2).iv
-					.setImageResource(R.drawable.simul_emotion_relaxed_00000);
+			mFragments.get(2).iv.setImageResource(R.drawable.back_relaxed);
 			mFragments.get(2).tvTagView2.setText("in 'Relaxed'");
-			mFragments.get(3).iv
-					.setImageResource(R.drawable.simul_emotion_tired_00000);
+			mFragments.get(3).iv.setImageResource(R.drawable.back_tired);
 			mFragments.get(3).tvTagView2.setText("in 'Tired'");
 			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
 			break;
@@ -229,21 +237,16 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			fragmentTransaction.commit();
 			SelectTag(TaggingActivity.cur);
 			// VIEW
-			mFragments.get(4).iv
-					.setImageResource(R.drawable.simul_time_break_00000);
+			mFragments.get(4).iv.setImageResource(R.drawable.back_break);
 			mFragments.get(4).tvTagView2.setText("at 'Break of Day'");
 
-			mFragments.get(0).iv
-					.setImageResource(R.drawable.simul_time_morning_00000);
+			mFragments.get(0).iv.setImageResource(R.drawable.back_morning);
 			mFragments.get(0).tvTagView2.setText("in the 'Morning'");
-			mFragments.get(1).iv
-					.setImageResource(R.drawable.simul_time_daytime_00000);
+			mFragments.get(1).iv.setImageResource(R.drawable.back_daytime);
 			mFragments.get(1).tvTagView2.setText("in the 'DayTime'");
-			mFragments.get(2).iv
-					.setImageResource(R.drawable.simul_time_sunset_00000);
+			mFragments.get(2).iv.setImageResource(R.drawable.back_sunset);
 			mFragments.get(2).tvTagView2.setText("at 'Sunset'");
-			mFragments.get(3).iv
-					.setImageResource(R.drawable.simul_time_night_00000);
+			mFragments.get(3).iv.setImageResource(R.drawable.back_night);
 			mFragments.get(3).tvTagView2.setText("at 'Night'");
 
 			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
@@ -258,20 +261,16 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			TagPagerAdapter.mFragments.get(0).dateContainer
 					.setVisibility(View.INVISIBLE);
 			// VIEW
-			mFragments.get(0).iv
-					.setImageResource(R.drawable.simul_weather_sunny_00000);
+			mFragments.get(0).iv.setImageResource(R.drawable.back_sunny);
 			mFragments.get(0).tvTagView2.setText("on 'Sunny day'");
-			mFragments.get(1).iv
-					.setImageResource(R.drawable.simul_weather_rain_00000);
+			mFragments.get(1).iv.setImageResource(R.drawable.back_rain);
 			mFragments.get(1).tvTagView2.setText("on 'Rainy day'");
 			mFragments.get(2).iv
 					.setImageResource(R.drawable.simul_weather_snow_00030);
 			mFragments.get(2).tvTagView2.setText("on 'Snowy day'");
-			mFragments.get(3).iv
-					.setImageResource(R.drawable.simul_weather_light_00000);
+			mFragments.get(3).iv.setImageResource(R.drawable.back_light);
 			mFragments.get(3).tvTagView2.setText("on 'Lighting day'");
-			mFragments.get(4).iv
-					.setImageResource(R.drawable.simul_weather_cloudy_00000);
+			mFragments.get(4).iv.setImageResource(R.drawable.back_cloudy);
 			mFragments.get(4).tvTagView2.setText("on 'Cloudy day'");
 
 			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
@@ -350,6 +349,7 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			}
 			break;
 		case 3:
+			pager.setPagingMax(true);
 			swipe.setVisibility(View.INVISIBLE);
 			break;
 		}
