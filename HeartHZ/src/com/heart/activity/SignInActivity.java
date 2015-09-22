@@ -9,6 +9,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.heart.R;
+import com.heart.util.Config;
+import com.heart.util.DownloadService;
+import com.heart.util.JSONParser;
+import com.heart.util.SharedPreferenceUtil;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -19,7 +25,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,11 +34,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.heart.R;
-import com.heart.util.Config;
-import com.heart.util.DownloadService;
-import com.heart.util.JSONParser;
 
 public class SignInActivity extends Activity {
 
@@ -52,7 +52,7 @@ public class SignInActivity extends Activity {
 	private RelativeLayout bgContainer;
 	private ImageView ivLogo;
 	private ImageView ivUser;
-	private ImageView iv_pw;
+	private ImageView ivPw;
 	private EditText editPhone;
 	private EditText editPassword;
 	private ProgressDialog pDialog;
@@ -61,27 +61,46 @@ public class SignInActivity extends Activity {
 	public static int iUserId;
 	public static String strName;
 	public static String strPhone;
+	public String strModel;
+	public String strPw;
 	public static String strPic;
 	public static String strCPic;
 	public static String strEmail;
+	
+	public static SharedPreferenceUtil pref;
+	public Boolean isNotFirst = false;	// true: 재방문
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
 
-		btnLogin = (Button) findViewById(R.id.login_btn);
+		
 		editPhone = (EditText) findViewById(R.id.edit_signin_phone);
+		pref = new SharedPreferenceUtil(this);
+		
+		isNotFirst = pref.getValue("first", false);
+		
+		if(isNotFirst) {
+			iUserId =  pref.getValue(Config.TAG_USER_ID, 0);
+			strPhone = pref.getValue(Config.TAG_PHONE, null);
+			strName =  pref.getValue(Config.TAG_NAME, null);
+			strPic = pref.getValue(Config.TAG_PIC_PATH, null);
+			strPw =  pref.getValue(Config.TAG_PW, null);
+			strModel = pref.getValue(Config.TAG_MODEL, null);
+			editPhone.setText(strPhone);
+			new GetUserDetails().execute();
+		}
+		
+		btnLogin = (Button) findViewById(R.id.login_btn);
 		editPassword = (EditText) findViewById(R.id.edit_signin_pw);
-
-		tvCreateAccount = (TextView) findViewById(R.id.tv_create_account);
 		tvForgotAccount = (TextView) findViewById(R.id.tv_forgot_account);
-
+		tvCreateAccount = (TextView) findViewById(R.id.tv_create_account);
 		bgContainer = (RelativeLayout) findViewById(R.id.page1_container);
 
-		ivLogo = (ImageView) findViewById(R.id.imageView1);
+		ivPw = (ImageView) findViewById(R.id.pwImageView);
 		ivUser = (ImageView) findViewById(R.id.userImageView);
-		iv_pw = (ImageView) findViewById(R.id.pwImageView);
+		ivLogo = (ImageView) findViewById(R.id.imageView1);
 
 		btnLogin.setOnClickListener(signInListen);
 		tvCreateAccount.setOnClickListener(signInListen);
@@ -108,12 +127,11 @@ public class SignInActivity extends Activity {
 			case R.id.login_btn:
 				// CALL GetUserDetails() CLASS
 				strPhone = editPhone.getText().toString();
-				if (!(strPhone.equals("")))
-					new GetUserDetails().execute();
+				strPw = editPassword.getText().toString();
+				if(strPhone.equals("")) Toast.makeText(SignInActivity.this, "Enter your ID!", Toast.LENGTH_SHORT).show();
+				else if (strPw.equals("")) Toast.makeText(SignInActivity.this, "Enter your Password!", Toast.LENGTH_SHORT).show();
 				else
-					Toast.makeText(SignInActivity.this,
-							"WRITE DOWN YOUR PHONE NUMBER", Toast.LENGTH_SHORT)
-							.show();
+					new GetUserDetails().execute();				
 				break;
 
 			case R.id.tv_create_account:
@@ -143,10 +161,10 @@ public class SignInActivity extends Activity {
 				// BUILDING PARAMETERS
 				List<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair(Config.TAG_PHONE, strPhone));
+				params.add(new BasicNameValuePair(Config.TAG_PW, strPw));
 
-				// GETTING USER DETAILS BY MAKING HTTP REQUEST (GET)
-				JSONObject json = jsonParser.makeHttpRequest(
-						Config.URL_SIGN_IN, "GET", params);
+				// GETTING USER DETAILS BY MAKING HTTP REQUEST (POST)
+				JSONObject json = jsonParser.makeHttpRequest(Config.URL_SIGN_IN, "POST", params);
 
 				if (json != null) {
 					// CHECK YOUR LOG FOR JSON RESPONSE
@@ -161,23 +179,34 @@ public class SignInActivity extends Activity {
 						JSONObject user = userObj.getJSONObject(0);
 						Log.d(CURRENT_ACTIVITY + "_USER", user.toString());
 
-						int userId = user.getInt(Config.TAG_USER_ID);
-						String userName = user.getString(Config.TAG_NAME);
-						String userPhone = user.getString(Config.TAG_PHONE);
-						String userPic = user.getString(Config.TAG_PIC_PATH);
-						String userCPic = user.getString(Config.TAG_CPIC_PATH);
-						String userEmail = user
-								.getString(Config.TAG_USER_EMAIL);
-
+						if(!isNotFirst) {
+							int userId = user.getInt(Config.TAG_USER_ID);
+							String userName = user.getString(Config.TAG_NAME);
+							String userPhone = user.getString(Config.TAG_PHONE);
+							String userPw = user.getString(Config.TAG_PW);
+							String userModel = user.getString(Config.TAG_MODEL);
+							String userPic = user.getString(Config.TAG_PIC_PATH);
+							String userCPic = user.getString(Config.TAG_CPIC_PATH);
+	
+							pref.put("first", true);
+							pref.put(Config.TAG_USER_ID, userId);
+							pref.put(Config.TAG_PW, userPw);
+							pref.put(Config.TAG_MODEL, userModel);
+							pref.put(Config.TAG_NAME, userName);
+							pref.put(Config.TAG_PHONE, userPhone);
+							pref.put(Config.TAG_PIC_PATH, userPic);
+						}
+						
 						// TO MAINACTIVITY HAVING USER ID AND USER PHONE
-						Intent i = new Intent(SignInActivity.this,
-								MainActivity.class);
+						Intent i = new Intent(SignInActivity.this, MainActivity.class);
+						
+						
+						/* 지울 것
 						iUserId = userId;
 						strName = userName;
 						strPhone = userPhone;
 						strPic = userPic;
-						strCPic = userCPic;
-						strEmail = userEmail;
+						strCPic = userCPic;*/
 						Log.d("tag", iUserId + ";");
 						startActivity(i);
 						finish();
@@ -186,11 +215,8 @@ public class SignInActivity extends Activity {
 						// NO USER FOUND
 						publishProgress(TAG_NO_USER);
 						Log.e(CURRENT_ACTIVITY, "NO USER FOUND");
-					} else {
-						// NO PARAMETER
-						publishProgress(TAG_NO_PARAMETER);
-						Log.e(CURRENT_ACTIVITY, "NO PARAMETER");
-					}
+						
+					} 
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -205,7 +231,7 @@ public class SignInActivity extends Activity {
 			if (values[0].equals(TAG_NO_USER)) {
 				editPhone.setText("");
 				Toast.makeText(SignInActivity.this,
-						"NO USER FOUND. SIGN UP, PLEASE.", Toast.LENGTH_SHORT)
+						"The username or password you entered is incorrect.", Toast.LENGTH_SHORT)
 						.show();
 			}
 		}
@@ -231,7 +257,7 @@ public class SignInActivity extends Activity {
 				.decodeResource(getResources(), R.drawable.loginlogo_icon_01)));
 		ivUser.setBackground(new BitmapDrawable(getResources(), BitmapFactory
 				.decodeResource(getResources(), R.drawable.id_icon_01)));
-		iv_pw.setBackground(new BitmapDrawable(getResources(), BitmapFactory
+		ivPw.setBackground(new BitmapDrawable(getResources(), BitmapFactory
 				.decodeResource(getResources(), R.drawable.password_icon_01)));
 	}
 
@@ -241,7 +267,7 @@ public class SignInActivity extends Activity {
 		recycleBgBitmap(bgContainer);
 		recycleBgBitmap(ivLogo);
 		recycleBgBitmap(ivUser);
-		recycleBgBitmap(iv_pw);
+		recycleBgBitmap(ivPw);
 	}
 
 	public static void recycleBgBitmap(View v) {

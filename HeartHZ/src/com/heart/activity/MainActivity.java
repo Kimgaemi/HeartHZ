@@ -34,6 +34,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -71,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
 	private JSONParser jsonParser = new JSONParser();
 
 	// VARIABLE
-	private long backKeyPressedTime = 0;
 	private int iUserId;
 	public String strName;
 	public String strPhone;
@@ -98,25 +98,24 @@ public class MainActivity extends AppCompatActivity {
 
 	public FriendPagerAdapter mpadapter;
 	public ViewPager pager;
-	private Toast toast;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		View menu = (View) findViewById(R.id.main_menu);
 		btnSelect = (Button) findViewById(R.id.btn_select);
 		tvHome = (TextView) findViewById(R.id.tv_home);
-		View menu = (View) findViewById(R.id.main_menu);
 
+		// iUserId = SignInActivity.pref.getValue(Config.TAG_USER_ID, 0);
 		iUserId = SignInActivity.iUserId;
 		strPhone = SignInActivity.strPhone;
 		strName = SignInActivity.strName;
 		strPic = SignInActivity.strPic;
 		strEmail = SignInActivity.strEmail;
 
-		Log.d(CURRENT_ACTIVITY, "USER ID : " + iUserId + "/" + strName + "/"
-				+ strPic);
+		Log.d(CURRENT_ACTIVITY, "USER ID : " + iUserId + "/" + strName + "/" + strPic);
 
 		// CHANGING MENU CENTER ICON
 		menu.findViewById(R.id.iv_toolbar_logo).setBackgroundResource(
@@ -164,16 +163,16 @@ public class MainActivity extends AppCompatActivity {
 		String strFriendName = item.get(mpadapter.getCurPosition()).getName();
 		String strFriendPhone = item.get(mpadapter.getCurPosition()).getPhone();
 		String strFriendPic = item.get(mpadapter.getCurPosition()).getPicPath();
-		String strFriendCPic = item.get(mpadapter.getCurPosition())
-				.getCPicPath();
+		String strFriendCPic = item.get(mpadapter.getCurPosition()).getCPicPath();
 		String strFriendEmail = item.get(mpadapter.getCurPosition()).getEmail();
 
 		Log.d(CURRENT_ACTIVITY, "CLICK : " + strFriendName);
 
-		if (strFriendId.equals(ADD_FRIEND)) { // ADD FRIEND
+		
+		 // ADD FRIEND
+		if (strFriendId.equals(ADD_FRIEND)) {
 
-			AlertDialog.Builder alert = new AlertDialog.Builder(
-					MainActivity.this);
+			/*AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 			alert.setTitle("WRITE DOWN THE FRIEND'S CONTACT NUMBER.");
 
 			// SET AN EDITTEXT VIEW TO GET USER INPUT
@@ -212,8 +211,10 @@ public class MainActivity extends AppCompatActivity {
 							// CANCELED.
 						}
 					});
-			alert.show();
+			alert.show();*/
 
+			
+			
 		} else {
 			// SELECT THE RECEIVER
 			// TO RECORD ACTIVITY HAVING USER ID, FRIEND ID AND FRIEND NAME
@@ -227,7 +228,6 @@ public class MainActivity extends AppCompatActivity {
 
 			startActivity(in);
 		}
-
 	}
 
 	class LoadAllFriends extends AsyncTask<String, String, String> {
@@ -235,8 +235,7 @@ public class MainActivity extends AppCompatActivity {
 		protected String doInBackground(String... args) {
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer
-					.toString(iUserId)));
+			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer.toString(iUserId)));
 
 			JSONObject json = jsonParser.makeHttpRequest(
 					Config.URL_GET_FIRENDS_LIST, "GET", params);

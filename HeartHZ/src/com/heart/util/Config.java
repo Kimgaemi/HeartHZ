@@ -6,8 +6,10 @@ public class Config {
 	public static final String TAG_SUCCESS = "success";
 
 	public static final String TAG_USER = "user";
+	public static final String TAG_PW = "password";
 	public static final String TAG_NAME = "name";
 	public static final String TAG_PHONE = "phone";
+	public static final String TAG_MODEL = "model";
 	public static final String TAG_USER_ID = "user_id";
 	public static final String TAG_USER_EMAIL = "email";
 	public static final String TAG_PIC_PATH = "pic_path";
@@ -45,6 +47,7 @@ public class Config {
 
 	// url to load all friends (user id > all related firends info)
 	public static final String URL_GET_FIRENDS_LIST = "http://210.125.96.96/heart_php/get_all_friends.php";
+	public static final String URL_GET_USER_LIST = "http://210.125.96.96/heart_php/get_all_users.php";
 	public static final String URL_GET_MESSAGE_LIST = "http://210.125.96.96/heart_php/get_all_messages.php";
 
 	// url to set the relation between users

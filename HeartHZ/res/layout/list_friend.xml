@@ -6,7 +6,7 @@
     <!-- user id (pid) - will be HIDDEN - used to pass to other activity -->
 
     <TextView
-        android:id="@+id/list_uid"
+        android:id="@+id/list_tv_uid"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:visibility="gone" />
@@ -19,7 +19,7 @@
         <!-- Profile picture -->
 
         <ImageView
-            android:id="@+id/iv_friend_pic"
+            android:id="@+id/list_iv_pic"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
@@ -29,13 +29,21 @@
         <!-- Name Label -->
 
         <TextView
-            android:id="@+id/list_name"
-            android:layout_width="fill_parent"
+            android:id="@+id/list_tv_name"
+            android:layout_width="wrap_content"
             android:layout_height="fill_parent"
             android:layout_marginLeft="10dp"
             android:gravity="center_vertical"
+            android:layout_weight="3"
             android:text="김개똥"
             android:textStyle="bold" />
+
+        <Button
+             android:id="@+id/list_btn_add"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="Add"
+            android:layout_gravity="center_vertical" />
     </LinearLayout>
 
 </LinearLayout>

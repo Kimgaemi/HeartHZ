@@ -15,6 +15,22 @@
         android:layout_marginBottom="30dp"
         android:gravity="center_horizontal"
         android:text="Sign Up" />
+    
+    <EditText
+        android:id="@+id/edit_signup_phone"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="Phone number"
+        android:inputType="phone|none" />
+    
+      <EditText
+        android:id="@+id/edit_signup_pw"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:inputType="textPassword"
+        android:hint="password" />
 
     <EditText
         android:id="@+id/edit_signup_name"
@@ -23,18 +39,43 @@
         android:layout_marginBottom="10dp"
         android:hint="Nickname" />
 
-    <EditText
-        android:id="@+id/edit_signup_phone"
+    
+
+    <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:hint="Phone number"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:text="Do you have a device?" />
+
+        <Switch
+            android:id="@+id/swtich_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+              />
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/edit_signup_model"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:hint="Model no."
+      	android:enabled="false"
         android:inputType="phone|none" />
 
     <Button
         android:id="@+id/btn_signup_submit"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:layout_marginBottom="10dp"
         android:text="SUBMIT" />
 

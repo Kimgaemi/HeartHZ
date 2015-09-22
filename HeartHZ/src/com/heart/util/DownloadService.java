@@ -9,7 +9,6 @@ public class DownloadService extends Service {
 	public static boolean IsPeriSer = false;
 	DownloadGetter getter;
 
-
 	@Override
 	public IBinder onBind(Intent intent) {
 		// TODO Auto-generated method stub
