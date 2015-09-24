@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawer"
     android:layout_width="match_parent"
@@ -5,7 +6,6 @@
     android:fitsSystemWindows="true" >
 
     <!-- ActionBar Layout -->
-
     <LinearLayout
         android:id="@+id/nav_lv"
         android:layout_width="match_parent"
@@ -19,7 +19,6 @@
             layout="@layout/include_menu" />
 
         <!-- InformationBar Layout -->
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="190px"
@@ -58,19 +57,6 @@
                         android:layout_height="508px"
                         android:layout_centerHorizontal="true"
                         android:scaleType="fitXY" />
-
-                    <RelativeLayout
-                        android:layout_width="508px"
-                        android:layout_height="508px" >
-
-                        <ImageView
-                            android:id="@+id/iv_edit_pic"
-                            android:layout_width="124px"
-                            android:layout_height="124px"
-                            android:layout_marginLeft="351px"
-                            android:layout_marginTop="351px"
-                            android:src="@drawable/edit_profile" />
-                    </RelativeLayout>
                 </FrameLayout>
 
                 <TextView
@@ -105,7 +91,9 @@
                 </View>
 
                 <RelativeLayout
+                    android:id="@+id/rl_account_setting"
                     android:layout_width="match_parent"
+                     android:onClick="settingClick"
                     android:layout_height="196px" >
 
                     <ImageView

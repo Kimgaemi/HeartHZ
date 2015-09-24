@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -41,6 +42,7 @@ import com.heart.util.Config;
 import com.heart.util.CustomViewPager;
 import com.heart.util.DownloadService;
 import com.heart.util.JSONParser;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -84,9 +86,9 @@ public class MainActivity extends AppCompatActivity {
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
 
-	public final int PAGES = 100;
+	public final static int PAGES = 100;
 	public static int maxPeople = 0;
-	public final static int FIRST_PAGE = 0;
+	public static int FIRST_PAGE = 0;
 	public final static float BIG_SCALE = 1.0f;
 	public final static float SMALL_SCALE = 0.7851f;
 	public final static float DIFF_SCALE = BIG_SCALE - SMALL_SCALE;
@@ -144,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
 	protected void onResume() {
 		super.onResume();
 		// CALL LoadAllFriends()
+		menuInit();
 		new LoadAllFriends().execute();
 	}
 
@@ -240,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
 
 						Log.d(CURRENT_ACTIVITY + "_NUM_OF_FRINEDS",
 								userObj.length() + "");
-
+						item.clear();
 						// LOOPING THROUGH ALL FRIENDS
 						for (int i = 0; i < userObj.length(); i++) {
 							JSONObject c = userObj.getJSONObject(i);
@@ -264,37 +267,58 @@ public class MainActivity extends AppCompatActivity {
 									strFriendEmail);
 							item.add(friend);
 						}
-
+						item.add(new Friend(ADD_FRIEND, "", "", null, null, ""));
+						// DUmmy Friend
+						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", "", ""));
 					} else {
 						// NO FRIENDS FOUND
+						maxPeople = 1;
+						item.add(new Friend(ADD_FRIEND, "", "", null, null, ""));
+						// DUmmy Friend
+						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", "", ""));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
 			}
-
 			return null;
 		}
 
 		protected void onPostExecute(String file_url) {
-
-			Friend friend = new Friend(ADD_FRIEND, "", "", null, null, "");
-			item.add(friend);
-
-			setUpColors(maxPeople); // SET COLOR
+			setUpColors(maxPeople + 4); // SET COLOR
 
 			// VIEW PAGER
 			pager = (CustomViewPager) findViewById(R.id.myviewpager);
-			pager.setCurrentItem(FIRST_PAGE);
+			
+			pager.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					pager.setCurrentItem(FIRST_PAGE);
+					if (FIRST_PAGE == maxPeople - 1) {
+						pager.setPagingEnabled(false);
+						pager.setPagingMax(true);
+					} else {
+						pager.setPagingEnabled(true);
+						pager.setPagingMax(false);
+					}
+				}
+			}, 100);
+
+			pager.setOffscreenPageLimit(4);
 			pager.setBackgroundColor(bgColors[0]);
-			pager.setOffscreenPageLimit(3);
 			pager.setPageMargin(-450);
 
 			mpadapter = new FriendPagerAdapter(MainActivity.this,
 					MainActivity.this.getSupportFragmentManager(), pager, item,
 					btnSelect, bgColors, btnColors);
+			
 			pager.setAdapter(mpadapter);
-
 			pager.setOnPageChangeListener(mpadapter);
 		}
 	}
@@ -374,7 +398,6 @@ public class MainActivity extends AppCompatActivity {
 		@Override
 		protected void onProgressUpdate(String... values) {
 			super.onProgressUpdate(values);
-
 			if (values[0].equals(TAG_REGISTER)) {
 				Toast.makeText(MainActivity.this,
 						"NON-REGISTERED FRIEND. INVITE HIM!",

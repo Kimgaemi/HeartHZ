@@ -1,7 +1,5 @@
 package com.heart.friend;
 
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -11,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -60,11 +59,6 @@ public class FriendFragment extends Fragment {
 	@Override
 	public void onStop() {
 		super.onStop();
-		int pos = this.getArguments().getInt("POS");
-		if (pos == MainActivity.maxPeople - 1) {
-			SignInActivity.recycleBgBitmap(add_plus);
-		}
-
 	}
 
 	@Override
@@ -93,6 +87,7 @@ public class FriendFragment extends Fragment {
 		}
 
 		else {
+
 			l = (LinearLayout) inflater.inflate(R.layout.fragment_friend,
 					container, false);
 
@@ -147,8 +142,13 @@ public class FriendFragment extends Fragment {
 
 			FriendLinearLayout root = (FriendLinearLayout) l
 					.findViewById(R.id.root);
+
 			float scale = this.getArguments().getFloat("SCALE");
 			root.setScaleBoth(scale);
+			if (pos > MainActivity.maxPeople - 1
+					&& pos != MainActivity.maxPeople - 1) {
+				root.setVisibility(View.GONE);
+			}
 		}
 		return l;
 	}

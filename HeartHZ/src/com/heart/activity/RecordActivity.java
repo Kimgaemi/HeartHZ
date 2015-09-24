@@ -280,9 +280,9 @@ public class RecordActivity extends AppCompatActivity {
 					float sRate = cutLine1.getX() / 1440.0f;
 					float fRate = cutLine2.getX() / 1440.0f;
 
-					startPoint = (int) (BoxSize * 3584.0f * (sRate))
+					startPoint = (int) (BoxSize * 3584.0f * (sRate)) * 2
 							+ MovingCur;
-					finishPoint = (int) (BoxSize * 3584.0f * (fRate))
+					finishPoint = (int) (BoxSize * 3584.0f * (fRate)) * 2
 							+ MovingCur;
 
 					Log.i("TRIM",
@@ -296,15 +296,17 @@ public class RecordActivity extends AppCompatActivity {
 									+ " " + String.valueOf(finishPoint));
 
 					byte[] data = displayView.getAllWaveData();
-
+					Log.i("TRIM",
+							"CUTTING POINTER DATA LENGTH: "
+									+ String.valueOf(data.length));
 					// Short 이기 때문에 짝수 Index만 받음
 					if (startPoint % 2 != 0)
 						startPoint += 1;
 					if (finishPoint % 2 != 0)
 						finishPoint += 1;
 
-					byte[] trimData = Arrays.copyOfRange(data, startPoint * 2,
-							finishPoint * 2);
+					byte[] trimData = Arrays.copyOfRange(data, startPoint,
+							finishPoint);
 
 					final File file = new File(
 							convert.getTempFilename(Converter.AUDIO_RECORDER_TEMP_FILE));

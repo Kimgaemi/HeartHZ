@@ -37,7 +37,6 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 	public FriendPagerAdapter(MainActivity context, FragmentManager fm,
 			CustomViewPager vp, ArrayList<Friend> item, Button btn,
 			Integer[] bgColor, Integer[] btnColor) {
-
 		super(fm);
 		this.fm = fm;
 		this.context = context;
@@ -52,26 +51,22 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 
 	@Override
 	public Fragment getItem(int position) {
+		Log.i("FRAGMENT", "GETITEM " + position);
 		FriendFragment mf;
-		Log.i("FRAGMENT", "getItem : " + String.valueOf(position));
-
 		// MAKE THE FIRST PAGER BIGGER THAN OTHERS
 		if (position == MainActivity.FIRST_PAGE)
 			scale = MainActivity.BIG_SCALE;
 		else
 			scale = MainActivity.SMALL_SCALE;
-
 		mf = (FriendFragment) FriendFragment.newInstance(context, position,
 				scale, item.get(position));
 		mFragments.add(mf);
-
-		Log.i("FRAGMENT", "getsize : " + String.valueOf(mFragments.size()));
 		return mf;
 	}
 
 	@Override
 	public int getCount() {
-		return MainActivity.maxPeople;
+		return MainActivity.PAGES;
 	}
 
 	// CLICK EVENT
@@ -117,16 +112,20 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 
 	@Override
 	public void onPageSelected(int position) {
-		if (position == MainActivity.maxPeople - 1)
+		MainActivity.FIRST_PAGE = position;
+		Log.i("TEST ADAPTER", MainActivity.FIRST_PAGE + "");
+		if (position == MainActivity.maxPeople - 1) {
 			btn.setText("+ New RECEIVER");
-		else {
+			vp.setPagingEnabled(false);
+			vp.setPagingMax(true);
+		} else {
 			btn.setText("SELECT");
+			vp.setPagingMax(false);
 		}
 	}
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
-		Log.i("FRAGMENT", "onPageScrollStateChanged " + String.valueOf(state));
 	}
 
 	private FriendLinearLayout getRootView(int position) {

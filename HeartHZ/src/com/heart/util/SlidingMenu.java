@@ -11,6 +11,7 @@ import com.heart.activity.SignInActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.Preference;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-
 
 
 public class SlidingMenu extends AppCompatActivity{
@@ -61,8 +61,11 @@ public class SlidingMenu extends AppCompatActivity{
 	}
 
 	private void SlidingMenuInit() {
-
-		MenuItems me = new MenuItems(SignInActivity.strName, SignInActivity.strCPic, 0);
+		SharedPreferenceUtil pref = SignInActivity.pref;
+		String strName = pref.getValue(Config.TAG_NAME, null);
+		String strPic = pref.getValue(Config.TAG_PIC_PATH, null);
+		
+		MenuItems me = new MenuItems(strName, strPic, 0);
 		item.add(me);
 
 		lv = (ListView) ((Activity) mContext).findViewById(R.id.nav_list);

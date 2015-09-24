@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.example.heart.R;
 import com.heart.util.Config;
 import com.heart.util.JSONParser;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -68,26 +69,46 @@ public class SettingActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
+	
+	public SharedPreferenceUtil pref;
+	public ImageLoader imageLoader;
+	public DisplayImageOptions options;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 
-		iUserId = SignInActivity.iUserId;
+	//	iUserId = SignInActivity.iUserId;
 		MainActivity.imageInit(this);
-		new GetUserDetails().execute();
+	// 	new GetUserDetails().execute();
 
 		ivPic = (ImageView) findViewById(R.id.iv_pic);
 		tvName = (TextView) findViewById(R.id.tv_name);
+			
+		pref = SignInActivity.pref;
+		iUserId = pref.getValue(Config.TAG_USER_ID, 0);
+		strName = pref.getValue(Config.TAG_NAME, null);
+		strPic = pref.getValue(Config.TAG_PIC_PATH, null);
+		
+		tvName.setText(strName);
+		
+		imageLoader = ImageLoader.getInstance();
+		options = new DisplayImageOptions.Builder().cacheInMemory()
+				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc().resetViewBeforeLoading()
+				.showImageForEmptyUri(R.drawable.default_profile).showImageOnFail(R.drawable.default_profile)
+				.build();
+
+		imageLoader.displayImage(strPic, ivPic, options);
+		
 		// tvName = (EditText) findViewById(R.id.tv_name);
 		/*
-		 * btnSave = (Button) findViewById(R.id.btn_main_setting); btnBack =
-		 * (Button) findViewById(R.id.btn_setting_back);
+		 * btnSave = (Button) findViewById(R.id.btn_main_setting); 
+		 * btnBack = (Button) findViewById(R.id.btn_setting_back);
 		 */
 
-		ivPic.setImageResource(R.drawable.setting_profile_user2);
-		tvName.setText(SignInActivity.strName);
+	//	ivPic.setImageResource(R.drawable.setting_profile_user2);
+	//	tvName.setText(SignInActivity.strName);
 
 		// ivPic.setOnClickListener(settingListener);
 		/*
@@ -128,6 +149,15 @@ public class SettingActivity extends AppCompatActivity {
 				"fonts/AppleSDGothicNeo-Regular.otf"));
 	}
 
+	public void settingClick(View v){
+		switch(v.getId()) {
+		case R.id.rl_account_setting :
+			Intent i = new Intent(SettingActivity.this, SettingAccountActivity.class);
+			startActivity(i);
+			break;
+		}
+		
+	}
 	/*
 	 * private OnClickListener settingListener = new OnClickListener() {
 	 * 
@@ -229,14 +259,11 @@ public class SettingActivity extends AppCompatActivity {
 		protected String doInBackground(String... args) {
 			try {
 				List<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair(Config.TAG_USER_ID,
-						Integer.toString(iUserId)));
+				params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer.toString(iUserId)));
 
-				JSONObject json = jsonParser.makeHttpRequest(Config.URL_GET_USER_PROFILE,
-						"GET", params);
+				JSONObject json = jsonParser.makeHttpRequest(Config.URL_GET_USER_PROFILE, "GET", params);
 
 				if (json != null) { Log.d("SettingProfile_USER", json.toString());
-
 				int success = json.getInt(Config.TAG_SUCCESS); 
 				if (success == 0) {
 
@@ -245,7 +272,7 @@ public class SettingActivity extends AppCompatActivity {
 					Log.d("SettingProfile", user.toString());
 
 					strName = user.getString(Config.TAG_NAME); 
-					strPic = user.getString(Config.TAG_CPIC_PATH);
+					strPic = user.getString(Config.TAG_PIC_PATH);
 
 					Log.d("SettingProfile_Pic_Path", strName + " " + strPic);
 

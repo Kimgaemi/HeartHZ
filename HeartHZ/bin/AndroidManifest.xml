@@ -42,6 +42,7 @@
         </activity>
         <activity android:name="com.heart.activity.MainActivity" />
         <activity android:name="com.heart.activity.AddNewFriendActivity" />
+        <activity android:name="com.heart.activity.SettingAccountActivity" />
         <activity android:name="com.heart.activity.SendActivity" />
         <activity android:name="com.heart.activity.TaggingActivity" >
         </activity>
