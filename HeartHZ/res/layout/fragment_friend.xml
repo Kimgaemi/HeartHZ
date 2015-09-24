@@ -50,9 +50,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="650px"
-                        android:text="days over"
-                        android:textSize="100px"
-                        android:visibility="gone" />
+                        android:textSize="100px" />
 
                     <TextView
                         android:id="@+id/tv_home_phone"
@@ -60,9 +58,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="760px"
-                        android:text="days over"
-                        android:textSize="50px"
-                        android:visibility="gone" />
+                        android:textSize="50px" />
                 </FrameLayout>
 
                 <LinearLayout

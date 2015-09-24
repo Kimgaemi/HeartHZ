@@ -1,7 +1,11 @@
 package com.heart.activity;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -13,12 +17,13 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -42,7 +47,6 @@ import com.heart.util.Config;
 import com.heart.util.CustomViewPager;
 import com.heart.util.DownloadService;
 import com.heart.util.JSONParser;
-import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -75,8 +79,6 @@ public class MainActivity extends AppCompatActivity {
 	public String strName;
 	public String strPhone;
 	public String strPic;
-	public String strCPic;
-	public String strEmail;
 
 	// FRIEND
 	private ArrayList<Friend> item = new ArrayList<Friend>();
@@ -114,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
 		strPhone = SignInActivity.strPhone;
 		strName = SignInActivity.strName;
 		strPic = SignInActivity.strPic;
-		strEmail = SignInActivity.strEmail;
 
 		Log.d(CURRENT_ACTIVITY, "USER ID : " + iUserId + "/" + strName + "/"
 				+ strPic);
@@ -142,12 +143,21 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+ 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		// CALL LoadAllFriends()
 		menuInit();
 		new LoadAllFriends().execute();
+				
+	}
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		
 	}
 
 	/**
@@ -162,45 +172,12 @@ public class MainActivity extends AppCompatActivity {
 		String strFriendName = item.get(mpadapter.getCurPosition()).getName();
 		String strFriendPhone = item.get(mpadapter.getCurPosition()).getPhone();
 		String strFriendPic = item.get(mpadapter.getCurPosition()).getPicPath();
-		String strFriendCPic = item.get(mpadapter.getCurPosition())
-				.getCPicPath();
-		String strFriendEmail = item.get(mpadapter.getCurPosition()).getEmail();
 
 		Log.d(CURRENT_ACTIVITY, "CLICK : " + strFriendName);
 
 		// ADD FRIEND
 		if (strFriendId.equals(ADD_FRIEND)) {
-
-			/*
-			 * AlertDialog.Builder alert = new
-			 * AlertDialog.Builder(MainActivity.this);
-			 * alert.setTitle("WRITE DOWN THE FRIEND'S CONTACT NUMBER.");
-			 * 
-			 * // SET AN EDITTEXT VIEW TO GET USER INPUT final EditText
-			 * editInput = new EditText(MainActivity.this);
-			 * editInput.setInputType(InputType.TYPE_CLASS_PHONE);
-			 * 
-			 * alert.setView(editInput); alert.setPositiveButton("OK", new
-			 * DialogInterface.OnClickListener() { public void
-			 * onClick(DialogInterface dialog, int whichButton) { // OK BUTTON
-			 * String strValue = editInput.getText().toString();
-			 * 
-			 * if (strValue.equals("") || strValue == null) { // NO INPUT VALUE
-			 * Toast.makeText(MainActivity.this,
-			 * "WRITE DOWN CONNECT NUMBER TO ADD", Toast.LENGTH_SHORT).show(); }
-			 * else { if (strValue.substring(1).equals(strPhone)) {
-			 * Toast.makeText(MainActivity.this, "YOU CAN'T ADD YOURSELF",
-			 * Toast.LENGTH_SHORT).show(); } else { new
-			 * AddNewFriend().execute(strValue); } } } });
-			 * 
-			 * alert.setNegativeButton("CANCEL", new
-			 * DialogInterface.OnClickListener() { public void
-			 * onClick(DialogInterface dialog, int whichButton) { // CANCELED. }
-			 * }); alert.show();
-			 */
-
-			Intent in = new Intent(MainActivity.this,
-					AddNewFriendActivity.class);
+			Intent in = new Intent(MainActivity.this,AddNewFriendActivity.class);
 
 			startActivity(in);
 
@@ -212,8 +189,6 @@ public class MainActivity extends AppCompatActivity {
 			in.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 			in.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
 			in.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
-			in.putExtra(Config.TAG_CPIC_PATH, strFriendCPic);
-			in.putExtra(Config.TAG_USER_EMAIL, strFriendEmail);
 
 			startActivity(in);
 		}
@@ -256,32 +231,30 @@ public class MainActivity extends AppCompatActivity {
 									.getString(Config.TAG_PHONE);
 							String strFriendPicPath = c
 									.getString(Config.TAG_PIC_PATH);
-							String strFriendCPicPath = c
-									.getString(Config.TAG_CPIC_PATH);
-							String strFriendEmail = c
-									.getString(Config.TAG_USER_EMAIL);
+
+							int daysOver = getHistory("0"+strFriendPhone);
+							Log.d("tag", daysOver+"");
 
 							Friend friend = new Friend(strFriendId,
 									strFriendName, strFriendPhone,
-									strFriendPicPath, strFriendCPicPath,
-									strFriendEmail);
+									strFriendPicPath, daysOver);
 							item.add(friend);
 						}
-						item.add(new Friend(ADD_FRIEND, "", "", null, null, ""));
+						item.add(new Friend(ADD_FRIEND, "", "", "", 0));
 						// DUmmy Friend
-						item.add(new Friend("", "", "", "", "", ""));
-						item.add(new Friend("", "", "", "", "", ""));
-						item.add(new Friend("", "", "", "", "", ""));
-						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", 0));
+						item.add(new Friend("", "", "", "", 0));
+						item.add(new Friend("", "", "", "", 0));
+						item.add(new Friend("", "", "", "", 0));
 					} else {
 						// NO FRIENDS FOUND
 						maxPeople = 1;
-						item.add(new Friend(ADD_FRIEND, "", "", null, null, ""));
+						item.add(new Friend(ADD_FRIEND, "", "", "", 0));
 						// DUmmy Friend
-						item.add(new Friend("", "", "", "", "", ""));
-						item.add(new Friend("", "", "", "", "", ""));
-						item.add(new Friend("", "", "", "", "", ""));
-						item.add(new Friend("", "", "", "", "", ""));
+						item.add(new Friend("", "", "", "", 0));
+						item.add(new Friend("", "", "", "", 0));
+						item.add(new Friend("", "", "", "", 0));
+						item.add(new Friend("", "", "", "", 0));
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();
@@ -295,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
 			// VIEW PAGER
 			pager = (CustomViewPager) findViewById(R.id.myviewpager);
-			
+
 			pager.postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -317,11 +290,76 @@ public class MainActivity extends AppCompatActivity {
 			mpadapter = new FriendPagerAdapter(MainActivity.this,
 					MainActivity.this.getSupportFragmentManager(), pager, item,
 					btnSelect, bgColors, btnColors);
-			
+
 			pager.setAdapter(mpadapter);
 			pager.setOnPageChangeListener(mpadapter);
 		}
 	}
+
+
+
+	private int getHistory(String phoneNum) {
+		/* Query the CallLog Content Provider */
+
+		String selection = CallLog.Calls.NUMBER + "=?"; //WHERE절 타입이 
+		String[] selectionArgs = { phoneNum }; 
+		String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
+		Cursor managedCursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null, selection, selectionArgs, strOrder);
+
+		if(managedCursor.getCount() > 0) {
+			// long date = managedCursor.getLong(managedCursor.getColumnIndex(CallLog.Calls.DATE));
+			long date = 111123011;
+
+			Log.d("tag전화", date+"");
+			int lastDate = GetDifferenceOfDate(Long.valueOf(date));
+			managedCursor.close();
+			return lastDate;
+		} else return 365;   
+	}
+
+	public int GetDifferenceOfDate(long diff) {
+
+		// 현재시간
+		Calendar cal = Calendar.getInstance();
+		int nYear1 = cal.get(cal.YEAR);
+		int nMonth1 = cal.get(cal.MONTH) + 1;
+		int nDate1 = cal.get(cal.DATE);
+
+		// 구하고자 하는 시간
+		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		String str = df.format(diff);
+		int nYear2 = Integer.parseInt((String) str.subSequence(0, 4));
+		int nMonth2 = Integer.parseInt((String) str.subSequence(5, 7));
+		int nDate2 = Integer.parseInt((String) str.subSequence(8, 10));
+		System.out.println(str );
+		System.out.println(nYear2 + " " + nMonth2 + " " +nDate2 );
+		int nTotalDate1 = 0, nTotalDate2 = 0, nDiffOfYear = 0, nDiffOfDay = 0;
+
+		if (nYear1 > nYear2) {
+			for (int i = nYear2; i < nYear1; i++) {
+				cal.set(i, 12, 0);
+				nDiffOfYear += cal.get(Calendar.DAY_OF_YEAR);
+			}
+			nTotalDate1 += nDiffOfYear;
+		} else if (nYear1 < nYear2) {
+			for (int i = nYear1; i < nYear2; i++) {
+				cal.set(i, 12, 0);
+				nDiffOfYear += cal.get(Calendar.DAY_OF_YEAR);
+			}
+			nTotalDate2 += nDiffOfYear;
+		}
+
+		cal.set(nYear1, nMonth1 - 1, nDate1);
+		nDiffOfDay = cal.get(Calendar.DAY_OF_YEAR);
+		nTotalDate1 += nDiffOfDay;
+
+		cal.set(nYear2, nMonth2 - 1, nDate2);
+		nDiffOfDay = cal.get(Calendar.DAY_OF_YEAR);
+		nTotalDate2 += nDiffOfDay;
+
+		return nTotalDate1 - nTotalDate2;
+	}
+
 
 	class AddNewFriend extends AsyncTask<String, String, String> {
 		protected String doInBackground(String... args) {
@@ -347,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
 
 						Log.d(CURRENT_ACTIVITY, user.toString());
 						int iNewFirendId = user.getInt(Config.TAG_USER_ID);
-						String strNewFriendName = user
+						user
 								.getString(Config.TAG_NAME);
 
 						/*
@@ -421,8 +459,8 @@ public class MainActivity extends AppCompatActivity {
 
 	public static void imageInit(Activity v) {
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
-				.cacheInMemory().imageScaleType(ImageScaleType.EXACTLY).build();
+		.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
+		.cacheInMemory().imageScaleType(ImageScaleType.EXACTLY).build();
 
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				v.getBaseContext()).defaultDisplayImageOptions(defaultOptions)
@@ -473,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
 
 		setSupportActionBar(toolbar);
 		getWindow().getDecorView()
-				.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+		.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
 		dtToggle.setDrawerIndicatorEnabled(false);
 		ActionBar ab = getSupportActionBar();
@@ -544,18 +582,18 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	public void onBackPressed() {/*
-								 * 
-								 * if (System.currentTimeMillis() >
-								 * backKeyPressedTime + 2000) {
-								 * backKeyPressedTime =
-								 * System.currentTimeMillis(); toast =
-								 * Toast.makeText(MainActivity.this,
-								 * "Press back one more time to exit",
-								 * Toast.LENGTH_SHORT); toast.show(); return; }
-								 * if (System.currentTimeMillis() <=
-								 * backKeyPressedTime + 2000) { finish();
-								 * toast.cancel(); }
-								 */
+	 * 
+	 * if (System.currentTimeMillis() >
+	 * backKeyPressedTime + 2000) {
+	 * backKeyPressedTime =
+	 * System.currentTimeMillis(); toast =
+	 * Toast.makeText(MainActivity.this,
+	 * "Press back one more time to exit",
+	 * Toast.LENGTH_SHORT); toast.show(); return; }
+	 * if (System.currentTimeMillis() <=
+	 * backKeyPressedTime + 2000) { finish();
+	 * toast.cancel(); }
+	 */
 	}
 
 	protected void onNewIntent(Intent intent) {

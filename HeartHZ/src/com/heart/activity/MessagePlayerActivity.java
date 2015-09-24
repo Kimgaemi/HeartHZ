@@ -73,7 +73,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 	private MediaPlayer mp = new MediaPlayer();
 	private JSONParser jsonParser = new JSONParser();
 	private SeekBar seekbar;
-	
 
 	Thread thread = new Thread();
 	ChildItem child;
@@ -82,7 +81,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 	private final String CURRENT_ACTIVITY = getClass().getSimpleName().trim();
 	String folderPath = Environment.getExternalStorageDirectory().getPath()
 			+ "/HeartHZ/";
-
+	String playPath;
 	// VARIABLE
 	private int numbering = 1;
 	private double timeElapsed = 0;
@@ -103,6 +102,8 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_messagelist);
 
 		new LoadAllMessage().execute();
+		// GET LIST FROM FOLDER
+		getFileList();
 
 		tvMessageList = (TextView) findViewById(R.id.tv_messagelist);
 		btnDelete = (Button) findViewById(R.id.messagelist_deletebtn);
@@ -128,9 +129,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		btnDelete.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/DINMed.ttf"));
 
-		// GET LIST FROM FOLDER
-		getFileList();
-
 		// GROUP LISTENER
 		listView = (AnimatedExpandableListView) findViewById(R.id.expandlistview);
 		listView.setOnGroupClickListener(new OnGroupClickListener() {
@@ -138,7 +136,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			public boolean onGroupClick(ExpandableListView parent, View v,
 					int groupPosition, long id) {
 				Log.i("WHAT POSITION", String.valueOf(groupPosition));
-
+				playPath = fileNames[groupPosition]; // /////////////////////////////
 				if (mp.isPlaying())
 					mp.pause();
 				// thread.interrupt();
@@ -171,9 +169,9 @@ public class MessagePlayerActivity extends AppCompatActivity {
 								TextView nfocus_num = (TextView) notFocusChild
 										.findViewById(R.id.tv_messagelist_num);
 								nfocus_num
-								.setTextColor(getResources()
-										.getColor(
-												R.color.messagelist_grpitem_num_color));
+										.setTextColor(getResources()
+												.getColor(
+														R.color.messagelist_grpitem_num_color));
 							}
 						}
 					}
@@ -189,8 +187,10 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
 
-				Log.d("Tag" , child.strFileNo +"/");
+				Log.d("Tag", child.strFileNo + "/");
 
+				final int whatPosition = groupPosition;
+				Log.d("FILE", whatPosition + "/");
 				ImageView btnPlay = (ImageView) findViewById(R.id.iv_messagechild_play);
 				ImageView btnPause = (ImageView) findViewById(R.id.iv_messagechild_pause);
 				seekbar = (SeekBar) v.findViewById(R.id.child_seekbar);
@@ -200,12 +200,12 @@ public class MessagePlayerActivity extends AppCompatActivity {
 					@Override
 					public void onClick(View v) {
 						try {
-							//TextView tvPath = (TextView) v.findViewById(R.id.tv_secret_path);
-							//String realPath = tvPath.getText().toString();
-							//Log.d("Tag" , realPath);
+							// TextView tvPath = (TextView)
+							// v.findViewById(R.id.tv_secret_path);
+							// String realPath = tvPath.getText().toString();
+							// Log.d("Tag" , realPath);
 							mp.reset();
-							mp.setDataSource(path);
-
+							mp.setDataSource(playPath);
 							mp.prepare();
 							mp.start();
 							seekbar.setOnSeekBarChangeListener(seekbarListener);
@@ -241,19 +241,24 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		});
 	}
 
-	public void thread(){
-		Runnable task = new Runnable(){
-			public void run(){
-				while(mp.isPlaying()){
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+	public void thread() {
+		Runnable task = new Runnable() {
+			public void run() {
+				try {
+					while (mp.isPlaying()) {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						if (mp != null) {
+							seekbar.setProgress(mp.getCurrentPosition());
+							if (!mp.isPlaying())
+								isPlaying = false;
+						}
 					}
-					if(mp != null) {
-						seekbar.setProgress(mp.getCurrentPosition());
-						if(!mp.isPlaying()) isPlaying = false;
-					}
+				} catch (NullPointerException e) {
+				} catch (IllegalStateException e) {
 				}
 			}
 		};
@@ -263,8 +268,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 
 	public void onDestroy() {
 		super.onDestroy();
-		// FINISH THE MP PLAYER BEFORE THE ACTIVITY IS DESTORIED
-		// if(thread.isAlive()) thread.interrupt();
 		if (mp.isPlaying())
 			mp.pause();
 		if (mp != null)
@@ -354,7 +357,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 				holder.tvCb = (ToggleButton) convertView
 						.findViewById(R.id.tv_messagelist_cb);
 
-
 				// FONT
 				holder.tvNum.setTypeface(Typeface.createFromAsset(getAssets(),
 						"fonts/DINPRO-MEDIUM.ttf"));
@@ -370,7 +372,10 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			}
 
 			path = getFilePath(groupPosition, 0);
+			fileNames[groupPosition] = path;
+
 			String duration = getDuration(path);
+			Log.d("FILE", groupPosition + " " + path + " " + duration);
 
 			holder.tvNum.setText(item.strNum);
 			holder.tvSender.setText(item.strSender);
@@ -404,11 +409,11 @@ public class MessagePlayerActivity extends AppCompatActivity {
 
 			ImageLoader imageLoader = ImageLoader.getInstance();
 			DisplayImageOptions options = new DisplayImageOptions.Builder()
-			.cacheInMemory()
-			.displayer(new RoundedBitmapDisplayer(3000)).cacheOnDisc()
-			.resetViewBeforeLoading()
-			.showImageForEmptyUri(R.drawable.default_profile)
-			.showImageOnFail(R.drawable.default_profile).build();
+					.cacheInMemory()
+					.displayer(new RoundedBitmapDisplayer(3000)).cacheOnDisc()
+					.resetViewBeforeLoading()
+					.showImageForEmptyUri(R.drawable.default_profile)
+					.showImageOnFail(R.drawable.default_profile).build();
 
 			ChildHolder holder;
 			ChildItem item = getChild(groupPosition, childPosition);
@@ -471,6 +476,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		}
 
 		public String getFilePath(int groupPosition, int childPosition) {
+			Log.i("FILE", " " + groupPosition + " " + childPosition + " ");
 			String path = Environment.getExternalStorageDirectory().getPath();
 			path = path + "/HeartHZ/" + getFileNo(groupPosition, childPosition)
 					+ ".wav";
@@ -512,10 +518,10 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			int i = getTag(groupPosition, childPosition, 0);
 
 			switch (i) {
-			case 1 :
+			case 1:
 				weather = "Sunny";
 				break;
-			case 2 :
+			case 2:
 				weather = "Rainy";
 				break;
 			case 3:
@@ -527,7 +533,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			case 5:
 				weather = "Cloudy";
 				break;
-			default :
+			default:
 				weather = null;
 				break;
 			}
@@ -540,10 +546,10 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			int i = getTag(groupPosition, childPosition, 0);
 
 			switch (1) {
-			case 1 :
+			case 1:
 				time = "Morning";
 				break;
-			case 2 :
+			case 2:
 				time = "DayTime";
 				break;
 			case 3:
@@ -555,7 +561,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			case 5:
 				time = "Break of Day";
 				break;
-			default :
+			default:
 				time = null;
 				break;
 			}
@@ -658,16 +664,17 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			public boolean accept(File dir, String filename) {
 				File file = new File(dir, filename);
 				if (filename.startsWith("heart") && filename.endsWith(".wav")) {
-					Log.d("tag", filename);
 					return true;
 				} else
 					return false;
 			}
 		});
 
-		fileNames = new String[files.length];
-		for (int i = 0; i < files.length - 1; i++)
-			fileNames[i] = files[i].getName().replace(".wav", "");
+		fileNames = new String[files.length + 1];
+		for (int i = 0; i < files.length; i++) {
+			// fileNames[i] = files[i].getName().replace(".wav", "");
+			// Log.d("FILE_NAME 2", fileNames[i]);
+		}
 
 	}
 
@@ -803,7 +810,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 
 		setSupportActionBar(toolbar);
 		getWindow().getDecorView()
-		.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+				.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
 		dtToggle.setDrawerIndicatorEnabled(false);
 		ActionBar ab = getSupportActionBar();

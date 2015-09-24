@@ -32,6 +32,7 @@ public class DownloadGetter extends Thread {
 
 	private String strFromName;
 	private String strFromPhone;
+	private String strFromPic;
 	private String strFileTitle;
 	private String strFileNo;
 	private String strFlag;
@@ -53,31 +54,23 @@ public class DownloadGetter extends Thread {
 				Thread.sleep(5000);
 				Log.d("Tag", "µπ∞Ì¿’¥œ " + Popup_Activity_Flag +" / " + Download_Check_Flag);
 				if( !Popup_Activity_Flag && !Download_Check_Flag ) {
-					Log.d("Tag", "ø®");
-					Log.d("Tag", "main in");
-					Log.d("Tag", "11111");
 					Download_Check_Flag = true;
 					new CheckFileDownload().execute();
-					Log.d("Tag", "22222");
 				}
 
 			} catch (Exception e) {
-
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public static String URL_CHECK_FILE_DOWNLOAD = "http://210.125.96.96/heart_php/check_flag_from_android.php";   
 
-
-
 	class CheckFileDownload extends AsyncTask<String, String, String> {
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			
-			Log.d("Tag", "3333");
 		}
 
 		protected String doInBackground(String... args) {
@@ -107,6 +100,7 @@ public class DownloadGetter extends Thread {
 
 									strFromName = user.getString("from_name");
 									strFromPhone = user.getString("from_phone");
+									strFromPic = user.getString("from_pic");
 									strFileNo = user.getString("file_no");
 									strFileTitle = user.getString("file_title");
 									strFlag = user.getString("tag_flag");
@@ -119,6 +113,7 @@ public class DownloadGetter extends Thread {
 								Intent popupIntent = new Intent(mContext, com.heart.activity.PopupActivity.class);
 								popupIntent.putExtra("FromName", strFromName);
 								popupIntent.putExtra("FromPhone", strFromPhone);
+								popupIntent.putExtra("FromPic", strFromPic);
 								popupIntent.putExtra("FileTitle", strFileTitle);
 								popupIntent.putExtra("FileNo", strFileNo);
 

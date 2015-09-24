@@ -116,7 +116,7 @@ public class AddNewFriendActivity extends AppCompatActivity {
 										+ strFriendPicPath);
 								Friend friend = new Friend(strFriendId,
 										strFriendName, strFriendPhone,
-										strFriendPicPath, null, null);
+										strFriendPicPath, 0);
 								item.add(friend);
 							}
 						}

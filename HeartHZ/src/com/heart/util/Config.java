@@ -11,10 +11,8 @@ public class Config {
 	public static final String TAG_PHONE = "phone";
 	public static final String TAG_MODEL = "model";
 	public static final String TAG_USER_ID = "user_id";
-	public static final String TAG_USER_EMAIL = "email";
 	public static final String TAG_PIC_PATH = "pic_path";
 	public static final String TAG_MUSIC_PATH = "music_path";
-	public static final String TAG_CPIC_PATH = "pic_cpath";
 
 	public static final String TAG_FRIENDS = "friends";
 	public static final String TAG_FRIEND_ID = "friend_id";

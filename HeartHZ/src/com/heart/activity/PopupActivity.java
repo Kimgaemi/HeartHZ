@@ -19,14 +19,22 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heart.R;
 import com.heart.util.DownloadGetter;
 import com.heart.util.JSONParser;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 public class PopupActivity extends Activity {
 
+	private ImageView ivSenderPic = null;
 	private TextView fileName = null;
 	private TextView senderName = null;
 	private TextView ment1 = null;
@@ -41,23 +49,24 @@ public class PopupActivity extends Activity {
 	private String strFileUrl = "http://210.125.96.96/Heart_php/uploads/";
 	private String strFileNo;   // 받을거
 
-	// JSON
-	private JSONParser jsonParser = new JSONParser();
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_popup);
 
+		imageInit(this);
+		
 		Intent i = getIntent();
 		String strFromName = i.getStringExtra("FromName");
 		String strFromPhone = i.getStringExtra("FromPhone");
+		String strFromPic = i.getStringExtra("FromPic");
 		String strFileTitle = i.getStringExtra("FileTitle");
 		strFileNo = i.getStringExtra("FileNo");
 
 		Log.i("TAG!", strFromName + " / " +strFromPhone + " / " + strFileNo);
 
+		ivSenderPic = (ImageView) findViewById(R.id.iv_popup_sender);
 		fileName = (TextView) findViewById(R.id.tv_popup_file_name);
 		senderName = (TextView) findViewById(R.id.tv_popup_sender_name);
 		ment1 = (TextView) findViewById(R.id.tv_popup_ment1);
@@ -65,6 +74,16 @@ public class PopupActivity extends Activity {
 
 		senderName.setText(strFromName);
 		fileName.setText(strFileTitle);
+		
+		ImageLoader imageLoader = ImageLoader.getInstance();
+		DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory()
+				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc().resetViewBeforeLoading()
+				.showImageForEmptyUri(R.drawable.default_profile).showImageOnFail(R.drawable.default_profile)
+				.build();
+
+		imageLoader.displayImage(strFromPic, ivSenderPic, options);
+		
+		
 
 
 		// FONTS
@@ -79,6 +98,21 @@ public class PopupActivity extends Activity {
 
 	}
 
+	
+	public static void imageInit(Activity v) {
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+		.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
+		.cacheInMemory().imageScaleType(ImageScaleType.EXACTLY).build();
+
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				v.getBaseContext()).defaultDisplayImageOptions(defaultOptions)
+				.memoryCache(new WeakMemoryCache())
+				.discCacheSize(100 * 1024 * 1024).build();
+
+		ImageLoader.getInstance().init(config);
+	}
+
+	
 	// 배경터치 막기
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {

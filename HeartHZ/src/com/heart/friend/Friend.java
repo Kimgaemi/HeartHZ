@@ -5,17 +5,15 @@ public class Friend {
 	private String id;
 	private String name;
 	private String pic;
-	private String cpic;
 	private String phone;
-	private String email;
+	private int days;
 
-	public Friend(String receivedId, String receivedName, String receivedPhone, String receivedPic, String receivedCPic, String receivedEmail){
+	public Friend(String receivedId, String receivedName, String receivedPhone, String receivedPic, int days){
 		this.id = receivedId;
 		this.name = receivedName;
 		this.phone = receivedPhone;
 		this.pic = receivedPic;
-		this.cpic = receivedCPic;
-		this.email = receivedEmail;
+		this.days = days;
 	}
 	
 	public String getId() {
@@ -34,11 +32,7 @@ public class Friend {
 		return pic;
 	}
 	
-	public String getCPicPath() {
-		return cpic;
-	}
-	
-	public String getEmail() {
-		return email;
+	public int getDays() {
+		return days;
 	}
 }

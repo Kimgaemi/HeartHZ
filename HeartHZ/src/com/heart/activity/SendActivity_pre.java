@@ -73,8 +73,6 @@ public class SendActivity_pre extends AppCompatActivity {
 	private String strFriendPic;
 	private String strFriendName;
 	private String strFriendPhone;
-	private String strFriendCPic;
-	private String strFriendEmail;
 	private String musicPath;
 
 	protected Converter convert;
@@ -126,8 +124,6 @@ public class SendActivity_pre extends AppCompatActivity {
 		strFriendPic = i.getStringExtra(Config.TAG_FIREND_PIC);
 		strFriendName = i.getStringExtra(Config.TAG_FRIEND_NAME);
 		strFriendPhone = i.getStringExtra(Config.TAG_FIREND_PHONE);
-		strFriendCPic = i.getStringExtra(Config.TAG_CPIC_PATH);
-		strFriendEmail = i.getStringExtra(Config.TAG_USER_EMAIL);
 		musicPath = i.getStringExtra(Config.TAG_MUSIC_PATH);
 
 		Log.i("MUSICPATH", musicPath);
@@ -141,7 +137,7 @@ public class SendActivity_pre extends AppCompatActivity {
 		tvFirendPhone = (TextView) findViewById(R.id.tv_friend_phone);
 
 		tvFirendName.setText(strFriendName);
-		tvFirendPhone.setText(strFriendEmail);
+		tvFirendPhone.setText(strFriendPhone);
 
 		ivTagSelected1 = (ImageView) findViewById(R.id.iv_conf_im1);
 		ivTagSelected2 = (ImageView) findViewById(R.id.iv_conf_im2);
@@ -169,7 +165,7 @@ public class SendActivity_pre extends AppCompatActivity {
 				.showImageForEmptyUri(R.drawable.default_profile)
 				.showImageOnFail(R.drawable.default_profile).build();
 
-		imgloder.displayImage(strFriendCPic, ivFriendPic, options);
+		imgloder.displayImage(strFriendPic, ivFriendPic, options);
 
 		// MENU
 		menuInit();

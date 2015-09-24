@@ -65,8 +65,6 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private String strFriendPic;
 	private String strFriendName;
 	private String strFriendPhone;
-	private String strFriendCPic;
-	private String strFriendEmail;
 	private String path;
 
 	// SLIDING TOOL BAR
@@ -94,8 +92,6 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		strFriendPic = i.getStringExtra(Config.TAG_FIREND_PIC);
 		strFriendName = i.getStringExtra(Config.TAG_FRIEND_NAME);
 		strFriendPhone = i.getStringExtra(Config.TAG_FIREND_PHONE);
-		strFriendCPic = i.getStringExtra(Config.TAG_CPIC_PATH);
-		strFriendEmail = i.getStringExtra(Config.TAG_USER_EMAIL);
 
 		tagToggle.setChecked(true);
 		tagToggle.setOnClickListener(new View.OnClickListener() {
@@ -111,8 +107,6 @@ public class MusicImageTagActivity extends AppCompatActivity {
 					intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 					intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
 					intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
-					intent.putExtra(Config.TAG_CPIC_PATH, strFriendCPic);
-					intent.putExtra(Config.TAG_USER_EMAIL, strFriendEmail);
 					MusicImageTagActivity.this.startActivity(intent);
 					finish();
 				}
@@ -465,8 +459,6 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 		intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
 		intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
-		intent.putExtra(Config.TAG_CPIC_PATH, strFriendCPic);
-		intent.putExtra(Config.TAG_USER_EMAIL, strFriendEmail);
 		intent.putExtra(Config.TAG_MUSIC_PATH, path + title);
 		startActivity(intent);
 	}

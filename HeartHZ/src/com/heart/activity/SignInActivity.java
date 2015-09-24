@@ -64,8 +64,6 @@ public class SignInActivity extends Activity {
 	public static String strModel;
 	public static String strPw;
 	public static String strPic;
-	public static String strCPic;
-	public static String strEmail;
 
 	public static SharedPreferenceUtil pref;
 	public Boolean isNotFirst = false; // true: Àç¹æ¹®
@@ -190,7 +188,6 @@ public class SignInActivity extends Activity {
 							strPw = user.getString(Config.TAG_PW);
 							strModel = user.getString(Config.TAG_MODEL);
 							strPic = user.getString(Config.TAG_PIC_PATH);
-							// strCPic = user.getString(Config.TAG_CPIC_PATH);
 
 							pref.put("first", true);
 							pref.put(Config.TAG_USER_ID, iUserId);
@@ -205,10 +202,6 @@ public class SignInActivity extends Activity {
 						Intent i = new Intent(SignInActivity.this,
 								MainActivity.class);
 
-						/*
-						 * iUserId = userId; strName = userName; strPhone =
-						 * userPhone; strPic = userPic; strCPic = userCPic;
-						 */
 						Log.d("tag", iUserId + ";");
 						startActivity(i);
 						finish();

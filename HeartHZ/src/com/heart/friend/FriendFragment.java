@@ -41,6 +41,7 @@ public class FriendFragment extends Fragment {
 		b.putString("NAME", item.getName());
 		b.putString("PHONE", item.getPhone());
 		b.putString("PIC", item.getPicPath());
+		b.putInt("DAY", item.getDays());
 
 		return Fragment.instantiate(context, FriendFragment.class.getName(), b);
 	}
@@ -95,6 +96,7 @@ public class FriendFragment extends Fragment {
 			String name = this.getArguments().getString("NAME");
 			String phone = this.getArguments().getString("PHONE");
 			String pic = this.getArguments().getString("PIC");
+			int dayNum = this.getArguments().getInt("DAY");
 
 			tvId = (TextView) l.findViewById(R.id.tv_home_id);
 			tvName = (TextView) l.findViewById(R.id.tv_home_name);
@@ -106,22 +108,19 @@ public class FriendFragment extends Fragment {
 
 			tvId.setText(id);
 			tvName.setText(name);
-			tvPhone.setText(phone);
-
+			tvPhone.setText("0" + phone);
+			days.setText(String.valueOf(dayNum));
+			
 			if (pos == 0) {
-				days.setText("178");
 				days.setTextColor(getResources().getColor(
 						R.color.page2_text_color1));
 			} else if (pos == 1) {
-				days.setText("85");
 				days.setTextColor(getResources().getColor(
 						R.color.page2_text_color2));
 			} else if (pos == 2) {
-				days.setText("32");
 				days.setTextColor(getResources().getColor(
 						R.color.page2_text_color3));
 			} else {
-				days.setText("11");
 				days.setTextColor(getResources().getColor(
 						R.color.page2_text_color4));
 			}

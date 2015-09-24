@@ -56,8 +56,6 @@ public class MusicTagActivity extends AppCompatActivity {
 	private String strFriendPic;
 	private String strFriendName;
 	private String strFriendPhone;
-	private String strFriendCPic;
-	private String strFriendEmail;
 	private String path;
 
 	// VIEW
@@ -88,8 +86,6 @@ public class MusicTagActivity extends AppCompatActivity {
 		strFriendPic = i.getStringExtra(Config.TAG_FIREND_PIC);
 		strFriendName = i.getStringExtra(Config.TAG_FRIEND_NAME);
 		strFriendPhone = i.getStringExtra(Config.TAG_FIREND_PHONE);
-		strFriendCPic = i.getStringExtra(Config.TAG_CPIC_PATH);
-		strFriendEmail = i.getStringExtra(Config.TAG_USER_EMAIL);
 
 		tagToggle = (ToggleButton) findViewById(R.id.music_toggle);
 		tagToggle.setChecked(false);
@@ -101,8 +97,11 @@ public class MusicTagActivity extends AppCompatActivity {
 					for (int i = 0; i < musicNum; i++)
 						if (mp[i] != null)
 							mp[i].stop();
-					Intent intent = new Intent(MusicTagActivity.this,
-							MusicImageTagActivity.class);
+					Intent intent = new Intent(MusicTagActivity.this, MusicImageTagActivity.class);
+					intent.putExtra(Config.TAG_FRIEND_ID, strFriendId);
+					intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
+					intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
+					intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
 					MusicTagActivity.this.startActivity(intent);
 					finish();
 				}
@@ -374,8 +373,6 @@ public class MusicTagActivity extends AppCompatActivity {
 		intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 		intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
 		intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
-		intent.putExtra(Config.TAG_CPIC_PATH, strFriendCPic);
-		intent.putExtra(Config.TAG_USER_EMAIL, strFriendEmail);
 		intent.putExtra(Config.TAG_MUSIC_PATH, path + title);
 		startActivity(intent);
 	}
