@@ -87,6 +87,7 @@
                 android:background="@android:color/transparent"
                 android:hint="Password"
                 android:singleLine="true"
+                android:inputType="textPassword"
                 android:textColorHint="@color/edit_text_hint"
                 android:textSize="61px" />
         </LinearLayout>
