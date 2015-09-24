@@ -239,7 +239,6 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			// VIEW
 			mFragments.get(4).iv.setImageResource(R.drawable.back_break);
 			mFragments.get(4).tvTagView2.setText("at 'Break of Day'");
-
 			mFragments.get(0).iv.setImageResource(R.drawable.back_morning);
 			mFragments.get(0).tvTagView2.setText("in the 'Morning'");
 			mFragments.get(1).iv.setImageResource(R.drawable.back_daytime);
@@ -265,8 +264,7 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			mFragments.get(0).tvTagView2.setText("on 'Sunny day'");
 			mFragments.get(1).iv.setImageResource(R.drawable.back_rain);
 			mFragments.get(1).tvTagView2.setText("on 'Rainy day'");
-			mFragments.get(2).iv
-					.setImageResource(R.drawable.simul_weather_snow_00030);
+			mFragments.get(2).iv.setImageResource(R.drawable.simul_weather_snow_00030);
 			mFragments.get(2).tvTagView2.setText("on 'Snowy day'");
 			mFragments.get(3).iv.setImageResource(R.drawable.back_light);
 			mFragments.get(3).tvTagView2.setText("on 'Lighting day'");

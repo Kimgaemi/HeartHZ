@@ -144,7 +144,7 @@ public class FriendPagerAdapter extends FragmentPagerAdapter implements
 	}
 
 	private String getFragmentTag(int position) {
-		return "android:switcher:" + context.pager.getId() + ":" + position;
+		return "android:switcher:" + vp.getId() + ":" + position;
 	}
 
 }

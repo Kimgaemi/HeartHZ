@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 	private Window window = null;
 	private TextView tvHome = null;
 	private Button btnSelect = null;
+	private LinearLayout layout = null;
 
 	// JSON
 	private JSONParser jsonParser = new JSONParser();
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 	public Integer[] bgColors = null;
 	public Integer[] btnColors = null;
 
-	public FriendPagerAdapter mpadapter;
+	public FriendPagerAdapter mpadapter = null;
 	public CustomViewPager pager;
 
 	@Override
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
 		View menu = (View) findViewById(R.id.main_menu);
 		btnSelect = (Button) findViewById(R.id.btn_select);
 		tvHome = (TextView) findViewById(R.id.tv_home);
+		layout = (LinearLayout) findViewById(R.id.nav_lv);
 
 		// iUserId = SignInActivity.pref.getValue(Config.TAG_USER_ID, 0);
 		iUserId = SignInActivity.iUserId;
@@ -120,8 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
 		menu.findViewById(R.id.iv_toolbar_back).setVisibility(View.INVISIBLE);
 
-
-
 		imageInit(this); // IMAGE LOADER SETUP
 		menuInit(); // SET MENU BAR
 
@@ -138,14 +139,14 @@ public class MainActivity extends AppCompatActivity {
 					R.color.status_bar_base));
 		}
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		// CALL LoadAllFriends()
 		new LoadAllFriends().execute();
 	}
-	
+
 	/**
 	 * WHEN A FRIEND PROFILE VIEW IS CLICKED ADD A FRIEND / SELECT A RECEIVER
 	 * 
@@ -197,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
 
 			Intent in = new Intent(MainActivity.this,
 					AddNewFriendActivity.class);
+
 			startActivity(in);
 
 		} else {
@@ -292,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 					MainActivity.this.getSupportFragmentManager(), pager, item,
 					btnSelect, bgColors, btnColors);
 			pager.setAdapter(mpadapter);
-			
+
 			pager.setOnPageChangeListener(mpadapter);
 		}
 	}

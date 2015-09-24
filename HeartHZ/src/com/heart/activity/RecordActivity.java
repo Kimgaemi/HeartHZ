@@ -111,6 +111,8 @@ public class RecordActivity extends AppCompatActivity {
 	// TRIM
 	private int startPoint;
 	private int finishPoint;
+	private View finishDim;
+	private View fristDim;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -130,6 +132,8 @@ public class RecordActivity extends AppCompatActivity {
 		displayLayout = (LinearLayout) findViewById(R.id.displayView);
 		trimBox1 = (AbsoluteLayout) findViewById(R.id.trimContainer1);
 		trimBox2 = (AbsoluteLayout) findViewById(R.id.trimContainer2);
+		fristDim = (View) findViewById(R.id.dimview1);
+		finishDim = (View) findViewById(R.id.dimview2);
 
 		cutLine0 = (ImageView) findViewById(R.id.iv_cutline);
 		cutLine1 = (ImageView) findViewById(R.id.iv_cutline1);
@@ -227,12 +231,16 @@ public class RecordActivity extends AppCompatActivity {
 								cutLine0.setVisibility(View.INVISIBLE);
 								cutLine1.setVisibility(View.VISIBLE);
 								LayoutParams lp = new LayoutParams(69, 55,
-										(int) 720, (int) 238);
+										(int) 685, (int) 238);
 								cutLine1.setLayoutParams(lp);
 								cutLine2.setVisibility(View.VISIBLE);
-								lp = new LayoutParams(69, 55, (int) 720,
+								lp = new LayoutParams(69, 55, (int) 686,
 										(int) 0);
 								cutLine2.setLayoutParams(lp);
+
+								// DIM
+								fristDim.setVisibility(View.VISIBLE);
+								finishDim.setVisibility(View.VISIBLE);
 
 								// INITIALIZING
 								startPoint = 0;
@@ -257,6 +265,8 @@ public class RecordActivity extends AppCompatActivity {
 					cutLine0.setVisibility(View.VISIBLE);
 					cutLine1.setVisibility(View.INVISIBLE);
 					cutLine2.setVisibility(View.INVISIBLE);
+					fristDim.setVisibility(View.INVISIBLE);
+					finishDim.setVisibility(View.INVISIBLE);
 
 					// 좌표 가져오기
 					Log.i("TRIM",
@@ -341,6 +351,9 @@ public class RecordActivity extends AppCompatActivity {
 							LayoutParams lp = new LayoutParams(69, 55,
 									(int) event.getX(), (int) 238);
 							cutLine1.setLayoutParams(lp);
+							lp = new LayoutParams((int) event.getX() + 34, 998,
+									0, (int) 0);
+							fristDim.setLayoutParams(lp);
 						}
 
 					}
@@ -369,6 +382,9 @@ public class RecordActivity extends AppCompatActivity {
 							LayoutParams lp = new LayoutParams(69, 55,
 									(int) event.getX(), (int) 0);
 							cutLine2.setLayoutParams(lp);
+							lp = new LayoutParams(1405 - (int) event.getX(),
+									998, (int) event.getX() + 35, (int) 0);
+							finishDim.setLayoutParams(lp);
 						}
 					}
 					if (event.getAction() == MotionEvent.ACTION_UP) {

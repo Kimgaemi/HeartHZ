@@ -16,7 +16,6 @@ import android.widget.ToggleButton;
 
 import com.example.heart.R;
 import com.heart.activity.MusicImageTagActivity;
-import com.heart.activity.SignInActivity;
 import com.heart.activity.TaggingActivity;
 import com.heart.util.AnimeUtils;
 

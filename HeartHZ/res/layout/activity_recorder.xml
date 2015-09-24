@@ -90,6 +90,32 @@
                     android:background="@color/record_wave_house" />
             </LinearLayout>
 
+            <!-- DIM LAYOUT -->
+
+            <AbsoluteLayout
+                android:layout_width="fill_parent"
+                android:layout_height="998px"
+                android:layout_marginTop="238px" >
+
+                <View
+                    android:id="@+id/dimview1"
+                    android:layout_width="720px"
+                    android:layout_height="fill_parent"
+                    android:layout_x="0px"
+                    android:alpha="0.5"
+                    android:background="#000000"
+                    android:visibility="invisible" />
+
+                <View
+                    android:id="@+id/dimview2"
+                    android:layout_width="720px"
+                    android:layout_height="fill_parent"
+                    android:layout_x="720px"
+                    android:alpha="0.5"
+                    android:background="#000000"
+                    android:visibility="invisible" />
+            </AbsoluteLayout>
+
             <LinearLayout
                 android:id="@+id/displayView"
                 android:layout_width="fill_parent"

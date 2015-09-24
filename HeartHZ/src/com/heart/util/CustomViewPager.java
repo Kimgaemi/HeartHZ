@@ -59,5 +59,6 @@ public class CustomViewPager extends ViewPager {
 	public void setPagingMax(boolean b) {
 		this.isMax = b;
 	}
+	
 
 }
