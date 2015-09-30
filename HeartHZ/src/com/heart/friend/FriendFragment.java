@@ -9,14 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView.FindListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.heart.R;
 import com.heart.activity.MainActivity;
-import com.heart.activity.SignInActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -29,6 +27,7 @@ public class FriendFragment extends Fragment {
 	private TextView tvPhone;
 	private TextView days;
 	private TextView daysOver;
+	private BitmapDrawable addIcon;
 
 	public static Fragment newInstance(MainActivity context, int pos,
 			float scale, Friend item) {
@@ -47,17 +46,11 @@ public class FriendFragment extends Fragment {
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-	}
-
-	@Override
 	public void onStop() {
-		int pos = this.getArguments().getInt("POS");
-		if (pos == MainActivity.maxPeople - 1) {
-			SignInActivity.recycleBgBitmap(add_plus);
-		}
 		super.onStop();
+		Log.d("KKK", "called onDestroyView()");
+		if (addIcon != null)
+			addIcon.getBitmap().recycle();
 	}
 
 	@Override
@@ -77,10 +70,10 @@ public class FriendFragment extends Fragment {
 			add_tv.setTypeface(Typeface.createFromAsset(getActivity()
 					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
 			add_plus = (ImageView) l.findViewById(R.id.add_friend);
-
-			add_plus.setBackground(new BitmapDrawable(getResources(),
+			addIcon = new BitmapDrawable(getResources(),
 					BitmapFactory.decodeResource(getResources(),
-							R.drawable.add3_btn)));
+							R.drawable.add3_btn));
+			add_plus.setBackground(addIcon);
 
 			FriendLinearLayout addroot = (FriendLinearLayout) l
 					.findViewById(R.id.addroot);

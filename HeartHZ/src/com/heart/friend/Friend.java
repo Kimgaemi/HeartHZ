@@ -8,14 +8,15 @@ public class Friend {
 	private String phone;
 	private int days;
 
-	public Friend(String receivedId, String receivedName, String receivedPhone, String receivedPic, int days){
+	public Friend(String receivedId, String receivedName, String receivedPhone,
+			String receivedPic, int days) {
 		this.id = receivedId;
 		this.name = receivedName;
 		this.phone = receivedPhone;
 		this.pic = receivedPic;
 		this.days = days;
 	}
-	
+
 	public String getId() {
 		return id;
 	}
@@ -31,7 +32,7 @@ public class Friend {
 	public String getPicPath() {
 		return pic;
 	}
-	
+
 	public int getDays() {
 		return days;
 	}

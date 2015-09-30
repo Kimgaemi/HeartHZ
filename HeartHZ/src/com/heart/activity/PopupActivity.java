@@ -15,14 +15,12 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.heart.R;
-import com.heart.service.RealService;
-import com.heart.util.JSONParser;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,15 +28,29 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.heart.R;
+import com.heart.service.RealService;
+import com.heart.util.JSONParser;
+import com.heart.util.RecycleUtils;
+
 public class PopupActivity extends Activity {
 
+	// View
 	private TextView fileName = null;
 	private TextView senderName = null;
 	private TextView ment1 = null;
 	private TextView ment2 = null;
+	private ImageView dotIv = null;
+	private ImageView cancelIv = null;
+	private ImageView checkIv = null;
+
+	private BitmapDrawable dotIv_image;
+	private BitmapDrawable cancelIv_image;
+	private BitmapDrawable checkIv_image;
 
 	// TAG
 	private final String CURRENT_ACTIVITY = getClass().getSimpleName().trim();
@@ -74,6 +86,10 @@ public class PopupActivity extends Activity {
 		ment1 = (TextView) findViewById(R.id.tv_popup_ment1);
 		ment2 = (TextView) findViewById(R.id.tv_popup_ment2);
 
+		dotIv = (ImageView) findViewById(R.id.iv_popup_dot);
+		cancelIv = (ImageView) findViewById(R.id.popup_cancel);
+		checkIv = (ImageView) findViewById(R.id.popup_check);
+
 		senderName.setText(strFromName);
 		fileName.setText(strFileTitle);
 
@@ -87,6 +103,40 @@ public class PopupActivity extends Activity {
 		ment2.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/AppleSDGothicNeo-Regular.otf"));
 
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		dotIv_image = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.dot1_icon));
+		cancelIv_image = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.cancle_btn));
+		checkIv_image = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.check_btn));
+
+		dotIv.setBackground(dotIv_image);
+		cancelIv.setBackground(cancelIv_image);
+		checkIv.setBackground(checkIv_image);
+
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		dotIv_image.getBitmap().recycle();
+		cancelIv_image.getBitmap().recycle();
+		checkIv_image.getBitmap().recycle();
+	}
+
+	@Override
+	protected void onDestroy() {
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
+		super.onDestroy();
 	}
 
 	// 배경터치 막기

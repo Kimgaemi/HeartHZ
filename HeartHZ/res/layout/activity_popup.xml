@@ -33,8 +33,7 @@
             android:layout_height="23px"
             android:layout_marginRight="18px"
             android:layout_marginTop="474px"
-            android:layout_toLeftOf="@id/tv_popup_file_name"
-            android:src="@drawable/dot1_icon" />
+            android:layout_toLeftOf="@id/tv_popup_file_name" />
 
         <TextView
             android:id="@+id/tv_popup_sender_name"
@@ -89,10 +88,10 @@
             android:onClick="popupClick" >
 
             <ImageView
+                android:id="@+id/popup_cancel"
                 android:layout_width="150px"
                 android:layout_height="150px"
-                android:layout_centerInParent="true"
-                android:src="@drawable/cancle_btn" />
+                android:layout_centerInParent="true" />
         </RelativeLayout>
 
         <View
@@ -109,10 +108,10 @@
             android:onClick="popupClick" >
 
             <ImageView
+                android:id="@+id/popup_check"
                 android:layout_width="150px"
                 android:layout_height="150px"
-                android:layout_centerInParent="true"
-                android:src="@drawable/check_btn" />
+                android:layout_centerInParent="true" />
         </RelativeLayout>
     </LinearLayout>
 

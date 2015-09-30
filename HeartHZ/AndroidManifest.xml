@@ -59,6 +59,8 @@
         </activity>
         <activity android:name="com.heart.activity.SettingActivity" >
         </activity>
+        <activity android:name="com.heart.activity.StateChangeActivity" >
+        </activity>
         <activity android:name="com.heart.activity.SendActivity_pre" />
         <activity android:name="com.heart.activity.MusicTagActivity" >
         </activity>

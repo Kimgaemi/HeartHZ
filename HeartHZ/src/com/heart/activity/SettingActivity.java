@@ -240,7 +240,11 @@ public class SettingActivity extends AppCompatActivity {
 			startActivity(i);
 			break;
 		}
+	}
 
+	public void remoteSetting(View v) {
+		Intent i = new Intent(SettingActivity.this, StateChangeActivity.class);
+		startActivity(i);
 	}
 
 	/*

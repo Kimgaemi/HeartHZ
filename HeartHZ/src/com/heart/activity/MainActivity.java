@@ -47,6 +47,7 @@ import com.heart.util.Config;
 import com.heart.util.CustomViewPager;
 import com.heart.util.IdGen;
 import com.heart.util.JSONParser;
+import com.heart.util.RecycleUtils;
 import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -206,9 +207,9 @@ public class MainActivity extends AppCompatActivity {
 
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
 		super.onDestroy();
-
 	}
 
 	/**
@@ -644,19 +645,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-/*	@Override
-	public void onBackPressed() {
-								 * 
-								 * if (System.currentTimeMillis() >
-								 * backKeyPressedTime + 2000) {
-								 * backKeyPressedTime =
-								 * System.currentTimeMillis(); toast =
-								 * Toast.makeText(MainActivity.this,
-								 * "Press back one more time to exit",
-								 * Toast.LENGTH_SHORT); toast.show(); return; }
-								 * if (System.currentTimeMillis() <=
-								 * backKeyPressedTime + 2000) { finish();
-								 * toast.cancel(); }
-								 
-	}*/
+	/*
+	 * @Override public void onBackPressed() {
+	 * 
+	 * if (System.currentTimeMillis() > backKeyPressedTime + 2000) {
+	 * backKeyPressedTime = System.currentTimeMillis(); toast =
+	 * Toast.makeText(MainActivity.this, "Press back one more time to exit",
+	 * Toast.LENGTH_SHORT); toast.show(); return; } if
+	 * (System.currentTimeMillis() <= backKeyPressedTime + 2000) { finish();
+	 * toast.cancel(); }
+	 * 
+	 * }
+	 */
 }
