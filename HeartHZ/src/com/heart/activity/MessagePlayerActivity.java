@@ -330,7 +330,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		System.gc();
 	}
 
-	protected void GetSelectedPositions() { // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	protected void GetSelectedPositions() {
 		ArrayList<GroupItem> grouparray = adapter.getcheckedposition();
 		for (int i = 0; i < grouparray.size(); i++) {
 			Log.d("REMOVE_PATH", grouparray.get(i).strFilePath);

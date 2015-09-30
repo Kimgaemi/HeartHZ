@@ -14,8 +14,7 @@
             android:layout_width="264px"
             android:layout_height="264px"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="146px"
-            android:src="@drawable/profile1_image" />
+            android:layout_marginTop="146px" />
 
         <TextView
             android:id="@+id/tv_popup_file_name"

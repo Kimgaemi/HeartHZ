@@ -83,7 +83,9 @@ public class SignInActivity extends Activity {
 
 		editPhone = (EditText) findViewById(R.id.edit_signin_phone);
 		editPassword = (EditText) findViewById(R.id.edit_signin_pw);
+		
 		pref = new SharedPreferenceUtil(this);
+		
 		editPhone.setText(phoneNum);
 		editPhone.setEnabled(false);
 		editPassword.requestFocus();
@@ -247,8 +249,11 @@ public class SignInActivity extends Activity {
 			pDialog.dismiss();
 			if (!ServicePage.isExistSer) {
 				Log.d("Tag", "서비스 업당!");
-				startService(new Intent(getApplicationContext(),
-						ServicePage.class));
+				
+				Intent i = new Intent(getApplicationContext(), ServicePage.class);
+				i.putExtra(Config.TAG_USER_ID, iUserId);
+				startService(i);
+				
 			}
 		}
 	}

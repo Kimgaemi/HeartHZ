@@ -644,8 +644,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	@Override
-	public void onBackPressed() {/*
+/*	@Override
+	public void onBackPressed() {
 								 * 
 								 * if (System.currentTimeMillis() >
 								 * backKeyPressedTime + 2000) {
@@ -657,6 +657,6 @@ public class MainActivity extends AppCompatActivity {
 								 * if (System.currentTimeMillis() <=
 								 * backKeyPressedTime + 2000) { finish();
 								 * toast.cancel(); }
-								 */
-	}
+								 
+	}*/
 }

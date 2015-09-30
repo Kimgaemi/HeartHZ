@@ -120,13 +120,14 @@ public class SendActivity_pre extends AppCompatActivity {
 		arrFileTag[2] = MusicImageTagActivity.resultTagKind.getWeather() + 1;
 
 		if (MusicImageTagActivity.resultTagKind.getCDate() >= 0) {
-			// strDate = MusicImageTagActivity.resultTagKind.getRealDate();
-			strDate = "0000-00-00";
+			String str = MusicImageTagActivity.resultTagKind.getDate();
+			strDate = str.substring(0, 4) + "-" + str.substring(4, 6) + "-"
+					+ str.substring(6, 8);
+			Log.d("TEST", strDate);
 		} else {
 			strDate = "0000-00-00";
 		}
 		Log.d("atrDate", arrFileTag[0] + arrFileTag[1] + arrFileTag[2] + "?");
-		Log.d("atrDate", strDate + "?");
 
 		strFriendId = i.getStringExtra(Config.TAG_FRIEND_ID);
 		strFriendPic = i.getStringExtra(Config.TAG_FIREND_PIC);

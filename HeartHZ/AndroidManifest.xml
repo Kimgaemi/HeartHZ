@@ -25,6 +25,13 @@
         android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
+        <meta-data
+            android:name="com.samsung.android.health.platform_type"
+            android:value="rel" />
+        <meta-data
+            android:name="com.samsung.android.health.permission.read"
+            android:value="com.samsung.health.step_count" />
+
         <activity
             android:name="com.heart.activity.SignUpActivity"
             android:label="@string/app_name" >
@@ -65,6 +72,7 @@
             android:name="com.heart.activity.PopupActivity"
             android:launchMode="singleInstance"
             android:theme="@android:style/Theme.Dialog" />
+
         <service
             android:name="com.heart.service.ServicePage"
             android:enabled="true" >

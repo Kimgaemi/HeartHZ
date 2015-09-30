@@ -1,7 +1,34 @@
 package com.heart.activity;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.example.heart.R;
+import com.heart.activity.PopupActivity.ChangeFileFlag;
+import com.heart.friend.Friend;
+import com.heart.friend.FriendPagerAdapter;
+import com.heart.service.RealService;
+import com.heart.service.ServicePage;
+import com.heart.util.AnimeUtils;
+import com.heart.util.Config;
+import com.heart.util.JSONParser;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
+import com.heart.util.SlidingMenu;
+import com.heart.util.TagKind;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +38,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -35,15 +63,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-
-import com.example.heart.R;
-import com.heart.service.ServicePage;
-import com.heart.util.AnimeUtils;
-import com.heart.util.Config;
-import com.heart.util.RecycleUtils;
-import com.heart.util.SharedPreferenceUtil;
-import com.heart.util.SlidingMenu;
-import com.heart.util.TagKind;
 
 public class MusicImageTagActivity extends AppCompatActivity {
 
@@ -75,7 +94,8 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private String strFriendName;
 	private String strFriendPhone;
 	private String path;
-
+	private boolean isDownloadFinish = false;   
+	
 	// SLIDING TOOL BAR
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
@@ -85,8 +105,21 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private BitmapDrawable toolbarBackBitmap;
 
 	public static TagKind resultTagKind;
+
 	// 추가부분
 	private static final int REQUEST_CODE = 6384;
+
+	// TAG
+	private final String CURRENT_ACTIVITY = getClass().getSimpleName().trim();
+	private final String FOLDER_NAME = "/HeartHZ/MusicTag/";
+
+	// VARIABLE
+	private String strFileUrl = "http://210.125.96.96/Heart_php/musics/";
+
+
+	// JSON
+	private JSONParser jsonParser = new JSONParser();
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -114,15 +147,14 @@ public class MusicImageTagActivity extends AppCompatActivity {
 					for (int i = 0; i < musicNum; i++)
 						if (mp[i] != null)
 							mp[i].stop();
-					Intent intent = new Intent(MusicImageTagActivity.this,
-							MusicTagActivity.class);
+					Intent intent = new Intent(MusicImageTagActivity.this, MusicTagActivity.class);
 					intent.putExtra(Config.TAG_FRIEND_ID, strFriendId);
 					intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 					intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
 					intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
 					MusicImageTagActivity.this.startActivity(intent);
 					finish();
-				}else{
+				} else {
 					tagToggle.setBackground(musicImageOn);
 				}
 			}
@@ -133,19 +165,15 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			window = this.getWindow();
 			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-			window.setStatusBarColor(getResources().getColor(
-					R.color.status_bar_base));
+			window.setStatusBarColor(getResources().getColor(R.color.status_bar_base));
 		}
 
 		// font
-		musictag.setTypeface(Typeface.createFromAsset(getAssets(),
-				"fonts/DINPRO-MEDIUM.ttf"));
-		btnNext.setTypeface(Typeface.createFromAsset(getAssets(),
-				"fonts/DINMed.ttf"));
+		musictag.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
+		btnNext.setTypeface(Typeface.createFromAsset(getAssets(), "fonts/DINMed.ttf"));
 
-		path = Environment.getExternalStorageDirectory().getPath()
-				+ "/MusicTag/";
-
+		path = Environment.getExternalStorageDirectory().getPath() + FOLDER_NAME;
+				
 		// MENU
 		menuInit();
 	}
@@ -173,14 +201,11 @@ public class MusicImageTagActivity extends AppCompatActivity {
 
 		View menu = (View) findViewById(R.id.music_image_tag_menu);
 		logoBitmap = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.logo3_icon_01));
+				BitmapFactory.decodeResource(getResources(), R.drawable.logo3_icon_01));
 		toolbarBtnBitmap = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.menu_btn));
+				BitmapFactory.decodeResource(getResources(), R.drawable.menu_btn));
 		toolbarBackBitmap = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.back_btn));
+				BitmapFactory.decodeResource(getResources(), R.drawable.back_btn));
 
 		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
 		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
@@ -191,70 +216,56 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		backBtn.setBackground(toolbarBackBitmap);
 
 		musicImageOn = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.album_on_btn));
+				BitmapFactory.decodeResource(getResources(), R.drawable.album_on_btn));
 		musicImageOff = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.album_off_btn));
+				BitmapFactory.decodeResource(getResources(), R.drawable.album_off_btn));
 		tagToggle.setBackground(musicImageOn);
 		dim_drawable = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.musictag_dim_play));
+				BitmapFactory.decodeResource(getResources(), R.drawable.musictag_dim_play));
 		add_drawable = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.add2_btn));
+				BitmapFactory.decodeResource(getResources(), R.drawable.add2_btn));
 
 		musicLeftImageResource = new ArrayList<MusicAlbumArt>();
 		musicRightImageResource = new ArrayList<MusicAlbumArt>();
 		listViewLeft = (ListView) findViewById(R.id.left_image_musictag);
 		listViewRight = (ListView) findViewById(R.id.right_image_musictag);
 		BitmapDrawable d = new BitmapDrawable(getResources(),
-				BitmapFactory.decodeResource(getResources(),
-						R.drawable.album1_image));
+				BitmapFactory.decodeResource(getResources(), R.drawable.album1_image));
 		MusicAlbumArt maa = new MusicAlbumArt("Born to die", d, 0, false);
 		musicLeftImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album2_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album2_image));
 		maa = new MusicAlbumArt("Dream", d, 1, false);
 		musicLeftImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album3_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album3_image));
 		maa = new MusicAlbumArt("Hooka", d, 2, false);
 		musicLeftImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album4_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album4_image));
 		maa = new MusicAlbumArt("Healter Svelter", d, 3, false);
 		musicLeftImageResource.add(maa);
 
 		listViewLeft.setOnItemClickListener(onLeftClickListner);
-		adapterLeft = new LAlbumArtAdapter(this, R.layout.list_musicimage,
-				musicLeftImageResource);
+		adapterLeft = new LAlbumArtAdapter(this, R.layout.list_musicimage, musicLeftImageResource);
 		listViewLeft.setAdapter(adapterLeft);
 
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album5_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album5_image));
 		maa = new MusicAlbumArt("Chvrches", d, 4, false);
 		musicRightImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album6_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album6_image));
 		maa = new MusicAlbumArt("Chvrches_s", d, 5, false);
 		musicRightImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album7_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album7_image));
 		maa = new MusicAlbumArt("Beast", d, 6, false);
 		musicRightImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album8_image));
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(getResources(), R.drawable.album8_image));
 		maa = new MusicAlbumArt("Indians", d, 7, false);
 		musicRightImageResource.add(maa);
-		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
-				getResources(), R.drawable.album_add_image));
+		d = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(), R.drawable.album_add_image));
 		maa = new MusicAlbumArt("", d, -1, false);
 		musicRightImageResource.add(maa);
 
 		listViewRight.setOnItemClickListener(onRightClickListner);
-		adapterRight = new RAlbumArtAdapter(this, R.layout.list_musicimage,
-				musicRightImageResource);
+		adapterRight = new RAlbumArtAdapter(this, R.layout.list_musicimage, musicRightImageResource);
 		listViewRight.setAdapter(adapterRight);
 
 	}
@@ -268,7 +279,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		}
 
 		// Recycle
-		
+
 		logoBitmap.getBitmap().recycle();
 		toolbarBtnBitmap.getBitmap().recycle();
 		toolbarBackBitmap.getBitmap().recycle();
@@ -315,8 +326,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 
 		private ArrayList<MusicAlbumArt> items;
 
-		public LAlbumArtAdapter(Context context, int textViewResourceId,
-				ArrayList<MusicAlbumArt> items) {
+		public LAlbumArtAdapter(Context context, int textViewResourceId, ArrayList<MusicAlbumArt> items) {
 			super(context, textViewResourceId, items);
 			this.items = items;
 		}
@@ -338,10 +348,8 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			boolean isFocus = items.get(position).focus;
 			if (d != null) {
 				Drawable pos_d = items.get(position).d;
-				iv_imageMusic = (ImageView) v
-						.findViewById(R.id.iv_image_musictag);
-				iv_imagePlay = (ImageView) v
-						.findViewById(R.id.iv_image_musictag_play);
+				iv_imageMusic = (ImageView) v.findViewById(R.id.iv_image_musictag);
+				iv_imagePlay = (ImageView) v.findViewById(R.id.iv_image_musictag_play);
 				iv_imageDim = (ImageView) v.findViewById(R.id.iv_image_dim);
 				iv_imageDim.setBackground(dim_drawable);
 				iv_imageMusic.setBackground(pos_d);
@@ -351,8 +359,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				iv_imageDim.setVisibility(View.INVISIBLE);
 				iv_imagePlay.setVisibility(View.VISIBLE);
 
-				Drawable d1 = AnimeUtils.loadDrawableFromResource(
-						getResources(), R.drawable.equal_30fps);
+				Drawable d1 = AnimeUtils.loadDrawableFromResource(getResources(), R.drawable.equal_30fps);
 				iv_imagePlay.setScaleType(ImageView.ScaleType.CENTER);
 				iv_imagePlay.setImageDrawable(d1);
 				AnimeUtils.startViewAnimation(iv_imagePlay, true);
@@ -369,8 +376,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private class RAlbumArtAdapter extends ArrayAdapter<MusicAlbumArt> {
 		private ArrayList<MusicAlbumArt> items;
 
-		public RAlbumArtAdapter(Context context, int textViewResourceId,
-				ArrayList<MusicAlbumArt> items) {
+		public RAlbumArtAdapter(Context context, int textViewResourceId, ArrayList<MusicAlbumArt> items) {
 			super(context, textViewResourceId, items);
 			this.items = items;
 		}
@@ -393,13 +399,10 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			ImageView iv_imagePlay = null;
 
 			if (pos_d != null) {
-				iv_imageMusic = (ImageView) v
-						.findViewById(R.id.iv_image_musictag);
-				iv_imageAdd = (ImageView) v
-						.findViewById(R.id.iv_image_musictag_add);
+				iv_imageMusic = (ImageView) v.findViewById(R.id.iv_image_musictag);
+				iv_imageAdd = (ImageView) v.findViewById(R.id.iv_image_musictag_add);
 				iv_imageDim = (ImageView) v.findViewById(R.id.iv_image_dim);
-				iv_imagePlay = (ImageView) v
-						.findViewById(R.id.iv_image_musictag_play);
+				iv_imagePlay = (ImageView) v.findViewById(R.id.iv_image_musictag_play);
 				iv_imageDim.setBackground(dim_drawable);
 				iv_imageAdd.setBackground(add_drawable);
 				iv_imageMusic.setBackground(pos_d);
@@ -420,8 +423,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				iv_imageDim.setVisibility(View.INVISIBLE);
 				if (position != items.size() - 1) {
 					iv_imagePlay.setVisibility(View.VISIBLE);
-					Drawable d1 = AnimeUtils.loadDrawableFromResource(
-							getResources(), R.drawable.equal_30fps);
+					Drawable d1 = AnimeUtils.loadDrawableFromResource(getResources(), R.drawable.equal_30fps);
 					iv_imagePlay.setScaleType(ImageView.ScaleType.CENTER);
 					iv_imagePlay.setImageDrawable(d1);
 					AnimeUtils.startViewAnimation(iv_imagePlay, true);
@@ -437,8 +439,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	}
 
 	private OnItemClickListener onLeftClickListner = new OnItemClickListener() {
-		public void onItemClick(android.widget.AdapterView<?> parent,
-				View view, int pos, long id) {
+		public void onItemClick(android.widget.AdapterView<?> parent, View view, int pos, long id) {
 
 			// MusicTag
 			int what = musicLeftImageResource.get(pos).pos;
@@ -471,7 +472,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 							mp[i].pause();
 						}
 					title = musicLeftImageResource.get(pos).title + ".wav";
-					playSong(path + title, what);
+					isExistFile(title, path + title, what);
 				}
 			}
 			adapterLeft.notifyDataSetChanged();
@@ -480,14 +481,12 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	};
 
 	private OnItemClickListener onRightClickListner = new OnItemClickListener() {
-		public void onItemClick(android.widget.AdapterView<?> parent,
-				View view, int pos, long id) {
+		public void onItemClick(android.widget.AdapterView<?> parent, View view, int pos, long id) {
 			// MusicTag
 			int what = musicRightImageResource.get(pos).pos;
 			// fileManager 실행
 			if (what == -1) {
-				Toast.makeText(MusicImageTagActivity.this, "Click",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(MusicImageTagActivity.this, "Click", Toast.LENGTH_SHORT).show();
 			}
 			// Data
 			boolean isFocusState = musicRightImageResource.get(pos).focus;
@@ -521,7 +520,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 							mp[i].pause();
 						}
 					title = musicRightImageResource.get(pos).title + ".wav";
-					playSong(path + title, what);
+					isExistFile(title, path + title, what);
 				}
 			}
 			adapterRight.notifyDataSetChanged();
@@ -534,8 +533,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		for (int i = 0; i < musicNum; i++)
 			if (mp[i] != null)
 				mp[i].stop();
-		Intent intent = new Intent(MusicImageTagActivity.this,
-				TaggingActivity.class);
+		Intent intent = new Intent(MusicImageTagActivity.this, TaggingActivity.class);
 		intent.putExtra(Config.TAG_FRIEND_ID, strFriendId);
 		intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 		intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
@@ -551,8 +549,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		dtToggle = sm.getToggle();
 
 		setSupportActionBar(toolbar);
-		getWindow().getDecorView()
-				.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+		getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
 		dtToggle.setDrawerIndicatorEnabled(false);
 		ActionBar ab = getSupportActionBar();
@@ -574,7 +571,104 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		}
 	}
 
+	public void isExistFile(String title, String path, int pos) {
+		Log.d("File Exist", path);
+		File file = new File(path);
+		Log.d("File Exist", file.exists() + ".");
+		if(file.exists()){
+			Log.d("File Exist", "존재");
+			playSong(path, pos);
+		} else {
+			Toast.makeText(MusicImageTagActivity.this, "Downloading...", Toast.LENGTH_SHORT).show();
+			new MusicDownload().execute(strFileUrl + title, title);
+		}
+	}
+
+	public static final String TAG_MUSIC_TITLE = "music_title";
+
+
+	class MusicDownload extends AsyncTask<String, String, String> {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+
+			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {         
+				// IF SDCARD EXISTS
+				
+				File file = new File(path);
+
+				if (!file.exists()) {
+					// IF DIRECTORY DOESN'T EXIST
+					Log.d(CURRENT_ACTIVITY + "_PATH", "만들어");   
+					file.mkdirs();
+				}
+				Log.d(CURRENT_ACTIVITY + "_PATH", path);
+			} 
+		}
+
+		@Override
+		protected String doInBackground(String... f_url) {
+
+			int count = 0;
+			try {
+				URL url = new URL(f_url[0]);
+				String title = f_url[1];
+
+				Log.d(CURRENT_ACTIVITY + "_URL", url.toString() + " + " + title);
+
+				HttpURLConnection con = (HttpURLConnection) url
+						.openConnection();
+				con.setRequestMethod("POST");
+				con.connect();
+
+				int len = con.getContentLength();
+				Log.d(CURRENT_ACTIVITY + "_RESPONSE CODE",
+						con.getResponseCode() + "!");
+				byte[] tmpByte = new byte[len];
+
+				File file = new File(path, title);
+
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+				Log.d(CURRENT_ACTIVITY + "_PATH", file.getAbsolutePath());
+
+				InputStream is = con.getInputStream();
+				FileOutputStream fos = new FileOutputStream(file);
+
+				for (;;) {
+					count = is.read(tmpByte);
+					if (count <= 0) {
+						break;
+					}
+					fos.write(tmpByte, 0, count);
+				}
+				isDownloadFinish = true;
+				is.close();
+				fos.close();
+				con.disconnect();
+			} catch (MalformedURLException e) {
+				isDownloadFinish = false;
+				Log.e(CURRENT_ACTIVITY + "_ERROR1", e.getMessage());
+			} catch (IOException e) {
+				isDownloadFinish = false;
+				Log.e(CURRENT_ACTIVITY + "_ERROR2", e.getMessage());
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String file_url) {
+			if(isDownloadFinish) Toast.makeText(MusicImageTagActivity.this, "finish to download!", Toast.LENGTH_SHORT).show();				
+			else Toast.makeText(getApplicationContext(), "Fail to download", Toast.LENGTH_SHORT).show();
+		}
+
+	}
+
 	public void playSong(String title, int pos) {
+
 		try {
 			mp[pos].reset();
 			mp[pos].setDataSource(title);
@@ -589,8 +683,8 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
+
 
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
@@ -626,8 +720,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 
 		case R.id.ll_menu_message:
 			dlDrawer.closeDrawers();
-			i = new Intent(MusicImageTagActivity.this,
-					MessagePlayerActivity.class);
+			i = new Intent(MusicImageTagActivity.this, MessagePlayerActivity.class);
 			startActivity(i);
 			break;
 
@@ -639,9 +732,9 @@ public class MusicImageTagActivity extends AppCompatActivity {
 
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
-			
+
 			SharedPreferenceUtil pref = SignInActivity.pref;
-			
+
 			pref.put("first", false);
 			pref.put(Config.TAG_USER_ID, "");
 			pref.put(Config.TAG_PW, "");
@@ -650,20 +743,10 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			pref.put(Config.TAG_PHONE, "");
 			pref.put(Config.TAG_PIC_PATH, "");
 			stopService(new Intent(MusicImageTagActivity.this, ServicePage.class));
-			
+
 			finish();
 			startActivity(new Intent(MusicImageTagActivity.this, SignInActivity.class));
 			break;
 		}
-	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(MusicImageTagActivity.this,
-				MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
 	}
 }

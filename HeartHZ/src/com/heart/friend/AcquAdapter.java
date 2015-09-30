@@ -9,8 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.heart.R;
-import com.heart.activity.MainActivity;
-import com.heart.activity.SettingActivity;
 import com.heart.util.Config;
 import com.heart.util.JSONParser;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -19,7 +17,6 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -139,7 +136,7 @@ public class AcquAdapter extends ArrayAdapter<Friend>{
 
 			if (values[0].equals(TAG_NO_NEW_FRIEND)) {
 				Toast.makeText(getContext(), "COMPLETE!", Toast.LENGTH_SHORT).show();
-				
+				((Activity)context).finish();
 			}
 		}
 	}

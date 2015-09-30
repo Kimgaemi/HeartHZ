@@ -46,9 +46,6 @@ public class AddNewFriendActivity extends AppCompatActivity {
 	private JSONParser jsonParser = new JSONParser();
 
 	// VARIABLE
-	private String strName;
-	private String strPic;
-	private String strPhone;
 	private int iUserId;
 
 	private AcquAdapter adapter;
@@ -66,7 +63,6 @@ public class AddNewFriendActivity extends AppCompatActivity {
 		
 		iUserId = SignInActivity.iUserId;
 		listView = (ListView) findViewById(R.id.acqu_list);
-		Log.d("tag","AsdasdasD2");
 		
 		new LoadAllAcqu().execute();
 
@@ -171,7 +167,7 @@ public class AddNewFriendActivity extends AppCompatActivity {
 
 		protected void onPostExecute(String file_url) {
 
-			adapter = new AcquAdapter(getBaseContext(), R.layout.list_friend, item, iUserId);
+			adapter = new AcquAdapter(AddNewFriendActivity.this, R.layout.list_friend, item, iUserId);
 			listView.setAdapter(adapter);
 		}
 	}

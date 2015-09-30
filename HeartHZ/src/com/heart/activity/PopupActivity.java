@@ -47,8 +47,8 @@ public class PopupActivity extends Activity {
 	// VARIABLE
 	private String strPath;
 	private String strFileUrl = "http://210.125.96.96/Heart_php/uploads/";
-	private String strFileNo;   // 받을거
-	private boolean isDownloadFinish = false;   
+	private String strFileNo; // 받을거
+	private boolean isDownloadFinish = false;
 
 	// JSON
 	private JSONParser jsonParser = new JSONParser();
@@ -58,16 +58,16 @@ public class PopupActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_popup);
-		
-		RealService.Duplicated_Popup_Flag = true;	// Popup창
-		
+
+		RealService.Duplicated_Popup_Flag = true; // Popup창
+
 		Intent i = getIntent();
 		String strFromName = i.getStringExtra("FromName");
 		String strFromPhone = i.getStringExtra("FromPhone");
 		String strFileTitle = i.getStringExtra("FileTitle");
 		strFileNo = i.getStringExtra("FileNo");
 
-		Log.i("TAG!", strFromName + " / " +strFromPhone + " / " + strFileNo);
+		Log.i("TAG!", strFromName + " / " + strFromPhone + " / " + strFileNo);
 
 		fileName = (TextView) findViewById(R.id.tv_popup_file_name);
 		senderName = (TextView) findViewById(R.id.tv_popup_sender_name);
@@ -76,7 +76,6 @@ public class PopupActivity extends Activity {
 
 		senderName.setText(strFromName);
 		fileName.setText(strFileTitle);
-
 
 		// FONTS
 		fileName.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -96,29 +95,28 @@ public class PopupActivity extends Activity {
 
 		Rect dialogBounds = new Rect();
 		getWindow().getDecorView().getHitRect(dialogBounds);
-		if(!dialogBounds.contains((int) ev.getX(), (int)ev.getY())) {
+		if (!dialogBounds.contains((int) ev.getX(), (int) ev.getY())) {
 			return false;
 		}
 		return super.dispatchTouchEvent(ev);
-	}   
-
+	}
 
 	public void popupClick(View v) {
-		
+
 		RealService.Check_Change_Flag = true;
 		RealService.Duplicated_Popup_Flag = false;
 		// RealService.CheckFileDownload.class.notifyAll();
-		
+
 		Log.d("Tag", "깨우자!");
-		
-		switch(v.getId()){
-		case R.id.iv_popup_ok :
+
+		switch (v.getId()) {
+		case R.id.iv_popup_ok:
 			new DownloadFileFromURL().execute(strFileUrl + strFileNo + ".wav");
 			Log.d("Tag", "popup ok");
 			finish();
 			break;
 
-		case R.id.iv_popup_cancel :
+		case R.id.iv_popup_cancel:
 			Log.d("Tag", "popup no");
 			RealService.Check_Downloading_Flag = false;
 			new ChangeFileFlag().execute();
@@ -127,20 +125,21 @@ public class PopupActivity extends Activity {
 		}
 	}
 
-
 	class DownloadFileFromURL extends AsyncTask<String, String, String> {
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 
-			if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {         
+			if (Environment.getExternalStorageState().equals(
+					Environment.MEDIA_MOUNTED)) {
 				// IF SDCARD EXISTS
-				strPath = Environment.getExternalStorageDirectory().getAbsolutePath() + FOLDER_NAME;
+				strPath = Environment.getExternalStorageDirectory()
+						.getAbsolutePath() + FOLDER_NAME;
 				File file = new File(strPath);
 
 				if (!file.exists()) {
 					// IF DIRECTORY DOESN'T EXIST
-					Log.d(CURRENT_ACTIVITY + "_PATH", "만들어");   
+					Log.d(CURRENT_ACTIVITY + "_PATH", "만들어");
 					file.mkdirs();
 				}
 
@@ -203,36 +202,39 @@ public class PopupActivity extends Activity {
 		@Override
 		protected void onPostExecute(String file_url) {
 			Log.d("Service", "MessageList move");
-			if(isDownloadFinish) {			
-				Intent i = new Intent(PopupActivity.this, MessagePlayerActivity.class);
+			if (isDownloadFinish) {
+				Intent i = new Intent(PopupActivity.this,
+						MessagePlayerActivity.class);
 				i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 				startActivity(i);
 
 				// if잘받아졌다면
 				new ChangeFileFlag().execute();
-			}
-			else Toast.makeText(getApplicationContext(), "Fail to download", Toast.LENGTH_SHORT).show();
+			} else
+				Toast.makeText(getApplicationContext(), "Fail to download",
+						Toast.LENGTH_SHORT).show();
 			RealService.Check_Downloading_Flag = false;
 		}
 
 	}
-
 
 	public static String URL_CHANGE_FLAG = "http://210.125.96.96/heart_php/change_flag.php";
 
 	class ChangeFileFlag extends AsyncTask<String, String, String> {
 		protected String doInBackground(String... args) {
 
-			while(true) {
-				if( RealService.Check_Change_Flag ){
+			while (true) {
+				if (RealService.Check_Change_Flag) {
 					Log.d("Tag", "change flag in");
 
 					// Flag Change
 					List<NameValuePair> params = new ArrayList<NameValuePair>();
 					params.add(new BasicNameValuePair("file_no", strFileNo));
-					params.add(new BasicNameValuePair("tag_flag",Integer.toString(2)));
+					params.add(new BasicNameValuePair("tag_flag", Integer
+							.toString(2)));
 
-					JSONObject json = jsonParser.makeHttpRequest(URL_CHANGE_FLAG, "GET", params);
+					JSONObject json = jsonParser.makeHttpRequest(
+							URL_CHANGE_FLAG, "GET", params);
 
 					if (json != null) {
 						try {
@@ -248,10 +250,10 @@ public class PopupActivity extends Activity {
 				}
 			}
 			return null;
-		}   
+		}
 	}
 
-
 	@Override
-	public void onBackPressed() {}
+	public void onBackPressed() {
+	}
 }
