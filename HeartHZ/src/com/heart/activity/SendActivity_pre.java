@@ -23,7 +23,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioRecord;
 import android.os.AsyncTask;
@@ -46,8 +48,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.Config;
 import com.heart.util.Converter;
+import com.heart.util.Recorder;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -93,6 +99,9 @@ public class SendActivity_pre extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -169,11 +178,9 @@ public class SendActivity_pre extends AppCompatActivity {
 
 		// MENU
 		menuInit();
-		View menu = (View) findViewById(R.id.send1_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo5_icon);
 
 		// FONTS
+
 		tvSend.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/DINPRO-MEDIUM.ttf"));
 		btnSend.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -197,11 +204,44 @@ public class SendActivity_pre extends AppCompatActivity {
 		converting();
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		// MENU
+		View menu = (View) findViewById(R.id.send1_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo5_icon));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+	}
+
 	public void converting() {
 		if (MusicImageTagActivity.resultTagKind.getMusicCur() >= 0) {
 			convert.convertWavToPcm(musicPath);
 			convert.mixingWav();
-		}else{
+		} else {
 			convert.convertPcmToWav();
 		}
 	}
@@ -221,23 +261,23 @@ public class SendActivity_pre extends AppCompatActivity {
 			ivTagSelected3.setVisibility(View.GONE);
 			// 음악태그 우선순위
 			if (MusicImageTagActivity.resultTagKind.getMusicCur() >= 0) {
-				ivTagSelected2.setImageDrawable(getDrawableMusicTag());
+				ivTagSelected2.setBackground(getDrawableMusicTag());
 				break;
 			}
 			if (MusicImageTagActivity.resultTagKind.getEmotion() >= 0) {
-				ivTagSelected2.setImageDrawable(getDrawableEmotionTag());
+				ivTagSelected2.setBackground(getDrawableEmotionTag());
 				break;
 			}
 			if (MusicImageTagActivity.resultTagKind.getTime() >= 0) {
-				ivTagSelected2.setImageDrawable(getDrawableTimeTag());
+				ivTagSelected2.setBackground(getDrawableTimeTag());
 				break;
 			}
 			if (MusicImageTagActivity.resultTagKind.getWeather() >= 0) {
-				ivTagSelected2.setImageDrawable(getDrawableWeatherTag());
+				ivTagSelected2.setBackground(getDrawableWeatherTag());
 				break;
 			}
 			if (MusicImageTagActivity.resultTagKind.getCDate() >= 0) {
-				ivTagSelected2.setImageDrawable(getDrawableDateTag());
+				ivTagSelected2.setBackground(getDrawableDateTag());
 				break;
 			}
 			break;
@@ -247,10 +287,10 @@ public class SendActivity_pre extends AppCompatActivity {
 			ivTagSelected2.setVisibility(View.GONE);
 			if (MusicImageTagActivity.resultTagKind.getMusicCur() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableMusicTag());
+					ivTagSelected3.setBackground(getDrawableMusicTag());
 					flag1 = false;
 				} else {
-					ivTagSelected1.setImageDrawable(getDrawableMusicTag());
+					ivTagSelected1.setBackground(getDrawableMusicTag());
 					flag2 = false;
 				}
 				if (flag2 == false && flag1 == false)
@@ -258,10 +298,10 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getEmotion() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableEmotionTag());
+					ivTagSelected3.setBackground(getDrawableEmotionTag());
 					flag1 = false;
 				} else {
-					ivTagSelected1.setImageDrawable(getDrawableEmotionTag());
+					ivTagSelected1.setBackground(getDrawableEmotionTag());
 					flag2 = false;
 				}
 				if (flag2 == false && flag1 == false)
@@ -269,10 +309,10 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getTime() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableTimeTag());
+					ivTagSelected3.setBackground(getDrawableTimeTag());
 					flag1 = false;
 				} else {
-					ivTagSelected1.setImageDrawable(getDrawableTimeTag());
+					ivTagSelected1.setBackground(getDrawableTimeTag());
 					flag2 = false;
 				}
 				if (flag2 == false && flag1 == false)
@@ -280,10 +320,10 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getWeather() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableWeatherTag());
+					ivTagSelected3.setBackground(getDrawableWeatherTag());
 					flag1 = false;
 				} else {
-					ivTagSelected1.setImageDrawable(getDrawableWeatherTag());
+					ivTagSelected1.setBackground(getDrawableWeatherTag());
 					flag2 = false;
 				}
 				if (flag2 == false && flag1 == false)
@@ -291,10 +331,10 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getCDate() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableDateTag());
+					ivTagSelected3.setBackground(getDrawableDateTag());
 					flag1 = false;
 				} else {
-					ivTagSelected1.setImageDrawable(getDrawableDateTag());
+					ivTagSelected1.setBackground(getDrawableDateTag());
 					flag2 = false;
 				}
 				if (flag2 == false && flag1 == false)
@@ -307,14 +347,14 @@ public class SendActivity_pre extends AppCompatActivity {
 			boolean flag3 = true;
 			if (MusicImageTagActivity.resultTagKind.getMusicCur() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableMusicTag());
+					ivTagSelected3.setBackground(getDrawableMusicTag());
 					flag1 = false;
 				} else {
 					if (flag2) {
-						ivTagSelected2.setImageDrawable(getDrawableMusicTag());
+						ivTagSelected2.setBackground(getDrawableMusicTag());
 						flag2 = false;
 					} else {
-						ivTagSelected1.setImageDrawable(getDrawableMusicTag());
+						ivTagSelected1.setBackground(getDrawableMusicTag());
 						flag3 = false;
 					}
 				}
@@ -323,16 +363,14 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getEmotion() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableEmotionTag());
+					ivTagSelected3.setBackground(getDrawableEmotionTag());
 					flag1 = false;
 				} else {
 					if (flag2) {
-						ivTagSelected2
-								.setImageDrawable(getDrawableEmotionTag());
+						ivTagSelected2.setBackground(getDrawableEmotionTag());
 						flag2 = false;
 					} else {
-						ivTagSelected1
-								.setImageDrawable(getDrawableEmotionTag());
+						ivTagSelected1.setBackground(getDrawableEmotionTag());
 						flag3 = false;
 					}
 				}
@@ -341,14 +379,14 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getTime() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableTimeTag());
+					ivTagSelected3.setBackground(getDrawableTimeTag());
 					flag1 = false;
 				} else {
 					if (flag2) {
-						ivTagSelected2.setImageDrawable(getDrawableTimeTag());
+						ivTagSelected2.setBackground(getDrawableTimeTag());
 						flag2 = false;
 					} else {
-						ivTagSelected1.setImageDrawable(getDrawableTimeTag());
+						ivTagSelected1.setBackground(getDrawableTimeTag());
 						flag3 = false;
 					}
 				}
@@ -357,16 +395,14 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getWeather() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableWeatherTag());
+					ivTagSelected3.setBackground(getDrawableWeatherTag());
 					flag1 = false;
 				} else {
 					if (flag2) {
-						ivTagSelected2
-								.setImageDrawable(getDrawableWeatherTag());
+						ivTagSelected2.setBackground(getDrawableWeatherTag());
 						flag2 = false;
 					} else {
-						ivTagSelected1
-								.setImageDrawable(getDrawableWeatherTag());
+						ivTagSelected1.setBackground(getDrawableWeatherTag());
 						flag3 = false;
 					}
 				}
@@ -375,14 +411,14 @@ public class SendActivity_pre extends AppCompatActivity {
 			}
 			if (MusicImageTagActivity.resultTagKind.getCDate() >= 0) {
 				if (flag1) {
-					ivTagSelected3.setImageDrawable(getDrawableDateTag());
+					ivTagSelected3.setBackground(getDrawableDateTag());
 					flag1 = false;
 				} else {
 					if (flag2) {
-						ivTagSelected2.setImageDrawable(getDrawableDateTag());
+						ivTagSelected2.setBackground(getDrawableDateTag());
 						flag2 = false;
 					} else {
-						ivTagSelected1.setImageDrawable(getDrawableDateTag());
+						ivTagSelected1.setBackground(getDrawableDateTag());
 						flag3 = false;
 					}
 				}
@@ -393,106 +429,152 @@ public class SendActivity_pre extends AppCompatActivity {
 		}
 	}
 
-	public Drawable getDrawableMusicTag() {
-		Drawable d = null;
+	public BitmapDrawable getDrawableMusicTag() {
+		BitmapDrawable d = null;
 		int pos = MusicImageTagActivity.resultTagKind.getMusicCur();
 		switch (pos) {
 		case 0:
-			d = getResources().getDrawable(R.drawable.tagmusic1_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic1_img));
 			break;
 		case 1:
-			d = getResources().getDrawable(R.drawable.tagmusic2_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic2_img));
 			break;
 		case 2:
-			d = getResources().getDrawable(R.drawable.tagmusic3_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic3_img));
 			break;
 		case 3:
-			d = getResources().getDrawable(R.drawable.tagmusic4_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic4_img));
 			break;
 		case 4:
-			d = getResources().getDrawable(R.drawable.tagmusic5_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic5_img));
 			break;
 		case 5:
-			d = getResources().getDrawable(R.drawable.tagmusic6_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic6_img));
 			break;
 		case 6:
-			d = getResources().getDrawable(R.drawable.tagmusic7_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic7_img));
 			break;
 		case 7:
-			d = getResources().getDrawable(R.drawable.tagmusic8_img);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.tagmusic8_img));
 			break;
 		}
 		return d;
 	}
 
-	public Drawable getDrawableEmotionTag() {
-		Drawable d = null;
+	public BitmapDrawable getDrawableEmotionTag() {
+		BitmapDrawable d = null;
 		int pos = MusicImageTagActivity.resultTagKind.getEmotion();
 		switch (pos) {
 		case 0:
-			d = getResources().getDrawable(R.drawable.emotion1_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.emotion1_icon));
 			break;
 		case 1:
-			d = getResources().getDrawable(R.drawable.emotion2_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.emotion2_icon));
 			break;
 		case 2:
-			d = getResources().getDrawable(R.drawable.emotion3_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.emotion3_icon));
 			break;
 		case 3:
-			d = getResources().getDrawable(R.drawable.emotion4_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.emotion4_icon));
 			break;
 		}
 		return d;
 	}
 
-	public Drawable getDrawableTimeTag() {
-		Drawable d = null;
+	public BitmapDrawable getDrawableTimeTag() {
+		BitmapDrawable d = null;
 		int pos = MusicImageTagActivity.resultTagKind.getTime();
 		switch (pos) {
 		case 0:
-			d = getResources().getDrawable(R.drawable.time1_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.time1_icon));
 			break;
 		case 1:
-			d = getResources().getDrawable(R.drawable.time2_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.time2_icon));
 			break;
 		case 2:
-			d = getResources().getDrawable(R.drawable.time3_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.time3_icon));
 			break;
 		case 3:
-			d = getResources().getDrawable(R.drawable.time4_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.time4_icon));
 			break;
 		case 4:
-			d = getResources().getDrawable(R.drawable.time5_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.time5_icon));
 			break;
 		}
 		return d;
 	}
 
-	public Drawable getDrawableWeatherTag() {
-		Drawable d = null;
+	public BitmapDrawable getDrawableWeatherTag() {
+		BitmapDrawable d = null;
 		int pos = MusicImageTagActivity.resultTagKind.getWeather();
 		switch (pos) {
 		case 0:
-			d = getResources().getDrawable(R.drawable.weather1_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.weather1_icon));
 			break;
 		case 1:
-			d = getResources().getDrawable(R.drawable.weather2_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.weather2_icon));
 			break;
 		case 2:
-			d = getResources().getDrawable(R.drawable.weather3_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.weather3_icon));
 			break;
 		case 3:
-			d = getResources().getDrawable(R.drawable.weather4_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.weather4_icon));
 			break;
 		case 4:
-			d = getResources().getDrawable(R.drawable.weather5_icon);
+			d = new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.weather5_icon));
 			break;
 		}
 		return d;
 	}
 
-	public Drawable getDrawableDateTag() {
-		Drawable d = getResources().getDrawable(R.drawable.tagspecificday_icon);
+	public BitmapDrawable getDrawableDateTag() {
+		BitmapDrawable d = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.tagspecificday_icon));
 		return d;
 	}
 
@@ -515,6 +597,27 @@ public class SendActivity_pre extends AppCompatActivity {
 
 	@Override
 	public void onDestroy() {
+		int num = MusicImageTagActivity.resultTagKind.getTagCount();
+		if (num >= 3)
+			num = 3;
+		switch (num) {
+		case 0:
+			break;
+		case 1:
+			SignInActivity.recycleBgBitmap(ivTagSelected2);
+			break;
+		case 2:
+			SignInActivity.recycleBgBitmap(ivTagSelected1);
+			SignInActivity.recycleBgBitmap(ivTagSelected3);
+			break;
+		case 3:
+			SignInActivity.recycleBgBitmap(ivTagSelected1);
+			SignInActivity.recycleBgBitmap(ivTagSelected2);
+			SignInActivity.recycleBgBitmap(ivTagSelected3);
+			break;
+		}
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
 		super.onDestroy();
 		convert = null;
 		window = null;
@@ -527,7 +630,6 @@ public class SendActivity_pre extends AppCompatActivity {
 		ivTagSelected1 = null;
 		ivTagSelected2 = null;
 		ivTagSelected3 = null;
-		System.gc();
 	}
 
 	private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
@@ -723,17 +825,22 @@ public class SendActivity_pre extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(SendActivity_pre.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(SendActivity_pre.this, SignInActivity.class));
 			break;
 		}
-	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(SendActivity_pre.this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
 	}
 }

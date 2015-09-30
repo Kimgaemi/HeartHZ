@@ -22,16 +22,14 @@
                 android:layout_height="126px"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="28px"
-                android:onClick="toolbarClick"
-                android:src="@drawable/menu_btn" />
+                android:onClick="toolbarClick" />
 
             <ImageView
                 android:id="@+id/iv_toolbar_logo"
                 android:layout_width="225px"
                 android:layout_height="80px"
                 android:layout_gravity="center"
-                android:layout_marginRight="371px"
-                android:src="@drawable/logo1_icon" />
+                android:layout_marginRight="371px" />
 
             <ImageView
                 android:id="@+id/iv_toolbar_back"
@@ -39,8 +37,7 @@
                 android:layout_height="126px"
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="450px"
-                android:onClick="toolbarClick"
-                android:src="@drawable/back_btn" />
+                android:onClick="toolbarClick" />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
 

@@ -94,8 +94,8 @@
                     android:id="@+id/tag_swipe_circle"
                     android:layout_width="125px"
                     android:layout_height="24px"
-                    android:layout_centerHorizontal="true"
-                    android:src="@drawable/swipe1_icon_01" />
+                    android:layout_centerHorizontal="true" >
+                </ImageView>
             </RelativeLayout>
         </LinearLayout>
 

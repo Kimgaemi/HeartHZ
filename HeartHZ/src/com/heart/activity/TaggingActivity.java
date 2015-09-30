@@ -3,7 +3,9 @@ package com.heart.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -22,9 +24,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.tag.TagPagerAdapter;
 import com.heart.util.Config;
 import com.heart.util.CustomViewPager;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 
 public class TaggingActivity extends AppCompatActivity {
@@ -67,6 +72,9 @@ public class TaggingActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -105,7 +113,6 @@ public class TaggingActivity extends AppCompatActivity {
 		musicTag = i.getStringExtra(Config.TAG_MUSIC_PATH);
 
 		tvKind.setText(tagKind[cur]);
-		swipeCircle.setImageResource(R.drawable.swipe1_icon_01);
 		btnFooterBar = (Button) findViewById(R.id.tag_next_page);
 
 		left.setOnClickListener(kindListen);
@@ -130,9 +137,7 @@ public class TaggingActivity extends AppCompatActivity {
 
 		// MENU
 		menuInit();
-		View menu = (View) findViewById(R.id.tag_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo4_icon_01);
+
 	}
 
 	// BUTTON EVENT
@@ -208,13 +213,42 @@ public class TaggingActivity extends AppCompatActivity {
 	}
 
 	@Override
+	public void onResume() {
+		View menu = (View) findViewById(R.id.tag_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo4_icon_01));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+		super.onResume();
+	}
+
+	@Override
 	public void onPause() {
 		super.onPause();
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
 		cur = 0;
 	}
 
 	@Override
 	public void onDestroy() {
+		adapter.recycleSwipe();
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
 		super.onDestroy();
 		mContext = null;
 		adapter = null;
@@ -226,7 +260,6 @@ public class TaggingActivity extends AppCompatActivity {
 		left = null;
 		right = null;
 		btnFooterBar = null;
-		System.gc();
 	}
 
 	@Override
@@ -274,18 +307,22 @@ public class TaggingActivity extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(TaggingActivity.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(TaggingActivity.this, SignInActivity.class));
 			break;
 		}
 	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(TaggingActivity.this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
-	}
-
 }

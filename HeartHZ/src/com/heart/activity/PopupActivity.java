@@ -7,6 +7,17 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.example.heart.R;
+import com.heart.service.RealService;
+import com.heart.util.JSONParser;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -19,22 +30,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.example.heart.R;
-import com.heart.util.DownloadGetter;
-import com.heart.util.JSONParser;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import android.widget.Toast;
 
 public class PopupActivity extends Activity {
 
-	private ImageView ivSenderPic = null;
 	private TextView fileName = null;
 	private TextView senderName = null;
 	private TextView ment1 = null;
@@ -48,25 +48,27 @@ public class PopupActivity extends Activity {
 	private String strPath;
 	private String strFileUrl = "http://210.125.96.96/Heart_php/uploads/";
 	private String strFileNo;   // 받을거
+	private boolean isDownloadFinish = false;   
+
+	// JSON
+	private JSONParser jsonParser = new JSONParser();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_popup);
-
-		imageInit(this);
+		
+		RealService.Duplicated_Popup_Flag = true;	// Popup창
 		
 		Intent i = getIntent();
 		String strFromName = i.getStringExtra("FromName");
 		String strFromPhone = i.getStringExtra("FromPhone");
-		String strFromPic = i.getStringExtra("FromPic");
 		String strFileTitle = i.getStringExtra("FileTitle");
 		strFileNo = i.getStringExtra("FileNo");
 
 		Log.i("TAG!", strFromName + " / " +strFromPhone + " / " + strFileNo);
 
-		ivSenderPic = (ImageView) findViewById(R.id.iv_popup_sender);
 		fileName = (TextView) findViewById(R.id.tv_popup_file_name);
 		senderName = (TextView) findViewById(R.id.tv_popup_sender_name);
 		ment1 = (TextView) findViewById(R.id.tv_popup_ment1);
@@ -74,16 +76,6 @@ public class PopupActivity extends Activity {
 
 		senderName.setText(strFromName);
 		fileName.setText(strFileTitle);
-		
-		ImageLoader imageLoader = ImageLoader.getInstance();
-		DisplayImageOptions options = new DisplayImageOptions.Builder().cacheInMemory()
-				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc().resetViewBeforeLoading()
-				.showImageForEmptyUri(R.drawable.default_profile).showImageOnFail(R.drawable.default_profile)
-				.build();
-
-		imageLoader.displayImage(strFromPic, ivSenderPic, options);
-		
-		
 
 
 		// FONTS
@@ -98,21 +90,6 @@ public class PopupActivity extends Activity {
 
 	}
 
-	
-	public static void imageInit(Activity v) {
-		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-		.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
-		.cacheInMemory().imageScaleType(ImageScaleType.EXACTLY).build();
-
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				v.getBaseContext()).defaultDisplayImageOptions(defaultOptions)
-				.memoryCache(new WeakMemoryCache())
-				.discCacheSize(100 * 1024 * 1024).build();
-
-		ImageLoader.getInstance().init(config);
-	}
-
-	
 	// 배경터치 막기
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -127,21 +104,24 @@ public class PopupActivity extends Activity {
 
 
 	public void popupClick(View v) {
+		
+		RealService.Check_Change_Flag = true;
+		RealService.Duplicated_Popup_Flag = false;
+		// RealService.CheckFileDownload.class.notifyAll();
+		
+		Log.d("Tag", "깨우자!");
+		
 		switch(v.getId()){
 		case R.id.iv_popup_ok :
 			new DownloadFileFromURL().execute(strFileUrl + strFileNo + ".wav");
-			// DownloadGetter.isShow = false;
 			Log.d("Tag", "popup ok");
-			DownloadGetter.Download_Finish_Flag = true;
-
 			finish();
-			// Popup_Activity_Flag 는 true 로 유지!!
 			break;
 
 		case R.id.iv_popup_cancel :
-			//DownloadGetter.isShow = false;
 			Log.d("Tag", "popup no");
-			DownloadGetter.Popup_Activity_Flag = false;
+			RealService.Check_Downloading_Flag = false;
+			new ChangeFileFlag().execute();
 			finish();
 			break;
 		}
@@ -204,12 +184,15 @@ public class PopupActivity extends Activity {
 					}
 					fos.write(tmpByte, 0, count);
 				}
+				isDownloadFinish = true;
 				is.close();
 				fos.close();
 				con.disconnect();
 			} catch (MalformedURLException e) {
+				isDownloadFinish = false;
 				Log.e(CURRENT_ACTIVITY + "_ERROR1", e.getMessage());
 			} catch (IOException e) {
+				isDownloadFinish = false;
 				Log.e(CURRENT_ACTIVITY + "_ERROR2", e.getMessage());
 				e.printStackTrace();
 			}
@@ -217,18 +200,57 @@ public class PopupActivity extends Activity {
 			return null;
 		}
 
-		protected void onProgressUpdate(String... progress) {
-			// pDialog.setProgress(Integer.parseInt(progress[0]));
-		}
-
 		@Override
 		protected void onPostExecute(String file_url) {
-			Intent i = new Intent(PopupActivity.this, MessagePlayerActivity.class);
-			i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			startActivity(i);
+			Log.d("Service", "MessageList move");
+			if(isDownloadFinish) {			
+				Intent i = new Intent(PopupActivity.this, MessagePlayerActivity.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+				startActivity(i);
+
+				// if잘받아졌다면
+				new ChangeFileFlag().execute();
+			}
+			else Toast.makeText(getApplicationContext(), "Fail to download", Toast.LENGTH_SHORT).show();
+			RealService.Check_Downloading_Flag = false;
 		}
 
 	}
+
+
+	public static String URL_CHANGE_FLAG = "http://210.125.96.96/heart_php/change_flag.php";
+
+	class ChangeFileFlag extends AsyncTask<String, String, String> {
+		protected String doInBackground(String... args) {
+
+			while(true) {
+				if( RealService.Check_Change_Flag ){
+					Log.d("Tag", "change flag in");
+
+					// Flag Change
+					List<NameValuePair> params = new ArrayList<NameValuePair>();
+					params.add(new BasicNameValuePair("file_no", strFileNo));
+					params.add(new BasicNameValuePair("tag_flag",Integer.toString(2)));
+
+					JSONObject json = jsonParser.makeHttpRequest(URL_CHANGE_FLAG, "GET", params);
+
+					if (json != null) {
+						try {
+							Log.d("tag", json.toString());
+							int success = json.getInt("success");
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+					RealService.Check_Change_Flag = false;
+					Log.d("Tag", "돌는중");
+					break;
+				}
+			}
+			return null;
+		}   
+	}
+
 
 	@Override
 	public void onBackPressed() {}

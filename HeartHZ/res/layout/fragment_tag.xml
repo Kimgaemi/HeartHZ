@@ -21,8 +21,7 @@
                 android:id="@+id/tagcontent"
                 android:layout_width="940px"
                 android:layout_height="860px"
-                android:background="@android:color/transparent"
-                android:src="@drawable/simul_emotion_joy_00000" >
+                android:background="@android:color/transparent" >
             </ImageView>
 
             <RelativeLayout

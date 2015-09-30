@@ -22,6 +22,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
+import com.heart.util.Config;
+import com.heart.util.Recorder;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 
 public class SendActivity_aft extends AppCompatActivity {
@@ -38,6 +43,9 @@ public class SendActivity_aft extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -82,15 +90,45 @@ public class SendActivity_aft extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		View menu = (View) findViewById(R.id.send2_menu);
+
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo2_icon_01));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+
 		sendingIcon.setBackground(new BitmapDrawable(getResources(),
 				BitmapFactory.decodeResource(getResources(),
 						R.drawable.sending_icon)));
 	}
 
 	@Override
-	public void onDestroy() {
-		super.onDestroy();
+	public void onPause() {
+		super.onPause();
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
 		SignInActivity.recycleBgBitmap(sendingIcon);
+	}
+
+	@Override
+	public void onDestroy() {
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
+		super.onDestroy();
 		window = null;
 		tvSuccessful = null;
 		tvMent1 = null;
@@ -100,7 +138,6 @@ public class SendActivity_aft extends AppCompatActivity {
 
 		MusicImageTagActivity.resultTagKind = null;
 		TaggingActivity.cur = 0;
-		System.gc();
 	}
 
 	public void newMessage(View v) {
@@ -178,6 +215,21 @@ public class SendActivity_aft extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(SendActivity_aft.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(SendActivity_aft.this, SignInActivity.class));
 			break;
 		}
 	}

@@ -1,8 +1,11 @@
 package com.heart.tag;
 
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,18 +17,24 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.droidtools.android.graphics.GifDrawable;
 import com.example.heart.R;
 import com.heart.activity.MusicImageTagActivity;
 import com.heart.activity.TaggingActivity;
-import com.heart.util.AnimeUtils;
 
 public class TagFragment extends Fragment {
 
+	public ImageView iv;
 	private Drawable d1;
+
+	private Handler mHandler;
+	private Runnable mUpdateTimeTask;
+	private long startTime = 0;
+	
+	BitmapWorkerTask task;
 	private int pos;
 	private TextView tvTagView1;
 	public ToggleButton tgn;
-	public ImageView iv;
 	public TextView tvTagView2;
 	public LinearLayout dateContainer;
 	public EditText etTag1;
@@ -50,7 +59,7 @@ public class TagFragment extends Fragment {
 		LinearLayout l = (LinearLayout) inflater.inflate(R.layout.fragment_tag,
 				container, false);
 		pos = this.getArguments().getInt("pos");
-		Log.i("FRAGMENT", "ONCREATEVIEW " + String.valueOf(pos));
+		Log.i("FRAGMENT 1", "ONCREATEVIEW " + String.valueOf(pos));
 
 		iv = (ImageView) l.findViewById(R.id.tagcontent);
 		tvTagView1 = (TextView) l.findViewById(R.id.tv_tag_view1);
@@ -65,22 +74,17 @@ public class TagFragment extends Fragment {
 		tgn = (ToggleButton) l.findViewById(R.id.tgn_select_tag);
 		tgn.setOnClickListener(tag_fragment_listener);
 
+		startAnimation(TaggingActivity.cur, pos);
 		if (pos == 0) {
 			tvTagView2.setText("in 'Joy'");
-			iv.setImageResource(R.drawable.back_joy);
-			startAnimation(TaggingActivity.cur, 0);
 		} else if (pos == 1) {
 			tvTagView2.setText("in 'Gloomy'");
-			iv.setImageResource(R.drawable.back_gloomy);
 		} else if (pos == 2) {
 			tvTagView2.setText("in 'Relaxed'");
-			iv.setImageResource(R.drawable.back_relaxed);
 		} else if (pos == 3) {
 			tvTagView2.setText("in 'Tired'");
-			iv.setImageResource(R.drawable.back_tired);
 		} else {
 			tvTagView2.setText("in 'Tired'");
-			iv.setImageResource(R.drawable.back_tired);
 		}
 
 		// fonts
@@ -95,6 +99,20 @@ public class TagFragment extends Fragment {
 		etTag3.setTypeface(Typeface.createFromAsset(getActivity().getAssets(),
 				"fonts/AppleSDGothicNeo-Medium.otf"));
 
+		mHandler = new Handler();
+		mUpdateTimeTask = new Runnable() {
+			public void run() {
+				long time = System.currentTimeMillis();
+				if (d1 != null) {
+					if (d1.setLevel((int) (((time - startTime) / 10) % 10000))) {
+						iv.postInvalidate();
+					}
+				}
+				mHandler.postDelayed(this, 10);
+			}
+		};
+		mHandler.post(mUpdateTimeTask);
+
 		MyLinearLayout root = (MyLinearLayout) l.findViewById(R.id.tagroot);
 		float scale = this.getArguments().getFloat("scale");
 		root.setScaleBoth(scale);
@@ -102,8 +120,25 @@ public class TagFragment extends Fragment {
 	}
 
 	@Override
+	public void onStart() {
+		super.onStart();
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+	}
+
+	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		try {
+			if (d1 != null && TaggingActivity.cur != 3) {
+				((GifDrawable) d1).recycle();
+			}
+		} catch (ClassCastException e) {
+
+		}
 		d1 = null;
 		tgn = null;
 		iv = null;
@@ -161,72 +196,59 @@ public class TagFragment extends Fragment {
 	}
 
 	public void startAnimation(int mode, int num) {
+		task = new BitmapWorkerTask();
 		switch (mode) {
 		case 0:
 			switch (num) {
 			case 0:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_joy);
+				task.execute("ani_joy.gif");
 				break;
 			case 1:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_gloomy);
+				task.execute("ani_gloomy.gif");
 				break;
 			case 2:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_relax);
+				task.execute("ani_relax.gif");
 				break;
 			case 3:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_tired);
+				task.execute("ani_tired.gif");
 				break;
 			}
 			break;
 		case 1:
 			switch (num) {
 			case 0:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_morning);
+				task.execute("ani_morning.gif");
 				break;
 			case 1:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_daytime);
+				task.execute("ani_daytime.gif");
 				break;
 			case 2:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_sunset);
+				task.execute("ani_sunset.gif");
 				break;
 			case 3:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_night);
+				task.execute("ani_night.gif");
 				break;
 			case 4:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_break);
+				task.execute("ani_break.gif");
 				break;
 			}
 			break;
 		case 2:
 			switch (num) {
 			case 0:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_sunny);
+				task.execute("ani_sunny.gif");
 				break;
 			case 1:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_rain);
+				task.execute("ani_rain.gif");
 				break;
 			case 2:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_snow);
+				task.execute("ani_snow.gif");
 				break;
 			case 3:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_light);
+				task.execute("ani_light.gif");
 				break;
 			case 4:
-				d1 = AnimeUtils.loadDrawableFromResource(getResources(),
-						R.drawable.ani_cloudy);
+				task.execute("ani_cloudy.gif");
 				break;
 			}
 			break;
@@ -234,25 +256,41 @@ public class TagFragment extends Fragment {
 			d1 = getResources().getDrawable(R.drawable.specific_day);
 			break;
 		}
-		iv.setImageDrawable(d1);
-		if (mode != 3) {
-			getActivity().runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					AnimeUtils.startViewAnimation(iv, true);
-				}
-			});
-		}
 	}
 
-	public void stopAnimation() {
-		getActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				AnimeUtils.startViewAnimation(iv, false);
+	class BitmapWorkerTask extends AsyncTask<String, Void, GifDrawable> {
+
+		public BitmapWorkerTask() {
+			iv.setImageDrawable(null);
+			Log.i("TASK", "持失切 持失");
+		}
+
+		// Decode image in background.
+		@Override
+		protected GifDrawable doInBackground(String... params) {
+			String im = params[0];
+			Log.i("TASK", "doInBackground " + im);
+			return GifDrawable.gifFromAsset(getResources(), im);
+		}
+
+		// Once complete, see if ImageView is still around and set bitmap.
+		@Override
+		protected void onPostExecute(GifDrawable drawable) {
+			if (drawable != null) {
+				try {
+					if (d1 != null) {
+						Log.i("TASK", "reCycle");
+						((GifDrawable) d1).recycle();
+					}
+				} catch (ClassCastException e) {
+					Log.i("TASK", " Date reCycle");
+				}
+				Log.i("TASK", "OnPostExecute");
+				d1 = drawable;
+				iv.setImageDrawable(drawable);
+				startTime = System.currentTimeMillis();
 			}
-		});
-		return;
+		}
 	}
 
 }

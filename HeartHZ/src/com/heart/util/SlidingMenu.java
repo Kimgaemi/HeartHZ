@@ -61,16 +61,17 @@ public class SlidingMenu extends AppCompatActivity{
 	}
 
 	private void SlidingMenuInit() {
-		SharedPreferenceUtil pref = SignInActivity.pref;
-		String strName = pref.getValue(Config.TAG_NAME, null);
-		String strPic = pref.getValue(Config.TAG_PIC_PATH, null);
-		
-		MenuItems me = new MenuItems(strName, strPic, 0);
-		item.add(me);
+		if(SignInActivity.pref != null) {
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			String strName = pref.getValue(Config.TAG_NAME, null);
+			String strPic = pref.getValue(Config.TAG_PIC_PATH, null);
+			Log.d("menu", strName);
+
+			MenuItems me = new MenuItems(strName, strPic, 0);
+			item.add(me);
+		}
 
 		lv = (ListView) ((Activity) mContext).findViewById(R.id.nav_list);
 		lv.setAdapter(new MenuAdapter(((Activity) mContext).getBaseContext(), R.layout.list_menu, item));
-		
-
 	}
 }

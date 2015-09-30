@@ -49,16 +49,14 @@ public class FriendFragment extends Fragment {
 	@Override
 	public void onStart() {
 		super.onStart();
-		int pos = this.getArguments().getInt("POS");
-		if (pos == MainActivity.maxPeople - 1) {
-			add_plus.setBackground(new BitmapDrawable(getResources(),
-					BitmapFactory.decodeResource(getResources(),
-							R.drawable.add3_btn)));
-		}
 	}
 
 	@Override
 	public void onStop() {
+		int pos = this.getArguments().getInt("POS");
+		if (pos == MainActivity.maxPeople - 1) {
+			SignInActivity.recycleBgBitmap(add_plus);
+		}
 		super.onStop();
 	}
 
@@ -75,12 +73,13 @@ public class FriendFragment extends Fragment {
 			// 마지막인 경우에는 Add하는 경우를 올려야함
 			l = (LinearLayout) inflater.inflate(R.layout.fragment_add,
 					container, false);
-
 			TextView add_tv = (TextView) l.findViewById(R.id.add_friend_text);
 			add_tv.setTypeface(Typeface.createFromAsset(getActivity()
 					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
 			add_plus = (ImageView) l.findViewById(R.id.add_friend);
 
+			add_plus.setBackground(new BitmapDrawable(getResources(),BitmapFactory.decodeResource(getResources(),R.drawable.add3_btn)));
+			
 			FriendLinearLayout addroot = (FriendLinearLayout) l
 					.findViewById(R.id.addroot);
 			float scale = this.getArguments().getFloat("SCALE");
@@ -111,19 +110,7 @@ public class FriendFragment extends Fragment {
 			tvPhone.setText("0" + phone);
 			days.setText(String.valueOf(dayNum));
 			
-			if (pos == 0) {
-				days.setTextColor(getResources().getColor(
-						R.color.page2_text_color1));
-			} else if (pos == 1) {
-				days.setTextColor(getResources().getColor(
-						R.color.page2_text_color2));
-			} else if (pos == 2) {
-				days.setTextColor(getResources().getColor(
-						R.color.page2_text_color3));
-			} else {
-				days.setTextColor(getResources().getColor(
-						R.color.page2_text_color4));
-			}
+			DaysOverColor(dayNum);
 			daysOver.setText("days over");
 
 			ImageLoader imgloder = ImageLoader.getInstance();
@@ -134,6 +121,10 @@ public class FriendFragment extends Fragment {
 			imgloder.displayImage(pic, ivPic, options);
 
 			// FONT
+			tvName.setTypeface(Typeface.createFromAsset(getActivity()
+					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
+			tvPhone.setTypeface(Typeface.createFromAsset(
+					getActivity().getAssets(), "fonts/DINPRO-REGULAR.ttf"));
 			days.setTypeface(Typeface.createFromAsset(
 					getActivity().getAssets(), "fonts/DINPRO-REGULAR.ttf"));
 			daysOver.setTypeface(Typeface.createFromAsset(getActivity()
@@ -150,6 +141,20 @@ public class FriendFragment extends Fragment {
 			}
 		}
 		return l;
+	}
+	private void DaysOverColor(int num){
+		if (num <= 7) {
+			//  ~7 
+			days.setTextColor(getResources().getColor(R.color.page2_text_color4));
+		} else if (num <= 15) {
+			// ~15
+			days.setTextColor(getResources().getColor(R.color.page2_text_color3));
+		} else if (num <= 31) {
+			// ~31
+			days.setTextColor(getResources().getColor(R.color.page2_text_color2));
+		} else {
+			days.setTextColor(getResources().getColor(R.color.page2_text_color1));
+		}
 	}
 
 }

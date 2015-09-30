@@ -49,7 +49,7 @@ public class MenuAdapter extends ArrayAdapter<MenuItems> {
 
 		MenuItems menu = items.get(position);
 		if (menu != null) {
-			TextView tvName = (TextView) v.findViewById(R.id.list_name);
+			TextView tvName = (TextView) v.findViewById(R.id.list_name);	
 			ImageView ivPic = (ImageView) v.findViewById(R.id.iv_friend_pic);
 			tvName.setTypeface(Typeface.createFromAsset(context.getAssets(),"fonts/DINPRO-MEDIUM.ttf"));
 			

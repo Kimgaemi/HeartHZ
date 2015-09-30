@@ -64,7 +64,6 @@ public class AddNewFriendActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_popup_listview);
 		
-		Log.d("tag","AsdasdasD1");
 		iUserId = SignInActivity.iUserId;
 		listView = (ListView) findViewById(R.id.acqu_list);
 		Log.d("tag","AsdasdasD2");
@@ -73,6 +72,38 @@ public class AddNewFriendActivity extends AppCompatActivity {
 
 	}
 
+	
+	public String getContactName(String phoneNumber) {
+		Uri uri;
+		String[] projection;
+		projection = new String[] { android.provider.Contacts.People.NAME };
+		mBaseUri = Contacts.Phones.CONTENT_FILTER_URL;
+
+		try {
+			Class<?> c = Class
+					.forName("android.provider.ContactsContract$PhoneLookup");
+			mBaseUri = (Uri) c.getField("CONTENT_FILTER_URI").get(mBaseUri);
+			projection = new String[] { "display_name" };
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		uri = Uri.withAppendedPath(mBaseUri, Uri.encode(phoneNumber));
+		Cursor cursor = this.getContentResolver().query(uri, projection, null,
+				null, null);
+
+		String contactName = "";
+
+		if (cursor.moveToFirst()) {
+			contactName = cursor.getString(0);
+		}
+
+		cursor.close();
+		cursor = null;
+
+		return contactName;
+	}
+	
 	class LoadAllAcqu extends AsyncTask<String, String, String> {
 
 		protected String doInBackground(String... args) {
@@ -140,115 +171,8 @@ public class AddNewFriendActivity extends AppCompatActivity {
 
 		protected void onPostExecute(String file_url) {
 
-			// runOnUiThread(new Runnable() {
-			// public void run() {
-
-			adapter = new AcquAdapter(getBaseContext(), R.layout.list_friend,
-					item);
+			adapter = new AcquAdapter(getBaseContext(), R.layout.list_friend, item, iUserId);
 			listView.setAdapter(adapter);
-			
-			listView.setOnItemClickListener(addFriendListener);
-			
-			// }
-			// });
 		}
-	}
-
-	private OnItemClickListener addFriendListener = new OnItemClickListener() {
-		public void onItemClick(android.widget.AdapterView<?> parent,
-				View view, int pos, long id) {
-			Log.d("tag", "itemclick");
-			Button btnAdd = (Button) view.findViewById(R.id.list_btn_add);
-			 tvId = (TextView) view.findViewById(R.id.list_tv_uid);
-			btnAdd.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Log.d("tag", "button click"+ tvId.getText().toString());
-					new AddNewFriend().execute(tvId.getText().toString());
-				}
-			});
-
-		};
-	};
-
-	class AddNewFriend extends AsyncTask<String, String, String> {
-		
-		protected String doInBackground(String... args) {
-			if (args == null) // NO FRIEND ID
-				return null;
-
-			String iNewFirendId = args[0];
-			Log.d("i",iNewFirendId);
-			// BEFORE ADD THE RELATION
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer
-					.toString(iUserId)));
-			params.add(new BasicNameValuePair(NEW_FRIEND_ID, iNewFirendId));
-
-			JSONObject json = jsonParser.makeHttpRequest(
-					Config.URL_SET_RELATION, "POST", params);
-			Log.d(CURRENT_ACTIVITY + "_relations", json.toString());
-
-			try {
-				int success = json.getInt(Config.TAG_SUCCESS);
-				if (success == 0) {
-					publishProgress(TAG_NO_NEW_FRIEND);
-					Log.d(CURRENT_ACTIVITY, "RELATION SUCCESSFULLY CREATED");
-				} /*
-				 * else if (success == 1) { publishProgress(TAG_ALREADY_FRIEND);
-				 * Log.d(CURRENT_ACTIVITY, "RELATION ALREADY CREATED"); }
-				 */
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onProgressUpdate(String... values) {
-			super.onProgressUpdate(values);
-
-			if (values[0].equals(TAG_NO_NEW_FRIEND)) {
-				Toast.makeText(AddNewFriendActivity.this, "COMPLETE!",
-						Toast.LENGTH_SHORT).show();
-
-				
-				AddNewFriendActivity.this.finish();
-			}
-		}
-	}
-
-	public String getContactName(String phoneNumber) {
-		Uri uri;
-		String[] projection;
-		projection = new String[] { android.provider.Contacts.People.NAME };
-		mBaseUri = Contacts.Phones.CONTENT_FILTER_URL;
-
-		try {
-			Class<?> c = Class
-					.forName("android.provider.ContactsContract$PhoneLookup");
-			mBaseUri = (Uri) c.getField("CONTENT_FILTER_URI").get(mBaseUri);
-			projection = new String[] { "display_name" };
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		uri = Uri.withAppendedPath(mBaseUri, Uri.encode(phoneNumber));
-		Cursor cursor = this.getContentResolver().query(uri, projection, null,
-				null, null);
-
-		String contactName = "";
-
-		if (cursor.moveToFirst()) {
-			contactName = cursor.getString(0);
-		}
-
-		cursor.close();
-		cursor = null;
-
-		return contactName;
 	}
 }

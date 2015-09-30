@@ -41,7 +41,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="70px"
-                android:background="@drawable/selector_musictag_on_off"
                 android:textOff=""
                 android:textOn="" />
         </RelativeLayout>
@@ -86,8 +85,7 @@
                 android:id="@+id/musictag_add_btn"
                 android:layout_width="140px"
                 android:layout_height="140px"
-                android:layout_centerInParent="true"
-                android:src="@drawable/add1_btn" />
+                android:layout_centerInParent="true" />
         </RelativeLayout>
 
         <Button

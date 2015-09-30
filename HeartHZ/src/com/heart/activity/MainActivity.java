@@ -1,11 +1,9 @@
 package com.heart.activity;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -13,13 +11,33 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.heart.R;
+import com.heart.friend.Friend;
+import com.heart.friend.FriendPagerAdapter;
+import com.heart.service.RealService;
+import com.heart.service.ServicePage;
+import com.heart.util.Config;
+import com.heart.util.CustomViewPager;
+import com.heart.util.IdGen;
+import com.heart.util.JSONParser;
+import com.heart.util.SharedPreferenceUtil;
+import com.heart.util.SlidingMenu;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -37,23 +55,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.heart.R;
-import com.heart.friend.Friend;
-import com.heart.friend.FriendPagerAdapter;
-import com.heart.util.Config;
-import com.heart.util.CustomViewPager;
-import com.heart.util.DownloadService;
-import com.heart.util.JSONParser;
-import com.heart.util.SlidingMenu;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -68,8 +72,12 @@ public class MainActivity extends AppCompatActivity {
 	// VIEW
 	private Window window = null;
 	private TextView tvHome = null;
+	private TextView tvLoading = null;
 	private Button btnSelect = null;
 	private LinearLayout layout = null;
+	private LinearLayout vpLayout = null;
+	private RelativeLayout loadingLayout = null;
+	private boolean isPager = false;
 
 	// JSON
 	private JSONParser jsonParser = new JSONParser();
@@ -83,10 +91,14 @@ public class MainActivity extends AppCompatActivity {
 	// FRIEND
 	private ArrayList<Friend> item = new ArrayList<Friend>();
 
-	// SLIDING TOOL BAR
-	private Toolbar toolbar;
-	private DrawerLayout dlDrawer;
-	private ActionBarDrawerToggle dtToggle;
+	// MENU
+	public SlidingMenu sm;
+	public Toolbar toolbar;
+	public DrawerLayout dlDrawer;
+	public ActionBarDrawerToggle dtToggle;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
 
 	public final static int PAGES = 100;
 	public static int maxPeople = 0;
@@ -99,19 +111,20 @@ public class MainActivity extends AppCompatActivity {
 	public Integer[] btnColors = null;
 
 	public FriendPagerAdapter mpadapter = null;
-	public CustomViewPager pager;
+	public CustomViewPager pager = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		View menu = (View) findViewById(R.id.main_menu);
 		btnSelect = (Button) findViewById(R.id.btn_select);
 		tvHome = (TextView) findViewById(R.id.tv_home);
+		tvLoading = (TextView) findViewById(R.id.tv_loading);
 		layout = (LinearLayout) findViewById(R.id.nav_lv);
+		vpLayout = (LinearLayout) findViewById(R.id.vp_container);
+		loadingLayout = (RelativeLayout) findViewById(R.id.loading_layout);
 
-		// iUserId = SignInActivity.pref.getValue(Config.TAG_USER_ID, 0);
 		iUserId = SignInActivity.iUserId;
 		strPhone = SignInActivity.strPhone;
 		strName = SignInActivity.strName;
@@ -121,17 +134,16 @@ public class MainActivity extends AppCompatActivity {
 				+ strPic);
 
 		// CHANGING MENU CENTER ICON
-		menu.findViewById(R.id.iv_toolbar_logo).setBackgroundResource(
-				R.drawable.logo1_icon);
-
-		menu.findViewById(R.id.iv_toolbar_back).setVisibility(View.INVISIBLE);
 
 		imageInit(this); // IMAGE LOADER SETUP
-		menuInit(); // SET MENU BAR
+		if (sm == null)
+			menuInit(); // SET MENU BAR
 
 		// FONT
 		tvHome.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/DINPRO-MEDIUM.ttf"));
+		tvLoading.setTypeface(Typeface.createFromAsset(getAssets(),
+				"fonts/AppleSDGothicNeo-Bold.otf"));
 
 		// STATUSBAR COLOR
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -143,21 +155,64 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
- 
 	@Override
 	protected void onResume() {
 		super.onResume();
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo1_icon));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		View menu = (View) findViewById(R.id.main_menu);
+		menu.findViewById(R.id.iv_toolbar_logo).setBackground(logoBitmap);
+		menu.findViewById(R.id.iv_toolbar_btn).setBackground(toolbarBtnBitmap);
+		menu.findViewById(R.id.iv_toolbar_back)
+				.setBackground(toolbarBackBitmap);
+		menu.findViewById(R.id.iv_toolbar_back).setVisibility(View.INVISIBLE);
 		// CALL LoadAllFriends()
 		menuInit();
+		if (!isPager) {
+			LinearLayout.LayoutParams lprams = new LinearLayout.LayoutParams(
+					LinearLayout.LayoutParams.MATCH_PARENT,
+					LinearLayout.LayoutParams.MATCH_PARENT);
+			lprams.gravity = Gravity.CENTER;
+			pager = new CustomViewPager(this);
+			pager.setId(IdGen.generateViewId());
+			vpLayout.addView(pager, lprams);
+			loadingLayout.setVisibility(View.GONE);
+			isPager = true;
+		}
+
 		new LoadAllFriends().execute();
-				
+
 	}
-	
+
+	@Override
+	public void onPause() {
+		btnSelect.setBackgroundColor(getResources().getColor(
+				R.color.page2_btn_color1));
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+		super.onPause();
+		if (isPager) {
+			loadingLayout.setVisibility(View.VISIBLE);
+			vpLayout.removeView(pager);
+			isPager = false;
+		}
+		System.gc();
+	}
+
 	@Override
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		
+
 	}
 
 	/**
@@ -177,7 +232,8 @@ public class MainActivity extends AppCompatActivity {
 
 		// ADD FRIEND
 		if (strFriendId.equals(ADD_FRIEND)) {
-			Intent in = new Intent(MainActivity.this,AddNewFriendActivity.class);
+			Intent in = new Intent(MainActivity.this,
+					AddNewFriendActivity.class);
 
 			startActivity(in);
 
@@ -232,8 +288,8 @@ public class MainActivity extends AppCompatActivity {
 							String strFriendPicPath = c
 									.getString(Config.TAG_PIC_PATH);
 
-							int daysOver = getHistory("0"+strFriendPhone);
-							Log.d("tag", daysOver+"");
+							int daysOver = getHistory("0" + strFriendPhone);
+							Log.d("tag", daysOver + "");
 
 							Friend friend = new Friend(strFriendId,
 									strFriendName, strFriendPhone,
@@ -264,11 +320,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		protected void onPostExecute(String file_url) {
-			setUpColors(maxPeople + 4); // SET COLOR
-
+			setUpColors(maxPeople); // SET COLOR
 			// VIEW PAGER
-			pager = (CustomViewPager) findViewById(R.id.myviewpager);
-
 			pager.postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -296,70 +349,113 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	private void setUpColors(int num) {
+		// BG
+		Integer[] bg_colors_temp = new Integer[100];
+		Integer[] btn_colors_temp = new Integer[100];
+		Integer color1;
+		Integer color2;
+		int days;
+		// Color
+		for (int i = 0; i < num - 1; i++) {
+			days = item.get(i).getDays();
+			if (days <= 7) {
+				// ~7
+				color1 = getResources().getColor(R.color.page2_bg_color4);
+				color2 = getResources().getColor(R.color.page2_btn_color4);
+			} else if (days <= 15) {
+				// ~15
+				color1 = getResources().getColor(R.color.page2_bg_color3);
+				color2 = getResources().getColor(R.color.page2_btn_color3);
+			} else if (days <= 31) {
+				color1 = getResources().getColor(R.color.page2_bg_color2);
+				color2 = getResources().getColor(R.color.page2_btn_color2);
+				// ~31
+			} else {
+				color1 = getResources().getColor(R.color.page2_bg_color1);
+				color2 = getResources().getColor(R.color.page2_btn_color1);
+			}
+			bg_colors_temp[i] = color1;
+			btn_colors_temp[i] = color2;
+		}
+		// ADD_COLOR + DummyColor
+		for (int i = num - 1; i < num + 4; i++) {
+			color1 = getResources().getColor(R.color.background_base);
+			color2 = getResources().getColor(R.color.button_base);
+			bg_colors_temp[i] = color1;
+			btn_colors_temp[i] = color2;
+		}
 
+		bgColors = bg_colors_temp;
+		btnColors = btn_colors_temp;
 
+	}
+
+	// //////////////////////////////////////////////////////////////////////////
+	// DAYS OVER
+	// //////////////////////////////////////////////////////////////////////////
 	private int getHistory(String phoneNum) {
-		/* Query the CallLog Content Provider */
-
-		String selection = CallLog.Calls.NUMBER + "=?"; //WHERE절 타입이 
-		String[] selectionArgs = { phoneNum }; 
+		String selection = CallLog.Calls.NUMBER + "=?";
+		String[] selectionArgs = { phoneNum };
 		String strOrder = android.provider.CallLog.Calls.DATE + " DESC";
-		Cursor managedCursor = getContentResolver().query(CallLog.Calls.CONTENT_URI, null, selection, selectionArgs, strOrder);
+		Cursor cursor = getContentResolver().query(CallLog.Calls.CONTENT_URI,
+				null, selection, selectionArgs, strOrder);
 
-		if(managedCursor.getCount() > 0) {
-			// long date = managedCursor.getLong(managedCursor.getColumnIndex(CallLog.Calls.DATE));
-			long date = 111123011;
+		if (cursor.getCount() > 0) {
+			cursor.moveToFirst();
+			long date = cursor.getLong(cursor
+					.getColumnIndex(CallLog.Calls.DATE));
+			Log.d("Date", date + "");
 
-			Log.d("tag전화", date+"");
 			int lastDate = GetDifferenceOfDate(Long.valueOf(date));
-			managedCursor.close();
+			cursor.close();
 			return lastDate;
-		} else return 365;   
+		} else
+			// 통화 기록 0번
+			return 365;
 	}
 
 	public int GetDifferenceOfDate(long diff) {
 
 		// 현재시간
 		Calendar cal = Calendar.getInstance();
-		int nYear1 = cal.get(cal.YEAR);
-		int nMonth1 = cal.get(cal.MONTH) + 1;
-		int nDate1 = cal.get(cal.DATE);
+		int cYear = cal.get(Calendar.YEAR);
+		int cMonth = cal.get(Calendar.MONTH) + 1;
+		int cDate = cal.get(Calendar.DATE);
 
 		// 구하고자 하는 시간
-		DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-		String str = df.format(diff);
-		int nYear2 = Integer.parseInt((String) str.subSequence(0, 4));
-		int nMonth2 = Integer.parseInt((String) str.subSequence(5, 7));
-		int nDate2 = Integer.parseInt((String) str.subSequence(8, 10));
-		System.out.println(str );
-		System.out.println(nYear2 + " " + nMonth2 + " " +nDate2 );
+		String str = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+				.format(diff);
+		int pYear = Integer.parseInt((String) str.subSequence(0, 4));
+		int pMonth = Integer.parseInt((String) str.subSequence(5, 7));
+		int pDate = Integer.parseInt((String) str.subSequence(8, 10));
+
 		int nTotalDate1 = 0, nTotalDate2 = 0, nDiffOfYear = 0, nDiffOfDay = 0;
 
-		if (nYear1 > nYear2) {
-			for (int i = nYear2; i < nYear1; i++) {
+		if (cYear > pYear) {
+			for (int i = pYear; i < cYear; i++) {
 				cal.set(i, 12, 0);
 				nDiffOfYear += cal.get(Calendar.DAY_OF_YEAR);
 			}
 			nTotalDate1 += nDiffOfYear;
-		} else if (nYear1 < nYear2) {
-			for (int i = nYear1; i < nYear2; i++) {
+		} else if (cYear < pYear) {
+			for (int i = cYear; i < pYear; i++) {
 				cal.set(i, 12, 0);
 				nDiffOfYear += cal.get(Calendar.DAY_OF_YEAR);
 			}
 			nTotalDate2 += nDiffOfYear;
 		}
 
-		cal.set(nYear1, nMonth1 - 1, nDate1);
+		cal.set(cYear, cMonth - 1, cDate);
 		nDiffOfDay = cal.get(Calendar.DAY_OF_YEAR);
 		nTotalDate1 += nDiffOfDay;
 
-		cal.set(nYear2, nMonth2 - 1, nDate2);
+		cal.set(pYear, pMonth - 1, pDate);
 		nDiffOfDay = cal.get(Calendar.DAY_OF_YEAR);
 		nTotalDate2 += nDiffOfDay;
 
 		return nTotalDate1 - nTotalDate2;
 	}
-
 
 	class AddNewFriend extends AsyncTask<String, String, String> {
 		protected String doInBackground(String... args) {
@@ -385,8 +481,7 @@ public class MainActivity extends AppCompatActivity {
 
 						Log.d(CURRENT_ACTIVITY, user.toString());
 						int iNewFirendId = user.getInt(Config.TAG_USER_ID);
-						user
-								.getString(Config.TAG_NAME);
+						user.getString(Config.TAG_NAME);
 
 						/*
 						 * strNewFriendName으로 한번 물어봐주기 (strNewFriendName가 맞니?)
@@ -459,8 +554,8 @@ public class MainActivity extends AppCompatActivity {
 
 	public static void imageInit(Activity v) {
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-		.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
-		.cacheInMemory().imageScaleType(ImageScaleType.EXACTLY).build();
+				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
+				.cacheInMemory().imageScaleType(ImageScaleType.EXACTLY).build();
 
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				v.getBaseContext()).defaultDisplayImageOptions(defaultOptions)
@@ -470,48 +565,15 @@ public class MainActivity extends AppCompatActivity {
 		ImageLoader.getInstance().init(config);
 	}
 
-	private void setUpColors(int num) {
-		// BG
-		Integer[] bg_colors_temp = new Integer[100];
-		Integer[] btn_colors_temp = new Integer[100];
-		Integer color1 = getResources().getColor(R.color.page2_bg_color1);
-		Integer color2 = getResources().getColor(R.color.page2_btn_color1);
-		for (int i = 0; i < num; i++) {
-			bg_colors_temp[i] = color1;
-			btn_colors_temp[i] = color2;
-		}
-		bg_colors_temp[num] = color1;
-		btn_colors_temp[num] = color2;
-		// Integer color2 = getResources().getColor(R.color.page2_bg_color2);
-		// Integer color3 = getResources().getColor(R.color.page2_bg_color3);
-		// Integer color4 = getResources().getColor(R.color.page2_bg_color4);
-		// Integer color5 = getResources().getColor(R.color.background_base);
-
-		// Integer[] bg_colors_temp = { color5, color1, color2, color3, color4,
-		// color4 };
-
-		// BTN
-		// color1 = getResources().getColor(R.color.page2_btn_color1);
-		// color2 = getResources().getColor(R.color.page2_btn_color2);
-		// color3 = getResources().getColor(R.color.page2_btn_color3);
-		// color4 = getResources().getColor(R.color.page2_btn_color4);
-		// color5 = getResources().getColor(R.color.button_base);
-		//
-		// Integer[] btn_colors_temp = { color5, color1, color2, color3, color4,
-		// color4, };
-		bgColors = bg_colors_temp;
-		btnColors = btn_colors_temp;
-	}
-
 	public void menuInit() {
-		SlidingMenu sm = new SlidingMenu(this);
+		sm = new SlidingMenu(this);
 		toolbar = sm.getToolbar();
 		dlDrawer = sm.getDlDrwaer();
 		dtToggle = sm.getToggle();
 
 		setSupportActionBar(toolbar);
 		getWindow().getDecorView()
-		.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+				.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
 		dtToggle.setDrawerIndicatorEnabled(false);
 		ActionBar ab = getSupportActionBar();
@@ -568,6 +630,18 @@ public class MainActivity extends AppCompatActivity {
 
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
+
+			SharedPreferenceUtil pref = SignInActivity.pref;
+
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(MainActivity.this, ServicePage.class));
+
 			finish();
 			startActivity(new Intent(MainActivity.this, SignInActivity.class));
 			break;
@@ -575,64 +649,18 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	@Override
-	public void onPause() {
-		super.onPause();
-		System.gc();
-	}
-
-	@Override
 	public void onBackPressed() {/*
-	 * 
-	 * if (System.currentTimeMillis() >
-	 * backKeyPressedTime + 2000) {
-	 * backKeyPressedTime =
-	 * System.currentTimeMillis(); toast =
-	 * Toast.makeText(MainActivity.this,
-	 * "Press back one more time to exit",
-	 * Toast.LENGTH_SHORT); toast.show(); return; }
-	 * if (System.currentTimeMillis() <=
-	 * backKeyPressedTime + 2000) { finish();
-	 * toast.cancel(); }
-	 */
-	}
-
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		boolean isKill = intent.getBooleanExtra("KILL_ACT", false);
-		if (isKill)
-			close();
-		startActivity(new Intent(MainActivity.this, SignInActivity.class));
-	}
-
-	private void close() {
-		stopService(new Intent(getApplicationContext(), DownloadService.class));
-		finish();
-		int nSDKVersion = Integer.parseInt(Build.VERSION.SDK);
-		if (nSDKVersion < 8) {
-			// 2.1이하
-			ActivityManager actMng = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-			actMng.restartPackage(getPackageName());
-		}
-
-		else {
-			new Thread(new Runnable() {
-				public void run() {
-					ActivityManager actMng = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-					String strProcessName = getApplicationInfo().processName;
-					while (true) {
-						List<RunningAppProcessInfo> list = actMng
-								.getRunningAppProcesses();
-						for (RunningAppProcessInfo rap : list) {
-							if (rap.processName.equals(strProcessName)) {
-								if (rap.importance >= RunningAppProcessInfo.IMPORTANCE_BACKGROUND)
-									actMng.restartPackage(getPackageName());
-								Thread.yield();
-								break;
-							}
-						}
-					}
-				}
-			}, "Process Killer").start();
-		}
+								 * 
+								 * if (System.currentTimeMillis() >
+								 * backKeyPressedTime + 2000) {
+								 * backKeyPressedTime =
+								 * System.currentTimeMillis(); toast =
+								 * Toast.makeText(MainActivity.this,
+								 * "Press back one more time to exit",
+								 * Toast.LENGTH_SHORT); toast.show(); return; }
+								 * if (System.currentTimeMillis() <=
+								 * backKeyPressedTime + 2000) { finish();
+								 * toast.cancel(); }
+								 */
 	}
 }

@@ -30,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.Config;
 import com.heart.util.JSONParser;
 import com.heart.util.SharedPreferenceUtil;
@@ -378,18 +379,22 @@ public class SettingActivity extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(SettingActivity.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(SettingActivity.this, SignInActivity.class));
 			break;
-
 		}
-	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(SettingActivity.this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
 	}
 }

@@ -38,7 +38,6 @@
                     android:layout_width="105px"
                     android:layout_height="82px"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/pause1_btn"
                     android:visibility="invisible" />
             </RelativeLayout>
         </FrameLayout>

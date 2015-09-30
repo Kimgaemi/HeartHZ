@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,6 +58,13 @@ public class SignUpActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_up);
 
+		TelephonyManager telManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+		String phoneNum = telManager.getLine1Number();	
+		
+		phoneNum = "0" + phoneNum.substring(3); 
+		Log.d("phoneNum", phoneNum);
+		
+		
 		btnSubmit = (Button) findViewById(R.id.btn_signup_submit);
 		btnCancel = (Button) findViewById(R.id.btn_signup_cancel);
 		editName = (EditText) findViewById(R.id.edit_signup_name);
@@ -65,6 +73,8 @@ public class SignUpActivity extends Activity {
 		swtichModel = (Switch) findViewById(R.id.swtich_device);
 		editModel = (EditText)findViewById(R.id.edit_signup_model);
 
+		editPhone.setText(phoneNum);
+		editPhone.setEnabled(false);
 		btnSubmit.setOnClickListener(signUpListen);
 		btnCancel.setOnClickListener(signUpListen);
 		swtichModel.setOnCheckedChangeListener(new OnCheckedChangeListener() {

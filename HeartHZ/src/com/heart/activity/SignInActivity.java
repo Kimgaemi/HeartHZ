@@ -10,9 +10,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.Config;
-import com.heart.util.DownloadService;
 import com.heart.util.JSONParser;
+import com.heart.util.RecycleUtils;
 import com.heart.util.SharedPreferenceUtil;
 
 import android.app.Activity;
@@ -25,6 +26,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,9 +75,20 @@ public class SignInActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
 
-		editPhone = (EditText) findViewById(R.id.edit_signin_phone);
-		pref = new SharedPreferenceUtil(this);
+		TelephonyManager telManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+		String phoneNum = telManager.getLine1Number();	
+		
+		phoneNum = "0" + phoneNum.substring(3); 
+		Log.d("phoneNum", phoneNum);
+		
 
+		editPhone = (EditText) findViewById(R.id.edit_signin_phone);
+		editPassword = (EditText) findViewById(R.id.edit_signin_pw);
+		pref = new SharedPreferenceUtil(this);
+		editPhone.setText(phoneNum);
+		editPhone.setEnabled(false);
+		editPassword.requestFocus();
+		
 		isNotFirst = pref.getValue("first", false);
 
 		if (isNotFirst) {
@@ -90,7 +103,6 @@ public class SignInActivity extends Activity {
 		}
 
 		btnLogin = (Button) findViewById(R.id.login_btn);
-		editPassword = (EditText) findViewById(R.id.edit_signin_pw);
 		tvForgotAccount = (TextView) findViewById(R.id.tv_forgot_account);
 		tvCreateAccount = (TextView) findViewById(R.id.tv_create_account);
 		bgContainer = (RelativeLayout) findViewById(R.id.page1_container);
@@ -234,10 +246,10 @@ public class SignInActivity extends Activity {
 		protected void onPostExecute(String file_url) {
 			// DISMISS THE DIALOG ONCE GOT ALL DETAILS
 			pDialog.dismiss();
-			if (!DownloadService.IsPeriSer) {
+			if (!ServicePage.isExistSer) {
 				Log.d("Tag", "서비스 업당!");
 				startService(new Intent(getApplicationContext(),
-						DownloadService.class));
+						ServicePage.class));
 			}
 		}
 	}
@@ -263,6 +275,15 @@ public class SignInActivity extends Activity {
 		recycleBgBitmap(ivLogo);
 		recycleBgBitmap(ivUser);
 		recycleBgBitmap(ivPw);
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
+
 	}
 
 	public static void recycleBgBitmap(View v) {

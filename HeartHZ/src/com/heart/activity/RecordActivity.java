@@ -42,9 +42,12 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.Config;
 import com.heart.util.Converter;
 import com.heart.util.Recorder;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.heart.wave.WaveDisplayView;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
@@ -71,12 +74,20 @@ public class RecordActivity extends AppCompatActivity {
 	private ImageView cutLine0;
 	private ImageView cutLine1;
 	private ImageView cutLine2;
+	private View cutLine1_bar1;
+	private View cutLine1_bar2;
 	private LinearLayout displayLayout;
 	private WaveDisplayView displayView;
 	private Button btnNext;
 	private ToggleButton pr_tgn;
 	private ToggleButton ps_tgn;
 	private ToggleButton tc_tgn;
+	private BitmapDrawable trimOn;
+	private BitmapDrawable trimOff;
+	private BitmapDrawable pauseBtn;
+	private BitmapDrawable ResumeBtn;
+	private BitmapDrawable StartBtn;
+	private BitmapDrawable SaveBtn;
 	private Animation animation;
 
 	// AUDIORECORD CONFIGURATION
@@ -102,9 +113,16 @@ public class RecordActivity extends AppCompatActivity {
 	private String strFriendPhone;
 
 	// SLIDING TOOL BAR
+	SlidingMenu sm;
 	private Toolbar toolbar;
 	private ActionBarDrawerToggle dtToggle;
 	private DrawerLayout dlDrawer;
+	
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
+	
+	
 
 	// TRIM
 	private int startPoint;
@@ -134,6 +152,8 @@ public class RecordActivity extends AppCompatActivity {
 		cutLine0 = (ImageView) findViewById(R.id.iv_cutline);
 		cutLine1 = (ImageView) findViewById(R.id.iv_cutline1);
 		cutLine2 = (ImageView) findViewById(R.id.iv_cutline2);
+		cutLine1_bar1 = (View) findViewById(R.id.iv_scutline);
+		cutLine1_bar2 = (View) findViewById(R.id.iv_fcutline);
 
 		scaleTime = (ImageView) findViewById(R.id.iv_scale_time);
 		animation = AnimationUtils.loadAnimation(RecordActivity.this,
@@ -158,15 +178,21 @@ public class RecordActivity extends AppCompatActivity {
 						Toast.makeText(mRecordActivity, "Trim 작업을 먼저 끝내주세요",
 								Toast.LENGTH_SHORT).show();
 						pr_tgn.setChecked(false);
+						pr_tgn.setBackground(pauseBtn);
+
 					} else {
 						if (Recorder.isRecording) {
 							animation.cancel();
 							recorder.audioPause();
+							pr_tgn.setBackground(ResumeBtn);
+
 						} else {
 							Toast.makeText(RecordActivity.this,
 									"녹음을 먼저 실행해 주세요", Toast.LENGTH_SHORT)
 									.show();
 							pr_tgn.setChecked(false);
+							pr_tgn.setBackground(pauseBtn);
+
 						}
 					}
 				} else {
@@ -175,6 +201,7 @@ public class RecordActivity extends AppCompatActivity {
 						animation.reset();
 						scaleTime.startAnimation(animation);
 						recorder.audioResume();
+						pr_tgn.setBackground(pauseBtn);
 					}
 				}
 
@@ -190,17 +217,22 @@ public class RecordActivity extends AppCompatActivity {
 					Toast.makeText(mRecordActivity, "Trim 작업을 먼저 끝내주세요",
 							Toast.LENGTH_SHORT).show();
 					ps_tgn.setChecked(false);
+					ps_tgn.setBackground(StartBtn);
 				} else {
 					if (ps_tgn.isChecked()) {
 						Log.i("MAINACTIVITY", "START RECORDING");
 						startRecord();
+						ps_tgn.setBackground(SaveBtn);
 					} else {
 						Log.i("MAINACTIVITY", "STOP RECORDING");
 						if (recorder.isPause()) {
 							recorder.audioResume();
 							stopRecord();
+							pr_tgn.setBackground(pauseBtn);
+							ps_tgn.setBackground(StartBtn);
 						} else {
 							stopRecord();
+							ps_tgn.setBackground(StartBtn);
 						}
 					}
 				}
@@ -217,7 +249,9 @@ public class RecordActivity extends AppCompatActivity {
 						Toast.makeText(mRecordActivity, "녹음을 먼저 중지해주세요",
 								Toast.LENGTH_SHORT).show();
 						tc_tgn.setChecked(false);
+						tc_tgn.setBackground(trimOff);
 					} else {
+						tc_tgn.setBackground(trimOn);
 						Log.i("MAINACTIVITY", "TRIM MODE");
 						if (displayView != null) {
 							if (displayView.isData()) {
@@ -226,17 +260,32 @@ public class RecordActivity extends AppCompatActivity {
 
 								cutLine0.setVisibility(View.INVISIBLE);
 								cutLine1.setVisibility(View.VISIBLE);
-								LayoutParams lp = new LayoutParams(69, 55,
-										(int) 685, (int) 238);
+								LayoutParams lp = new LayoutParams(56, 56,
+										(int) 392, (int) 238);
 								cutLine1.setLayoutParams(lp);
 								cutLine2.setVisibility(View.VISIBLE);
-								lp = new LayoutParams(69, 55, (int) 686,
+								lp = new LayoutParams(56, 56, (int) 992,
 										(int) 0);
 								cutLine2.setLayoutParams(lp);
 
 								// DIM
 								fristDim.setVisibility(View.VISIBLE);
+								lp = new LayoutParams(420, 998, (int) 0,
+										(int) 0);
+								fristDim.setLayoutParams(lp);
 								finishDim.setVisibility(View.VISIBLE);
+								lp = new LayoutParams(420, 998, (int) 1020,
+										(int) 0);
+								finishDim.setLayoutParams(lp);
+
+								cutLine1_bar1.setVisibility(View.VISIBLE);
+								lp = new LayoutParams(4, 942, (int) 418,
+										(int) 56);
+								cutLine1_bar1.setLayoutParams(lp);
+								cutLine1_bar2.setVisibility(View.VISIBLE);
+								lp = new LayoutParams(4, 942, (int) 1018,
+										(int) 0);
+								cutLine1_bar2.setLayoutParams(lp);
 
 								// INITIALIZING
 								startPoint = 0;
@@ -247,22 +296,26 @@ public class RecordActivity extends AppCompatActivity {
 										"녹음한 데이터가 없습니다.", Toast.LENGTH_SHORT)
 										.show();
 								tc_tgn.setChecked(false);
+								tc_tgn.setBackground(trimOff);
 							}
 						} else {
 							Toast.makeText(mRecordActivity, "녹음한 데이터가 없습니다.",
 									Toast.LENGTH_SHORT).show();
 							tc_tgn.setChecked(false);
+							tc_tgn.setBackground(trimOff);
 						}
 					}
 				} else {
 					// TRIM MODE 해제
 					isTrim = false;
-
+					tc_tgn.setBackground(trimOff);
 					cutLine0.setVisibility(View.VISIBLE);
 					cutLine1.setVisibility(View.INVISIBLE);
 					cutLine2.setVisibility(View.INVISIBLE);
 					fristDim.setVisibility(View.INVISIBLE);
 					finishDim.setVisibility(View.INVISIBLE);
+					cutLine1_bar1.setVisibility(View.INVISIBLE);
+					cutLine1_bar2.setVisibility(View.INVISIBLE);
 
 					// 좌표 가져오기
 					Log.i("TRIM",
@@ -307,7 +360,6 @@ public class RecordActivity extends AppCompatActivity {
 					final File file = new File(
 							convert.getTempFilename(Converter.AUDIO_RECORDER_TEMP_FILE));
 					saveSoundPcmFile(file, trimData);
-					convert.convertPcmToWav();
 					// 트림 끝난뒤의 View는 어떻게?
 					displayView.clearWaveData();
 					displayView.fireInvalidate();
@@ -346,12 +398,15 @@ public class RecordActivity extends AppCompatActivity {
 					if (startTrim) // any event from down and move
 					{
 						if (cutLine2.getX() > event.getX()) {
-							LayoutParams lp = new LayoutParams(69, 55,
+							LayoutParams lp = new LayoutParams(56, 56,
 									(int) event.getX(), (int) 238);
 							cutLine1.setLayoutParams(lp);
-							lp = new LayoutParams((int) event.getX() + 34, 998,
+							lp = new LayoutParams((int) event.getX() + 28, 998,
 									0, (int) 0);
 							fristDim.setLayoutParams(lp);
+							lp = new LayoutParams(4, 942,
+									(int) event.getX() + 26, (int) 56);
+							cutLine1_bar1.setLayoutParams(lp);
 						}
 
 					}
@@ -377,12 +432,15 @@ public class RecordActivity extends AppCompatActivity {
 						if (cutLine1.getX() < event.getX()
 								&& event.getX() < 1371) {
 							// y를 고정하면 y축은 고정됩니다.
-							LayoutParams lp = new LayoutParams(69, 55,
+							LayoutParams lp = new LayoutParams(56, 56,
 									(int) event.getX(), (int) 0);
 							cutLine2.setLayoutParams(lp);
-							lp = new LayoutParams(1405 - (int) event.getX(),
-									998, (int) event.getX() + 35, (int) 0);
+							lp = new LayoutParams(1412 - (int) event.getX(),
+									998, (int) event.getX() + 28, (int) 0);
 							finishDim.setLayoutParams(lp);
+							lp = new LayoutParams(4, 942,
+									(int) event.getX() + 26, (int) 0);
+							cutLine1_bar2.setLayoutParams(lp);
 						}
 					}
 					if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -408,10 +466,10 @@ public class RecordActivity extends AppCompatActivity {
 		imageInit(this);
 
 		// MENU
-		menuInit();
-		View menu = (View) findViewById(R.id.record_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo2_icon_01);
+		if(sm == null) {
+			Log.d("tag", "들어옴");
+			menuInit();
+		}
 
 		// FONT
 		record_tv.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -434,6 +492,49 @@ public class RecordActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		// MENU
+		View menu = (View) findViewById(R.id.record_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo2_icon_01));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+
+		trimOn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.pinch_on_btn_01));
+		trimOff = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.pinch_off_btn_01));
+		pauseBtn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.pause2_btn_01));
+		ResumeBtn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.play2_btn_01));
+		StartBtn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.record_btn));
+		SaveBtn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.stop_btn_01));
+
+		tc_tgn.setBackground(trimOff);
+		pr_tgn.setBackground(pauseBtn);
+		ps_tgn.setBackground(StartBtn);
+
 		cutLine0.setBackground(new BitmapDrawable(getResources(), BitmapFactory
 				.decodeResource(getResources(), R.drawable.cutline2_btn_01)));
 		cutLine1.setBackground(new BitmapDrawable(getResources(), BitmapFactory
@@ -448,6 +549,16 @@ public class RecordActivity extends AppCompatActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
+		trimOn.getBitmap().recycle();
+		trimOff.getBitmap().recycle();
+		pauseBtn.getBitmap().recycle();
+		ResumeBtn.getBitmap().recycle();
+		StartBtn.getBitmap().recycle();
+		SaveBtn.getBitmap().recycle();
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+
 		SignInActivity.recycleBgBitmap(cutLine0);
 		SignInActivity.recycleBgBitmap(cutLine1);
 		SignInActivity.recycleBgBitmap(cutLine2);
@@ -459,11 +570,13 @@ public class RecordActivity extends AppCompatActivity {
 
 	@Override
 	public void onDestroy() {
-		super.onDestroy();
 		if (displayView != null) {
 			displayView.clearWaveData();
 			displayView.closeWaveData();
 		}
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
+		super.onDestroy();
 		window = null;
 		record_tv = null;
 		time_tv1 = null;
@@ -483,7 +596,6 @@ public class RecordActivity extends AppCompatActivity {
 		tc_tgn = null;
 		audioRecord = null;
 		recorder = null;
-		System.gc();
 	}
 
 	// BUTTON EVENT
@@ -561,7 +673,7 @@ public class RecordActivity extends AppCompatActivity {
 	}
 
 	public void menuInit() {
-		SlidingMenu sm = new SlidingMenu(this);
+		sm = new SlidingMenu(this);
 		toolbar = sm.getToolbar();
 		dlDrawer = sm.getDlDrwaer();
 		dtToggle = sm.getToggle();
@@ -647,18 +759,22 @@ public class RecordActivity extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(RecordActivity.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(RecordActivity.this, SignInActivity.class));
 			break;
 		}
 	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(RecordActivity.this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
-	}
-
 }

@@ -35,59 +35,41 @@
                 android:textSize="72px" />
         </RelativeLayout>
 
-        <FrameLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="1830px" >
+            android:layout_height="1830px"
+            android:background="@color/send2_bg" >
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="1830px"
-                android:background="@color/send2_bg" >
+            <ImageView
+                android:id="@+id/sending_icon"
+                android:layout_width="712px"
+                android:layout_height="712px"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="283px"
+                android:src="@drawable/sending_icon" />
 
-                <ImageView
-                    android:id="@+id/sending_icon"
-                    android:layout_width="712px"
-                    android:layout_height="712px"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="283px"
-                    android:src="@drawable/sending_icon" />
+            <TextView
+                android:id="@+id/tv_congraturation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/sending_icon"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="170px"
+                android:text="Congraturation!"
+                android:textColor="@color/send2_text_color"
+                android:textSize="87px" />
 
-                <TextView
-                    android:id="@+id/tv_congraturation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/sending_icon"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="170px"
-                    android:text="Congraturation!"
-                    android:textColor="@color/send2_text_color"
-                    android:textSize="87px" />
-
-                <TextView
-                    android:id="@+id/tv_sended"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tv_congraturation"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="53px"
-                    android:text="Your message is sended"
-                    android:textColor="@color/send2_text_color"
-                    android:textSize="87px" />
-            </RelativeLayout>
-
-            <!--
-            <com.heart.util.RevealLayout
-                android:id="@+id/reveal_layout"
-                android:layout_width="match_parent"
-                android:layout_height="1830px" >
-
-                <ImageView
-                    android:layout_height="match_parent"
-                    android:layout_width="match_parent" 
-                    android:background="@color/send2_bg"/>
-            </com.heart.util.RevealLayout>
-            -->
-        </FrameLayout>
+            <TextView
+                android:id="@+id/tv_sended"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_congraturation"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="53px"
+                android:text="Your message is sended"
+                android:textColor="@color/send2_text_color"
+                android:textSize="87px" />
+        </RelativeLayout>
 
         <Button
             android:id="@+id/btn_new_message"

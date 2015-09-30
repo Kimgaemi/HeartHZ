@@ -15,7 +15,9 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -48,10 +50,13 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.AnimatedExpandableListView;
 import com.heart.util.AnimatedExpandableListView.AnimatedExpandableListAdapter;
 import com.heart.util.Config;
 import com.heart.util.JSONParser;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -62,7 +67,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 	// function
 	private AnimatedExpandableListView listView;
 	private MessageListAdapter adapter;
-	private List<GroupItem> items = new ArrayList<GroupItem>();
+	protected List<GroupItem> items = new ArrayList<GroupItem>();
 	protected static int mode = 0;
 
 	// View
@@ -93,6 +98,9 @@ public class MessagePlayerActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
 
 	private String[] fileNames;
 
@@ -110,9 +118,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 
 		// MENU
 		menuInit();
-		View menu = (View) findViewById(R.id.message_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo1_icon);
 
 		// STATUSBAR COLOR
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -241,6 +246,43 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		});
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		// MENU
+		View menu = (View) findViewById(R.id.message_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo1_icon));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if (mp.isPlaying())
+			mp.pause();
+		if (mp != null)
+			mp.release();
+
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+	}
+
 	public void thread() {
 		Runnable task = new Runnable() {
 			public void run() {
@@ -268,17 +310,31 @@ public class MessagePlayerActivity extends AppCompatActivity {
 
 	public void onDestroy() {
 		super.onDestroy();
-		if (mp.isPlaying())
-			mp.pause();
-		if (mp != null)
-			mp.release();
-		mp = null;
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
+		listView = null;
+		adapter = null;
+		items = null;
+		tvMessageList = null;
+		btnDelete = null;
+		jsonParser = null;
+		seekbar = null;
+		thread = null;
+		child = null;
+		toolbar = null;
+		dlDrawer = null;
+		dtToggle = null;
+		logoBitmap = null;
+		toolbarBtnBitmap = null;
+		toolbarBackBitmap = null;
+		System.gc();
 	}
 
-	/*
-	 */
-	public void GetSelectedPositions() {
+	protected void GetSelectedPositions() {
 		ArrayList<GroupItem> grouparray = adapter.getcheckedposition();
+		for (int i = 0; i < grouparray.size(); i++) {
+			//Log.d("REMOVE_PATH", grouparray.get(i).strFilePath);
+		}
 		for (int i = grouparray.size() - 1; i >= 0; i--) {
 			items.remove(grouparray.get(i).iPosition);
 		}
@@ -624,7 +680,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			listView.setAdapter(adapter);
 		} else {
 			mode = 0;
-
 			GetSelectedPositions();
 			for (int i = 0; i < items.size(); i++) {
 				items.get(i).strNum = "0" + String.valueOf(i + 1);
@@ -633,6 +688,9 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			adapter = new MessageListAdapter(this, items);
 			listView = (AnimatedExpandableListView) findViewById(R.id.expandlistview);
 			listView.setAdapter(adapter);
+
+			// deletePath =
+			// new File(deletePath).delete();
 		}
 	}
 
@@ -708,18 +766,12 @@ public class MessagePlayerActivity extends AppCompatActivity {
 							Log.d("Tag", file.getName());
 							if (file.exists()) {
 
-								Log.d("Tag", " 존재하는디");
-								// for(int numFile = 0; numFile <
-								// fileNames.length - 1; numFile++) {
-								// if(fileNames[numFile].equals(strFileNo)) {
-
 								String strDate = c.getString(Config.TAG_DATE);
-								String strFileTitle = c
-										.getString(Config.TAG_FILE_TITLE);
+								String strFileTitle = c.getString(Config.TAG_FILE_TITLE);
 								String strFriendPic = c.getString("friend_pic");
-								String strFriendName = c
-										.getString(Config.TAG_FRIEND_NAME);
-
+								String strFriendName = c.getString(Config.TAG_FRIEND_NAME);
+								String strFilePath	=	c.getString(Config.TAG_FILE_PATH);
+								
 								int arrTag[] = new int[3];
 								arrTag[0] = c.getInt(Config.TAG_EMOTION);
 								arrTag[1] = c.getInt(Config.TAG_WEATHER);
@@ -736,7 +788,7 @@ public class MessagePlayerActivity extends AppCompatActivity {
 								item.strTitle = strFileTitle;
 								item.strSender = strFriendName;
 								item.strTime = "00:00";
-
+								
 								child = new ChildItem();
 								child.iTag = arrTag;
 								child.strPic = strFriendPic;
@@ -876,18 +928,24 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+
+			SharedPreferenceUtil pref = SignInActivity.pref;
+
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(MessagePlayerActivity.this,
+					ServicePage.class));
+
+			finish();
+			startActivity(new Intent(MessagePlayerActivity.this,
+					SignInActivity.class));
 			break;
 		}
-	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(MessagePlayerActivity.this,
-				MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
 	}
 }

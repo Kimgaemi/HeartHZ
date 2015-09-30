@@ -2,6 +2,8 @@ package com.heart.tag;
 
 import java.util.ArrayList;
 
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -29,6 +31,16 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 	private boolean init = true;
 	private int maxPage = 0;
 	private CustomViewPager pager;
+	
+	private BitmapDrawable swipe1;
+	private BitmapDrawable swipe2;
+	private BitmapDrawable swipe3;
+	private BitmapDrawable swipe4;
+	private BitmapDrawable swipe5;
+	private BitmapDrawable swipe6;
+	private BitmapDrawable swipe7;
+	private BitmapDrawable swipe8;
+	private BitmapDrawable swipe9;
 
 	public static ArrayList<TagFragment> mFragments = null;
 
@@ -41,7 +53,36 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 		this.pager = pager;
 		maxPage = TaggingActivity.PAGES - 1;
 		mFragments = new ArrayList<TagFragment>();
-		Log.i("MyPAgerAdapter", "FINIXH");
+		
+		swipe1 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe1_icon_01));
+		swipe2 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe2_icon_01));
+		swipe3 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe3_icon_01));
+		swipe4 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe4_icon_01));
+		swipe5 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe5_icon));
+		swipe6 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe6_icon));
+		swipe7 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe7_icon));
+		swipe8 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe8_icon));
+		swipe9 = new BitmapDrawable(context.getResources(),
+				BitmapFactory.decodeResource(context.getResources(),
+						R.drawable.swipe9_icon));
+		
+		swipe.setBackground(swipe1);
 	}
 
 	@Override
@@ -132,7 +173,7 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 		mFragments.get(position).startAnimation(TaggingActivity.cur, position);
 		for (int i = 0; i < mFragments.size(); i++) {
 			if (i != position) {
-				mFragments.get(i).stopAnimation();
+				// mFragments.get(i).stopAnimation();
 			}
 		}
 	}
@@ -221,15 +262,14 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			fragmentTransaction.hide(mFragments.get(4));
 			fragmentTransaction.commit();
 
-			mFragments.get(0).iv.setImageResource(R.drawable.back_joy);
-			mFragments.get(0).tvTagView2.setText("in 'Joy'");
-			mFragments.get(1).iv.setImageResource(R.drawable.back_gloomy);
-			mFragments.get(1).tvTagView2.setText("in 'Gloomy'");
-			mFragments.get(2).iv.setImageResource(R.drawable.back_relaxed);
-			mFragments.get(2).tvTagView2.setText("in 'Relaxed'");
-			mFragments.get(3).iv.setImageResource(R.drawable.back_tired);
-			mFragments.get(3).tvTagView2.setText("in 'Tired'");
 			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
+			mFragments.get(0).tvTagView2.setText("in 'Joy'");
+			mFragments.get(1).startAnimation(TaggingActivity.cur, 1);
+			mFragments.get(1).tvTagView2.setText("in 'Gloomy'");
+			mFragments.get(2).startAnimation(TaggingActivity.cur, 2);
+			mFragments.get(2).tvTagView2.setText("in 'Relaxed'");
+			mFragments.get(3).startAnimation(TaggingActivity.cur, 3);
+			mFragments.get(3).tvTagView2.setText("in 'Tired'");
 			break;
 
 		case 1:
@@ -237,18 +277,17 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			fragmentTransaction.commit();
 			SelectTag(TaggingActivity.cur);
 			// VIEW
-			mFragments.get(4).iv.setImageResource(R.drawable.back_break);
+			mFragments.get(4).startAnimation(TaggingActivity.cur, 4);
 			mFragments.get(4).tvTagView2.setText("at 'Break of Day'");
-			mFragments.get(0).iv.setImageResource(R.drawable.back_morning);
+			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
 			mFragments.get(0).tvTagView2.setText("in the 'Morning'");
-			mFragments.get(1).iv.setImageResource(R.drawable.back_daytime);
+			mFragments.get(1).startAnimation(TaggingActivity.cur, 1);
 			mFragments.get(1).tvTagView2.setText("in the 'DayTime'");
-			mFragments.get(2).iv.setImageResource(R.drawable.back_sunset);
+			mFragments.get(2).startAnimation(TaggingActivity.cur, 2);
 			mFragments.get(2).tvTagView2.setText("at 'Sunset'");
-			mFragments.get(3).iv.setImageResource(R.drawable.back_night);
+			mFragments.get(3).startAnimation(TaggingActivity.cur, 3);
 			mFragments.get(3).tvTagView2.setText("at 'Night'");
 
-			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
 			break;
 		case 2:
 			fragmentTransaction = fm.beginTransaction();
@@ -260,18 +299,17 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			TagPagerAdapter.mFragments.get(0).dateContainer
 					.setVisibility(View.INVISIBLE);
 			// VIEW
-			mFragments.get(0).iv.setImageResource(R.drawable.back_sunny);
 			mFragments.get(0).tvTagView2.setText("on 'Sunny day'");
-			mFragments.get(1).iv.setImageResource(R.drawable.back_rain);
 			mFragments.get(1).tvTagView2.setText("on 'Rainy day'");
-			mFragments.get(2).iv.setImageResource(R.drawable.simul_weather_snow_00030);
 			mFragments.get(2).tvTagView2.setText("on 'Snowy day'");
-			mFragments.get(3).iv.setImageResource(R.drawable.back_light);
 			mFragments.get(3).tvTagView2.setText("on 'Lighting day'");
-			mFragments.get(4).iv.setImageResource(R.drawable.back_cloudy);
 			mFragments.get(4).tvTagView2.setText("on 'Cloudy day'");
 
 			mFragments.get(0).startAnimation(TaggingActivity.cur, 0);
+			mFragments.get(1).startAnimation(TaggingActivity.cur, 1);
+			mFragments.get(2).startAnimation(TaggingActivity.cur, 2);
+			mFragments.get(3).startAnimation(TaggingActivity.cur, 3);
+			mFragments.get(4).startAnimation(TaggingActivity.cur, 4);
 			break;
 		case 3:
 			pager.setPagingEnabled(false);
@@ -294,35 +332,35 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 		case 0:
 			switch (position) {
 			case 0:
-				swipe.setImageResource(R.drawable.swipe1_icon_01);
+				swipe.setBackground(swipe1);
 				break;
 			case 1:
-				swipe.setImageResource(R.drawable.swipe2_icon_01);
+				swipe.setBackground(swipe2);
 				break;
 			case 2:
-				swipe.setImageResource(R.drawable.swipe3_icon_01);
+				swipe.setBackground(swipe3);
 				break;
 			case 3:
-				swipe.setImageResource(R.drawable.swipe4_icon_01);
+				swipe.setBackground(swipe4);
 				break;
 			}
 			break;
 		case 1:
 			switch (position) {
 			case 0:
-				swipe.setImageResource(R.drawable.swipe5_icon);
+				swipe.setBackground(swipe5);
 				break;
 			case 1:
-				swipe.setImageResource(R.drawable.swipe6_icon);
+				swipe.setBackground(swipe6);
 				break;
 			case 2:
-				swipe.setImageResource(R.drawable.swipe7_icon);
+				swipe.setBackground(swipe7);
 				break;
 			case 3:
-				swipe.setImageResource(R.drawable.swipe8_icon);
+				swipe.setBackground(swipe8);
 				break;
 			case 4:
-				swipe.setImageResource(R.drawable.swipe9_icon);
+				swipe.setBackground(swipe9);
 				break;
 			}
 			break;
@@ -330,19 +368,19 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			swipe.setVisibility(View.VISIBLE);
 			switch (position) {
 			case 0:
-				swipe.setImageResource(R.drawable.swipe5_icon);
+				swipe.setBackground(swipe5);
 				break;
 			case 1:
-				swipe.setImageResource(R.drawable.swipe6_icon);
+				swipe.setBackground(swipe6);
 				break;
 			case 2:
-				swipe.setImageResource(R.drawable.swipe7_icon);
+				swipe.setBackground(swipe7);
 				break;
 			case 3:
-				swipe.setImageResource(R.drawable.swipe8_icon);
+				swipe.setBackground(swipe8);
 				break;
 			case 4:
-				swipe.setImageResource(R.drawable.swipe9_icon);
+				swipe.setBackground(swipe9);
 				break;
 			}
 			break;
@@ -370,5 +408,16 @@ public class TagPagerAdapter extends FragmentPagerAdapter implements
 			break;
 		}
 		return pager;
+	}
+	public void recycleSwipe(){
+		swipe1.getBitmap().recycle();
+		swipe2.getBitmap().recycle();
+		swipe3.getBitmap().recycle();
+		swipe4.getBitmap().recycle();
+		swipe5.getBitmap().recycle();
+		swipe6.getBitmap().recycle();
+		swipe7.getBitmap().recycle();
+		swipe8.getBitmap().recycle();
+		swipe9.getBitmap().recycle();
 	}
 }

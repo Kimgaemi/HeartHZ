@@ -41,7 +41,6 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="70px"
-                android:background="@drawable/selector_musictag_on_off"
                 android:textOff=""
                 android:textOn="" />
         </RelativeLayout>

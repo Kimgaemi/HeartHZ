@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -36,8 +38,11 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.AnimeUtils;
 import com.heart.util.Config;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 
 public class MusicTagActivity extends AppCompatActivity {
@@ -65,6 +70,13 @@ public class MusicTagActivity extends AppCompatActivity {
 	private ToggleButton tagToggle;
 	private Button btnNext;
 	private ListView listView;
+	private ImageView add_icon;
+	private BitmapDrawable pause_icon;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
+	private BitmapDrawable musicImageOn;
+	private BitmapDrawable musicImageOff;
 
 	// SLIDING TOOL BAR
 	private Toolbar toolbar;
@@ -80,6 +92,7 @@ public class MusicTagActivity extends AppCompatActivity {
 		btnNext = (Button) findViewById(R.id.musictag1_nextbtn);
 		listView = (ListView) findViewById(R.id.music_list);
 		add_musictag = (RelativeLayout) findViewById(R.id.new_tag_music);
+		add_icon = (ImageView) findViewById(R.id.musictag_add_btn);
 
 		Intent i = getIntent();
 		strFriendId = i.getStringExtra(Config.TAG_FRIEND_ID);
@@ -94,16 +107,20 @@ public class MusicTagActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				if (tagToggle.isChecked()) {
+					tagToggle.setBackground(musicImageOn);
 					for (int i = 0; i < musicNum; i++)
 						if (mp[i] != null)
 							mp[i].stop();
-					Intent intent = new Intent(MusicTagActivity.this, MusicImageTagActivity.class);
+					Intent intent = new Intent(MusicTagActivity.this,
+							MusicImageTagActivity.class);
 					intent.putExtra(Config.TAG_FRIEND_ID, strFriendId);
 					intent.putExtra(Config.TAG_FIREND_PIC, strFriendPic);
 					intent.putExtra(Config.TAG_FRIEND_NAME, strFriendName);
 					intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
 					MusicTagActivity.this.startActivity(intent);
 					finish();
+				} else {
+					tagToggle.setBackground(musicImageOff);
 				}
 			}
 		});
@@ -133,6 +150,42 @@ public class MusicTagActivity extends AppCompatActivity {
 		path = Environment.getExternalStorageDirectory().getPath()
 				+ "/MusicTag/";
 		Log.d("Tag", path);
+
+		// MENU
+		menuInit();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		View menu = (View) findViewById(R.id.musictag_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo3_icon_01));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+
+		musicImageOn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.album_on_btn));
+		musicImageOff = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.album_off_btn));
+		tagToggle.setBackground(musicImageOff);
+		
 		ArrayList<Music> m_orders = new ArrayList<Music>();
 		listView.setOnItemClickListener(onClickListner);
 
@@ -156,12 +209,11 @@ public class MusicTagActivity extends AppCompatActivity {
 
 		adapter = new MusicAdapter(this, R.layout.list_musictag, m_orders);
 		listView.setAdapter(adapter);
-
-		// MENU
-		menuInit();
-		View menu = (View) findViewById(R.id.musictag_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo3_icon_01);
+		pause_icon = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.pause1_btn));
+		add_icon.setBackground(new BitmapDrawable(getResources(), BitmapFactory
+				.decodeResource(getResources(), R.drawable.add1_btn)));
 	}
 
 	@Override
@@ -170,6 +222,13 @@ public class MusicTagActivity extends AppCompatActivity {
 		for (int i = 0; i < musicNum; i++)
 			if (mp[i] != null)
 				mp[i].stop();
+		musicImageOn.getBitmap().recycle();
+		musicImageOff.getBitmap().recycle();
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+		SignInActivity.recycleBgBitmap(add_icon);
+		pause_icon.getBitmap().recycle();
 	}
 
 	@Override
@@ -190,6 +249,7 @@ public class MusicTagActivity extends AppCompatActivity {
 		btnNext = null;
 		tagToggle = null;
 		listView = null;
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
 		System.gc();
 	}
 
@@ -313,6 +373,9 @@ public class MusicTagActivity extends AppCompatActivity {
 						.findViewById(R.id.tv_musictag_title);
 				TextView tv_singer = (TextView) v
 						.findViewById(R.id.tv_musictag_singer);
+				ImageView iv_pause = (ImageView) v
+						.findViewById(R.id.iv_musictag_pause);
+				iv_pause.setBackground(pause_icon);
 				tv_num.setTypeface(Typeface.createFromAsset(getAssets(),
 						"fonts/DINPRO-MEDIUM.ttf"));
 				tv_title.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -451,18 +514,24 @@ public class MusicTagActivity extends AppCompatActivity {
 			startActivity(i);
 			break;
 
+
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(MusicTagActivity.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(MusicTagActivity.this, SignInActivity.class));
 			break;
 		}
-	}
-
-	private void close() {
-		finish();
-		Intent intent = new Intent(MusicTagActivity.this, MainActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-				| Intent.FLAG_ACTIVITY_SINGLE_TOP);
-		intent.putExtra("KILL_ACT", true);
-		startActivity(intent);
 	}
 }

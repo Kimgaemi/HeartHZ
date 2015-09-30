@@ -15,15 +15,13 @@
             <ImageView
                 android:id="@+id/iv_image_musictag"
                 android:layout_width="match_parent"
-                android:layout_height="805px"
-                android:src="@drawable/album3_image" >
+                android:layout_height="805px" >
             </ImageView>
 
             <ImageView
                 android:id="@+id/iv_image_dim"
                 android:layout_width="match_parent"
                 android:layout_height="805px"
-                android:src="@drawable/musictag_dim_play"
                 android:visibility="visible" >
             </ImageView>
 
@@ -37,7 +35,6 @@
                     android:layout_height="318px"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="130px"
-                    android:src="@drawable/add2_btn"
                     android:visibility="invisible" >
                 </ImageView>
             </RelativeLayout>
@@ -54,10 +51,9 @@
                 android:layout_marginTop="650px" >
 
                 <ImageView
-                    android:id="@+id/iv_image_musictag_play"               
+                    android:id="@+id/iv_image_musictag_play"
                     android:layout_width="105px"
                     android:layout_height="82px"
-                    android:src="@drawable/equal_30fps"
                     android:visibility="invisible" >
                 </ImageView>
             </RelativeLayout>

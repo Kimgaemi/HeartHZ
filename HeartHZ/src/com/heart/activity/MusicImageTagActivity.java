@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -35,14 +37,17 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.heart.R;
+import com.heart.service.ServicePage;
 import com.heart.util.AnimeUtils;
 import com.heart.util.Config;
+import com.heart.util.RecycleUtils;
+import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.heart.util.TagKind;
 
 public class MusicImageTagActivity extends AppCompatActivity {
 
-	// MusicPlater
+	// MusicPlayer
 	private int musicNum = 8;
 	private MediaPlayer mp[] = new MediaPlayer[musicNum];
 
@@ -59,6 +64,10 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private TextView musictag;
 	private Button btnNext;
 	private ToggleButton tagToggle;
+	protected BitmapDrawable dim_drawable = null;
+	protected BitmapDrawable add_drawable = null;
+	private BitmapDrawable musicImageOn;
+	private BitmapDrawable musicImageOff;
 
 	// VARIABLE
 	private String strFriendId;
@@ -71,6 +80,9 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
 
 	public static TagKind resultTagKind;
 	// 추가부분
@@ -98,6 +110,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View v) {
 				if (!tagToggle.isChecked()) {
+					tagToggle.setBackground(musicImageOff);
 					for (int i = 0; i < musicNum; i++)
 						if (mp[i] != null)
 							mp[i].stop();
@@ -109,6 +122,8 @@ public class MusicImageTagActivity extends AppCompatActivity {
 					intent.putExtra(Config.TAG_FIREND_PHONE, strFriendPhone);
 					MusicImageTagActivity.this.startActivity(intent);
 					finish();
+				}else{
+					tagToggle.setBackground(musicImageOn);
 				}
 			}
 		});
@@ -133,20 +148,16 @@ public class MusicImageTagActivity extends AppCompatActivity {
 
 		// MENU
 		menuInit();
-		View menu = (View) findViewById(R.id.music_image_tag_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo3_icon_01);
-
 	}
 
 	private class MusicAlbumArt {
 		String title;
-		Drawable d;
+		BitmapDrawable d;
 		int pos;
 		boolean focus;
 		boolean playing;
 
-		MusicAlbumArt(String title, Drawable d, int pos, boolean focus) {
+		MusicAlbumArt(String title, BitmapDrawable d, int pos, boolean focus) {
 			this.title = title;
 			this.d = d;
 			this.pos = pos;
@@ -159,21 +170,59 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		View menu = (View) findViewById(R.id.music_image_tag_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo3_icon_01));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+
+		musicImageOn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.album_on_btn));
+		musicImageOff = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.album_off_btn));
+		tagToggle.setBackground(musicImageOn);
+		dim_drawable = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.musictag_dim_play));
+		add_drawable = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.add2_btn));
+
 		musicLeftImageResource = new ArrayList<MusicAlbumArt>();
 		musicRightImageResource = new ArrayList<MusicAlbumArt>();
 		listViewLeft = (ListView) findViewById(R.id.left_image_musictag);
 		listViewRight = (ListView) findViewById(R.id.right_image_musictag);
-
-		Drawable d = getResources().getDrawable(R.drawable.album1_image);
+		BitmapDrawable d = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.album1_image));
 		MusicAlbumArt maa = new MusicAlbumArt("Born to die", d, 0, false);
 		musicLeftImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album2_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album2_image));
 		maa = new MusicAlbumArt("Dream", d, 1, false);
 		musicLeftImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album3_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album3_image));
 		maa = new MusicAlbumArt("Hooka", d, 2, false);
 		musicLeftImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album4_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album4_image));
 		maa = new MusicAlbumArt("Healter Svelter", d, 3, false);
 		musicLeftImageResource.add(maa);
 
@@ -182,19 +231,24 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				musicLeftImageResource);
 		listViewLeft.setAdapter(adapterLeft);
 
-		d = getResources().getDrawable(R.drawable.album5_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album5_image));
 		maa = new MusicAlbumArt("Chvrches", d, 4, false);
 		musicRightImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album6_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album6_image));
 		maa = new MusicAlbumArt("Chvrches_s", d, 5, false);
 		musicRightImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album7_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album7_image));
 		maa = new MusicAlbumArt("Beast", d, 6, false);
 		musicRightImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album8_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album8_image));
 		maa = new MusicAlbumArt("Indians", d, 7, false);
 		musicRightImageResource.add(maa);
-		d = getResources().getDrawable(R.drawable.album_add_image);
+		d = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.album_add_image));
 		maa = new MusicAlbumArt("", d, -1, false);
 		musicRightImageResource.add(maa);
 
@@ -208,10 +262,32 @@ public class MusicImageTagActivity extends AppCompatActivity {
 	@Override
 	public void onPause() {
 		super.onPause();
-		for (int i = 0; i < musicNum; i++)
+		for (int i = 0; i < musicNum; i++) {
 			if (mp[i] != null)
 				mp[i].stop();
+		}
 
+		// Recycle
+		
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+
+		dim_drawable.getBitmap().recycle();
+		add_drawable.getBitmap().recycle();
+		musicImageOn.getBitmap().recycle();
+		musicImageOff.getBitmap().recycle();
+
+		musicLeftImageResource.get(0).d.getBitmap().recycle();
+		musicLeftImageResource.get(1).d.getBitmap().recycle();
+		musicLeftImageResource.get(2).d.getBitmap().recycle();
+		musicLeftImageResource.get(3).d.getBitmap().recycle();
+
+		musicRightImageResource.get(0).d.getBitmap().recycle();
+		musicRightImageResource.get(1).d.getBitmap().recycle();
+		musicRightImageResource.get(2).d.getBitmap().recycle();
+		musicRightImageResource.get(3).d.getBitmap().recycle();
+		musicRightImageResource.get(4).d.getBitmap().recycle();
 	}
 
 	@Override
@@ -231,6 +307,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 		musictag = null;
 		btnNext = null;
 		tagToggle = null;
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
 		System.gc();
 	}
 
@@ -252,7 +329,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				LayoutInflater vi = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				v = vi.inflate(R.layout.list_musicimage, null);
 			}
-			Drawable d = items.get(position).d;
+			BitmapDrawable d = items.get(position).d;
 
 			ImageView iv_imagePlay = null;
 			ImageView iv_imageMusic = null;
@@ -265,10 +342,12 @@ public class MusicImageTagActivity extends AppCompatActivity {
 						.findViewById(R.id.iv_image_musictag);
 				iv_imagePlay = (ImageView) v
 						.findViewById(R.id.iv_image_musictag_play);
-				iv_imageMusic.setImageDrawable(pos_d);
+				iv_imageDim = (ImageView) v.findViewById(R.id.iv_image_dim);
+				iv_imageDim.setBackground(dim_drawable);
+				iv_imageMusic.setBackground(pos_d);
+
 			}
 			if (isFocus) {
-				iv_imageDim = (ImageView) v.findViewById(R.id.iv_image_dim);
 				iv_imageDim.setVisibility(View.INVISIBLE);
 				iv_imagePlay.setVisibility(View.VISIBLE);
 
@@ -305,7 +384,7 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				v = vi.inflate(R.layout.list_musicimage, null);
 			}
 
-			Drawable pos_d = items.get(position).d;
+			BitmapDrawable pos_d = items.get(position).d;
 			boolean isFocus = items.get(position).focus;
 
 			ImageView iv_imageMusic = null;
@@ -321,7 +400,9 @@ public class MusicImageTagActivity extends AppCompatActivity {
 				iv_imageDim = (ImageView) v.findViewById(R.id.iv_image_dim);
 				iv_imagePlay = (ImageView) v
 						.findViewById(R.id.iv_image_musictag_play);
-				iv_imageMusic.setImageDrawable(pos_d);
+				iv_imageDim.setBackground(dim_drawable);
+				iv_imageAdd.setBackground(add_drawable);
+				iv_imageMusic.setBackground(pos_d);
 			}
 
 			if (position == items.size() - 1) {
@@ -557,7 +638,21 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			break;
 
 		case R.id.ll_menu_logout:
-			close();
+			dlDrawer.closeDrawers();
+			
+			SharedPreferenceUtil pref = SignInActivity.pref;
+			
+			pref.put("first", false);
+			pref.put(Config.TAG_USER_ID, "");
+			pref.put(Config.TAG_PW, "");
+			pref.put(Config.TAG_MODEL, "");
+			pref.put(Config.TAG_NAME, "");
+			pref.put(Config.TAG_PHONE, "");
+			pref.put(Config.TAG_PIC_PATH, "");
+			stopService(new Intent(MusicImageTagActivity.this, ServicePage.class));
+			
+			finish();
+			startActivity(new Intent(MusicImageTagActivity.this, SignInActivity.class));
 			break;
 		}
 	}

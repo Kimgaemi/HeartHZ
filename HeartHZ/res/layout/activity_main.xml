@@ -35,18 +35,33 @@
                 android:textSize="72px" />
         </RelativeLayout>
 
-        <com.heart.util.CustomViewPager
-            android:id="@+id/myviewpager"
+        <LinearLayout
+            android:id="@+id/vp_container"
             android:layout_width="match_parent"
             android:layout_height="1830px"
-            android:layout_gravity="center"
-            android:overScrollMode="never" />
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/loading_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <TextView
+                    android:id="@+id/tv_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:text="LOADING..."
+                    android:textSize="16dp" />
+            </RelativeLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_select"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="250px"
+            android:layout_gravity="bottom"
             android:background="@color/page2_btn_color1"
             android:gravity="center"
             android:onClick="mainClick"

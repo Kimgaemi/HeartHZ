@@ -54,6 +54,7 @@
         android:orientation="vertical" >
 
         <ImageView
+            android:id="@+id/iv_menu_home"
             android:layout_width="221px"
             android:layout_height="145px"
             android:src="@drawable/home_btn" />

@@ -114,6 +114,20 @@
                     android:alpha="0.5"
                     android:background="#000000"
                     android:visibility="invisible" />
+
+                <View
+                    android:id="@+id/iv_scutline"
+                    android:layout_width="4px"
+                    android:layout_height="942px"
+                    android:background="#FFFFFF"
+                    android:visibility="invisible" />
+
+                <View
+                    android:id="@+id/iv_fcutline"
+                    android:layout_width="4px"
+                    android:layout_height="942px"
+                    android:background="#FFFFFF"
+                    android:visibility="invisible" />
             </AbsoluteLayout>
 
             <LinearLayout
@@ -134,8 +148,8 @@
 
                 <ImageView
                     android:id="@+id/iv_cutline1"
-                    android:layout_width="69px"
-                    android:layout_height="55px"
+                    android:layout_width="56px"
+                    android:layout_height="56px"
                     android:layout_x="720px"
                     android:layout_y="238px"
                     android:visibility="invisible" />
@@ -145,13 +159,13 @@
             <AbsoluteLayout
                 android:id="@+id/trimContainer2"
                 android:layout_width="fill_parent"
-                android:layout_height="55px"
+                android:layout_height="56px"
                 android:layout_marginTop="1181px" >
 
                 <ImageView
                     android:id="@+id/iv_cutline2"
-                    android:layout_width="69px"
-                    android:layout_height="55px"
+                    android:layout_width="56px"
+                    android:layout_height="56px"
                     android:layout_x="720px"
                     android:visibility="invisible" />
             </AbsoluteLayout>
@@ -227,7 +241,6 @@
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="75px"
                     android:layout_marginTop="72px"
-                    android:background="@drawable/selector_trim_on_off"
                     android:textOff=""
                     android:textOn="" />
             </RelativeLayout>
@@ -242,7 +255,6 @@
                     android:layout_height="193px"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="469px"
-                    android:background="@drawable/selector_pause_resume"
                     android:textOff=""
                     android:textOn="" />
 
@@ -252,7 +264,6 @@
                     android:layout_height="193px"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="469px"
-                    android:background="@drawable/selector_record_save"
                     android:textOff=""
                     android:textOn="" />
             </RelativeLayout>
