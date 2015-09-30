@@ -524,54 +524,56 @@ public class MusicImageTagActivity extends AppCompatActivity {
 			int what = musicRightImageResource.get(pos).pos;
 			// fileManager 실행
 			if (what == -1) {
-				Toast.makeText(MusicImageTagActivity.this, "Click",
-						Toast.LENGTH_SHORT).show();
-			}
-			// Data
-			boolean isFocusState = musicRightImageResource.get(pos).focus;
-			// 파일검사
-			title = musicRightImageResource.get(pos).title + ".wav";
-			File file = new File(path + title);
-
-			if (file.exists()) {
-				if (isFocusState) {
-					if (mp[what].isPlaying()) { // play중이면 stop
-						mp[what].stop();
-					}
-					musicRightImageResource.get(pos).focus = false;
-					MusicImageTagActivity.resultTagKind.setMusicCur(-1);
-
-				} else {
-					musicRightImageResource.get(pos).focus = true;
-					MusicImageTagActivity.resultTagKind.setMusicCur(what);
-					for (int i = 0; i < musicRightImageResource.size() - 1; i++) {
-						if (i != pos) {
-							musicRightImageResource.get(i).focus = false;
-						}
-						musicLeftImageResource.get(i).focus = false;
-					}
-					musicRightImageResource
-							.get(musicRightImageResource.size() - 1).focus = true;
-
-					// MP 생성
-					if (mp[what] == null)
-						mp[what] = new MediaPlayer();
-					if (mp[what].isPlaying()) { // play중이면 stop
-						mp[what].stop();
-					} else { // play시킬거
-						for (int i = 0; i < musicNum; i++)
-							// playing 중인 다른 노래 중지
-							if (mp[i] != null && mp[i].isPlaying()) {
-								mp[i].pause();
-							}
-						title = musicRightImageResource.get(pos).title + ".wav";
-						isExistFile(title, path + title, what);
-					}
-				}
-				adapterRight.notifyDataSetChanged();
-				adapterLeft.notifyDataSetChanged();
+				MusicImageTagActivity.this.startActivity(new Intent(
+						MusicImageTagActivity.this, FileManageActivity.class));
 			} else {
-				isExistFile(title, path + title, what);
+				// Data
+				boolean isFocusState = musicRightImageResource.get(pos).focus;
+				// 파일검사
+				title = musicRightImageResource.get(pos).title + ".wav";
+				File file = new File(path + title);
+
+				if (file.exists()) {
+					if (isFocusState) {
+						if (mp[what].isPlaying()) { // play중이면 stop
+							mp[what].stop();
+						}
+						musicRightImageResource.get(pos).focus = false;
+						MusicImageTagActivity.resultTagKind.setMusicCur(-1);
+
+					} else {
+						musicRightImageResource.get(pos).focus = true;
+						MusicImageTagActivity.resultTagKind.setMusicCur(what);
+						for (int i = 0; i < musicRightImageResource.size() - 1; i++) {
+							if (i != pos) {
+								musicRightImageResource.get(i).focus = false;
+							}
+							musicLeftImageResource.get(i).focus = false;
+						}
+						musicRightImageResource.get(musicRightImageResource
+								.size() - 1).focus = true;
+
+						// MP 생성
+						if (mp[what] == null)
+							mp[what] = new MediaPlayer();
+						if (mp[what].isPlaying()) { // play중이면 stop
+							mp[what].stop();
+						} else { // play시킬거
+							for (int i = 0; i < musicNum; i++)
+								// playing 중인 다른 노래 중지
+								if (mp[i] != null && mp[i].isPlaying()) {
+									mp[i].pause();
+								}
+							title = musicRightImageResource.get(pos).title
+									+ ".wav";
+							isExistFile(title, path + title, what);
+						}
+					}
+					adapterRight.notifyDataSetChanged();
+					adapterLeft.notifyDataSetChanged();
+				} else {
+					isExistFile(title, path + title, what);
+				}
 			}
 
 		}

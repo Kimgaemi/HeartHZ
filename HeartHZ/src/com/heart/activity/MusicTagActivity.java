@@ -128,8 +128,8 @@ public class MusicTagActivity extends AppCompatActivity {
 		add_musictag.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(MusicTagActivity.this, "Click",
-						Toast.LENGTH_SHORT).show();
+				MusicTagActivity.this.startActivity(new Intent(
+						MusicTagActivity.this, FileManageActivity.class));
 			}
 		});
 
@@ -185,7 +185,7 @@ public class MusicTagActivity extends AppCompatActivity {
 				BitmapFactory.decodeResource(getResources(),
 						R.drawable.album_off_btn));
 		tagToggle.setBackground(musicImageOff);
-		
+
 		ArrayList<Music> m_orders = new ArrayList<Music>();
 		listView.setOnItemClickListener(onClickListner);
 
@@ -514,12 +514,11 @@ public class MusicTagActivity extends AppCompatActivity {
 			startActivity(i);
 			break;
 
-
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
-			
+
 			SharedPreferenceUtil pref = SignInActivity.pref;
-			
+
 			pref.put("first", false);
 			pref.put(Config.TAG_USER_ID, "");
 			pref.put(Config.TAG_PW, "");
@@ -528,9 +527,10 @@ public class MusicTagActivity extends AppCompatActivity {
 			pref.put(Config.TAG_PHONE, "");
 			pref.put(Config.TAG_PIC_PATH, "");
 			stopService(new Intent(MusicTagActivity.this, ServicePage.class));
-			
+
 			finish();
-			startActivity(new Intent(MusicTagActivity.this, SignInActivity.class));
+			startActivity(new Intent(MusicTagActivity.this,
+					SignInActivity.class));
 			break;
 		}
 	}
