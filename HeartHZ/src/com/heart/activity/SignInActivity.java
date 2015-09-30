@@ -75,12 +75,11 @@ public class SignInActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_in);
 
-		TelephonyManager telManager = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-		String phoneNum = telManager.getLine1Number();	
-		
-		phoneNum = "0" + phoneNum.substring(3); 
+		TelephonyManager telManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+		String phoneNum = telManager.getLine1Number();
+
+		phoneNum = "0" + phoneNum.substring(3);
 		Log.d("phoneNum", phoneNum);
-		
 
 		editPhone = (EditText) findViewById(R.id.edit_signin_phone);
 		editPassword = (EditText) findViewById(R.id.edit_signin_pw);
@@ -88,7 +87,7 @@ public class SignInActivity extends Activity {
 		editPhone.setText(phoneNum);
 		editPhone.setEnabled(false);
 		editPassword.requestFocus();
-		
+
 		isNotFirst = pref.getValue("first", false);
 
 		if (isNotFirst) {

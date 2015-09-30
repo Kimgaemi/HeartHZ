@@ -6,6 +6,7 @@
     android:fitsSystemWindows="true" >
 
     <!-- ActionBar Layout -->
+
     <LinearLayout
         android:id="@+id/nav_lv"
         android:layout_width="match_parent"
@@ -19,6 +20,7 @@
             layout="@layout/include_menu" />
 
         <!-- InformationBar Layout -->
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="190px"
@@ -93,8 +95,8 @@
                 <RelativeLayout
                     android:id="@+id/rl_account_setting"
                     android:layout_width="match_parent"
-                     android:onClick="settingClick"
-                    android:layout_height="196px" >
+                    android:layout_height="196px"
+                    android:onClick="settingClick" >
 
                     <ImageView
                         android:id="@+id/iv_account_setting"
@@ -102,8 +104,7 @@
                         android:layout_height="108px"
                         android:layout_alignParentLeft="true"
                         android:layout_marginLeft="55px"
-                        android:layout_marginTop="44px"
-                        android:src="@drawable/accountsetting_icon" />
+                        android:layout_marginTop="44px" />
 
                     <TextView
                         android:id="@+id/tv_accout_setting"
@@ -123,8 +124,7 @@
                         android:layout_height="108px"
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="45px"
-                        android:layout_marginTop="44px"
-                        android:src="@drawable/next_right_btn" />
+                        android:layout_marginTop="44px" />
                 </RelativeLayout>
 
                 <View
@@ -143,8 +143,7 @@
                         android:layout_height="108px"
                         android:layout_alignParentLeft="true"
                         android:layout_marginLeft="55px"
-                        android:layout_marginTop="44px"
-                        android:src="@drawable/devicesetting_icon" />
+                        android:layout_marginTop="44px" />
 
                     <TextView
                         android:id="@+id/tv_device_setting"
@@ -164,8 +163,7 @@
                         android:layout_height="108px"
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="45px"
-                        android:layout_marginTop="44px"
-                        android:src="@drawable/next_right_btn" />
+                        android:layout_marginTop="44px" />
                 </RelativeLayout>
 
                 <View
@@ -179,13 +177,12 @@
                     android:layout_height="196px" >
 
                     <ImageView
-                        android:id="@+id/iv_Notice_setting"
+                        android:id="@+id/iv_notice_setting"
                         android:layout_width="108px"
                         android:layout_height="108px"
                         android:layout_alignParentLeft="true"
                         android:layout_marginLeft="55px"
-                        android:layout_marginTop="44px"
-                        android:src="@drawable/noticesetting_icon" />
+                        android:layout_marginTop="44px" />
 
                     <TextView
                         android:id="@+id/tv_notice_setting"
@@ -193,19 +190,19 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="75px"
                         android:layout_marginTop="53px"
-                        android:layout_toRightOf="@id/iv_Notice_setting"
+                        android:layout_toRightOf="@id/iv_notice_setting"
                         android:text="Notice Setting"
                         android:textColor="@color/setting_text_color"
                         android:textSize="68px" >
                     </TextView>
 
                     <ImageView
+                        android:id="@+id/iv_notice_setting_next"
                         android:layout_width="108px"
                         android:layout_height="108px"
                         android:layout_alignParentRight="true"
                         android:layout_marginRight="45px"
-                        android:layout_marginTop="44px"
-                        android:src="@drawable/next_right_btn" />
+                        android:layout_marginTop="44px" />
                 </RelativeLayout>
 
                 <View

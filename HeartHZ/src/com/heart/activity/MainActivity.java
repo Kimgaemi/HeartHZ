@@ -11,27 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.example.heart.R;
-import com.heart.friend.Friend;
-import com.heart.friend.FriendPagerAdapter;
-import com.heart.service.RealService;
-import com.heart.service.ServicePage;
-import com.heart.util.Config;
-import com.heart.util.CustomViewPager;
-import com.heart.util.IdGen;
-import com.heart.util.JSONParser;
-import com.heart.util.SharedPreferenceUtil;
-import com.heart.util.SlidingMenu;
-import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -59,6 +39,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.heart.R;
+import com.heart.friend.Friend;
+import com.heart.friend.FriendPagerAdapter;
+import com.heart.service.ServicePage;
+import com.heart.util.Config;
+import com.heart.util.CustomViewPager;
+import com.heart.util.IdGen;
+import com.heart.util.JSONParser;
+import com.heart.util.SharedPreferenceUtil;
+import com.heart.util.SlidingMenu;
+import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
 public class MainActivity extends AppCompatActivity {
 
 	// TAG
@@ -69,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
 	private static final String TAG_REGISTER = "register";
 	private static final String ADD_FRIEND = "add";
 
-	// VIEW
 	private Window window = null;
 	private TextView tvHome = null;
 	private TextView tvLoading = null;

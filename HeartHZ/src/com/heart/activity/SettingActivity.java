@@ -11,7 +11,9 @@ import org.json.JSONObject;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,6 +35,7 @@ import com.example.heart.R;
 import com.heart.service.ServicePage;
 import com.heart.util.Config;
 import com.heart.util.JSONParser;
+import com.heart.util.RecycleUtils;
 import com.heart.util.SharedPreferenceUtil;
 import com.heart.util.SlidingMenu;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -60,6 +63,18 @@ public class SettingActivity extends AppCompatActivity {
 	private TextView tvDeviceSetting = null;
 	private TextView tvNoticeSetting = null;
 
+	private ImageView ivAccountSetting = null;
+	private ImageView ivAccountSettingNext = null;
+	private ImageView ivDeviceSetting = null;
+	private ImageView ivDeviceSettingNext = null;
+	private ImageView ivNoticeSetting = null;
+	private ImageView ivNoticeSettingNext = null;
+
+	private BitmapDrawable AS;
+	private BitmapDrawable DS;
+	private BitmapDrawable NS;
+	private BitmapDrawable NN;
+
 	// VARIABLE
 	private int iUserId;
 	private String strName;
@@ -70,7 +85,10 @@ public class SettingActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private DrawerLayout dlDrawer;
 	private ActionBarDrawerToggle dtToggle;
-	
+	private BitmapDrawable logoBitmap;
+	private BitmapDrawable toolbarBtnBitmap;
+	private BitmapDrawable toolbarBackBitmap;
+
 	public SharedPreferenceUtil pref;
 	public ImageLoader imageLoader;
 	public DisplayImageOptions options;
@@ -80,36 +98,37 @@ public class SettingActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_setting);
 
-	//	iUserId = SignInActivity.iUserId;
+		// iUserId = SignInActivity.iUserId;
 		MainActivity.imageInit(this);
-	// 	new GetUserDetails().execute();
+		// new GetUserDetails().execute();
 
 		ivPic = (ImageView) findViewById(R.id.iv_pic);
 		tvName = (TextView) findViewById(R.id.tv_name);
-			
+
 		pref = SignInActivity.pref;
 		iUserId = pref.getValue(Config.TAG_USER_ID, 0);
 		strName = pref.getValue(Config.TAG_NAME, null);
 		strPic = pref.getValue(Config.TAG_PIC_PATH, null);
-		
+
 		tvName.setText(strName);
-		
+
 		imageLoader = ImageLoader.getInstance();
 		options = new DisplayImageOptions.Builder().cacheInMemory()
-				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc().resetViewBeforeLoading()
-				.showImageForEmptyUri(R.drawable.default_profile).showImageOnFail(R.drawable.default_profile)
-				.build();
+				.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
+				.resetViewBeforeLoading()
+				.showImageForEmptyUri(R.drawable.default_profile)
+				.showImageOnFail(R.drawable.default_profile).build();
 
 		imageLoader.displayImage(strPic, ivPic, options);
-		
+
 		// tvName = (EditText) findViewById(R.id.tv_name);
 		/*
-		 * btnSave = (Button) findViewById(R.id.btn_main_setting); 
-		 * btnBack = (Button) findViewById(R.id.btn_setting_back);
+		 * btnSave = (Button) findViewById(R.id.btn_main_setting); btnBack =
+		 * (Button) findViewById(R.id.btn_setting_back);
 		 */
 
-	//	ivPic.setImageResource(R.drawable.setting_profile_user2);
-	//	tvName.setText(SignInActivity.strName);
+		// ivPic.setImageResource(R.drawable.setting_profile_user2);
+		// tvName.setText(SignInActivity.strName);
 
 		// ivPic.setOnClickListener(settingListener);
 		/*
@@ -122,6 +141,13 @@ public class SettingActivity extends AppCompatActivity {
 		tvDeviceSetting = (TextView) findViewById(R.id.tv_device_setting);
 		tvNoticeSetting = (TextView) findViewById(R.id.tv_notice_setting);
 
+		ivAccountSetting = (ImageView) findViewById(R.id.iv_account_setting);
+		ivAccountSettingNext = (ImageView) findViewById(R.id.iv_account_setting_next);
+		ivDeviceSetting = (ImageView) findViewById(R.id.iv_device_setting);
+		ivDeviceSettingNext = (ImageView) findViewById(R.id.iv_device_setting_next);
+		ivNoticeSetting = (ImageView) findViewById(R.id.iv_notice_setting);
+		ivNoticeSettingNext = (ImageView) findViewById(R.id.iv_notice_setting_next);
+
 		// STATUSBAR COLOR
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			window = this.getWindow();
@@ -133,9 +159,6 @@ public class SettingActivity extends AppCompatActivity {
 
 		// MENU
 		menuInit();
-		View menu = (View) findViewById(R.id.setting_menu);
-		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
-		logo.setImageResource(R.drawable.logo1_icon);
 
 		// fonts
 		tvSetting.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -150,15 +173,76 @@ public class SettingActivity extends AppCompatActivity {
 				"fonts/AppleSDGothicNeo-Regular.otf"));
 	}
 
-	public void settingClick(View v){
-		switch(v.getId()) {
-		case R.id.rl_account_setting :
-			Intent i = new Intent(SettingActivity.this, SettingAccountActivity.class);
+	@Override
+	public void onResume() {
+		super.onResume();
+		AS = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.accountsetting_icon));
+		DS = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.devicesetting_icon));
+		NS = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.noticesetting_icon));
+		NN = new BitmapDrawable(getResources(), BitmapFactory.decodeResource(
+				getResources(), R.drawable.next_right_btn));
+		// MENU
+		View menu = (View) findViewById(R.id.setting_menu);
+		logoBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.logo1_icon));
+		toolbarBtnBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.menu_btn));
+		toolbarBackBitmap = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.back_btn));
+
+		ImageView logo = (ImageView) menu.findViewById(R.id.iv_toolbar_logo);
+		ImageView menuBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_btn);
+		ImageView backBtn = (ImageView) menu.findViewById(R.id.iv_toolbar_back);
+
+		logo.setBackground(logoBitmap);
+		menuBtn.setBackground(toolbarBtnBitmap);
+		backBtn.setBackground(toolbarBackBitmap);
+
+		ivAccountSetting.setBackground(AS);
+		ivAccountSettingNext.setBackground(NN);
+		ivDeviceSetting.setBackground(DS);
+		ivDeviceSettingNext.setBackground(NN);
+		ivNoticeSetting.setBackground(NS);
+		ivNoticeSettingNext.setBackground(NN);
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		logoBitmap.getBitmap().recycle();
+		toolbarBtnBitmap.getBitmap().recycle();
+		toolbarBackBitmap.getBitmap().recycle();
+		AS.getBitmap().recycle();
+		DS.getBitmap().recycle();
+		NS.getBitmap().recycle();
+		NN.getBitmap().recycle();
+	}
+
+	@Override
+	public void onDestroy() {
+		RecycleUtils.recursiveRecycle(getWindow().getDecorView());
+		System.gc();
+		super.onDestroy();
+
+	}
+
+	public void settingClick(View v) {
+		switch (v.getId()) {
+		case R.id.rl_account_setting:
+			Intent i = new Intent(SettingActivity.this,
+					SettingAccountActivity.class);
 			startActivity(i);
 			break;
 		}
-		
+
 	}
+
 	/*
 	 * private OnClickListener settingListener = new OnClickListener() {
 	 * 
@@ -260,30 +344,33 @@ public class SettingActivity extends AppCompatActivity {
 		protected String doInBackground(String... args) {
 			try {
 				List<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer.toString(iUserId)));
+				params.add(new BasicNameValuePair(Config.TAG_USER_ID, Integer
+						.toString(iUserId)));
 
-				JSONObject json = jsonParser.makeHttpRequest(Config.URL_GET_USER_PROFILE, "GET", params);
+				JSONObject json = jsonParser.makeHttpRequest(
+						Config.URL_GET_USER_PROFILE, "GET", params);
 
-				if (json != null) { Log.d("SettingProfile_USER", json.toString());
-				int success = json.getInt(Config.TAG_SUCCESS); 
-				if (success == 0) {
+				if (json != null) {
+					Log.d("SettingProfile_USER", json.toString());
+					int success = json.getInt(Config.TAG_SUCCESS);
+					if (success == 0) {
 
-					JSONArray userObj = json.getJSONArray(Config.TAG_USER); 
-					JSONObject user = userObj.getJSONObject(0);
-					Log.d("SettingProfile", user.toString());
+						JSONArray userObj = json.getJSONArray(Config.TAG_USER);
+						JSONObject user = userObj.getJSONObject(0);
+						Log.d("SettingProfile", user.toString());
 
-					strName = user.getString(Config.TAG_NAME); 
-					strPic = user.getString(Config.TAG_PIC_PATH);
+						strName = user.getString(Config.TAG_NAME);
+						strPic = user.getString(Config.TAG_PIC_PATH);
 
-					Log.d("SettingProfile_Pic_Path", strName + " " + strPic);
+						Log.d("SettingProfile_Pic_Path", strName + " " + strPic);
 
-				} else { // NO PARAMETER OR USER 
-				}
+					} else { // NO PARAMETER OR USER
+					}
 				}
 			} catch (JSONException e) {
-				e.printStackTrace(); 
+				e.printStackTrace();
 			}
-			return null; 
+			return null;
 		}
 
 		@Override
@@ -294,11 +381,11 @@ public class SettingActivity extends AppCompatActivity {
 
 			ImageLoader imageLoader = ImageLoader.getInstance();
 			DisplayImageOptions options = new DisplayImageOptions.Builder()
-			.cacheInMemory()
-			.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
-			.resetViewBeforeLoading()
-			.showImageForEmptyUri(R.drawable.default_profile)
-			.showImageOnFail(R.drawable.default_profile).build();
+					.cacheInMemory()
+					.displayer(new RoundedBitmapDisplayer(1000)).cacheOnDisc()
+					.resetViewBeforeLoading()
+					.showImageForEmptyUri(R.drawable.default_profile)
+					.showImageOnFail(R.drawable.default_profile).build();
 
 			imageLoader.displayImage(strPic, ivPic, options);
 
@@ -326,7 +413,7 @@ public class SettingActivity extends AppCompatActivity {
 
 		setSupportActionBar(toolbar);
 		getWindow().getDecorView()
-		.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+				.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
 
 		dtToggle.setDrawerIndicatorEnabled(false);
 		ActionBar ab = getSupportActionBar();
@@ -380,9 +467,9 @@ public class SettingActivity extends AppCompatActivity {
 
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
-			
+
 			SharedPreferenceUtil pref = SignInActivity.pref;
-			
+
 			pref.put("first", false);
 			pref.put(Config.TAG_USER_ID, "");
 			pref.put(Config.TAG_PW, "");
@@ -391,7 +478,7 @@ public class SettingActivity extends AppCompatActivity {
 			pref.put(Config.TAG_PHONE, "");
 			pref.put(Config.TAG_PIC_PATH, "");
 			stopService(new Intent(SettingActivity.this, ServicePage.class));
-			
+
 			finish();
 			startActivity(new Intent(SettingActivity.this, SignInActivity.class));
 			break;

@@ -78,8 +78,10 @@ public class FriendFragment extends Fragment {
 					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
 			add_plus = (ImageView) l.findViewById(R.id.add_friend);
 
-			add_plus.setBackground(new BitmapDrawable(getResources(),BitmapFactory.decodeResource(getResources(),R.drawable.add3_btn)));
-			
+			add_plus.setBackground(new BitmapDrawable(getResources(),
+					BitmapFactory.decodeResource(getResources(),
+							R.drawable.add3_btn)));
+
 			FriendLinearLayout addroot = (FriendLinearLayout) l
 					.findViewById(R.id.addroot);
 			float scale = this.getArguments().getFloat("SCALE");
@@ -109,7 +111,7 @@ public class FriendFragment extends Fragment {
 			tvName.setText(name);
 			tvPhone.setText("0" + phone);
 			days.setText(String.valueOf(dayNum));
-			
+
 			DaysOverColor(dayNum);
 			daysOver.setText("days over");
 
@@ -122,9 +124,9 @@ public class FriendFragment extends Fragment {
 
 			// FONT
 			tvName.setTypeface(Typeface.createFromAsset(getActivity()
-					.getAssets(), "fonts/DINPRO-MEDIUM.ttf"));
-			tvPhone.setTypeface(Typeface.createFromAsset(
-					getActivity().getAssets(), "fonts/DINPRO-REGULAR.ttf"));
+					.getAssets(), "fonts/AppleSDGothicNeo-Medium.otf"));
+			tvPhone.setTypeface(Typeface.createFromAsset(getActivity()
+					.getAssets(), "fonts/AppleSDGothicNeo-Medium.otf"));
 			days.setTypeface(Typeface.createFromAsset(
 					getActivity().getAssets(), "fonts/DINPRO-REGULAR.ttf"));
 			daysOver.setTypeface(Typeface.createFromAsset(getActivity()
@@ -142,18 +144,23 @@ public class FriendFragment extends Fragment {
 		}
 		return l;
 	}
-	private void DaysOverColor(int num){
+
+	private void DaysOverColor(int num) {
 		if (num <= 7) {
-			//  ~7 
-			days.setTextColor(getResources().getColor(R.color.page2_text_color4));
+			// ~7
+			days.setTextColor(getResources()
+					.getColor(R.color.page2_text_color4));
 		} else if (num <= 15) {
 			// ~15
-			days.setTextColor(getResources().getColor(R.color.page2_text_color3));
+			days.setTextColor(getResources()
+					.getColor(R.color.page2_text_color3));
 		} else if (num <= 31) {
 			// ~31
-			days.setTextColor(getResources().getColor(R.color.page2_text_color2));
+			days.setTextColor(getResources()
+					.getColor(R.color.page2_text_color2));
 		} else {
-			days.setTextColor(getResources().getColor(R.color.page2_text_color1));
+			days.setTextColor(getResources()
+					.getColor(R.color.page2_text_color1));
 		}
 	}
 

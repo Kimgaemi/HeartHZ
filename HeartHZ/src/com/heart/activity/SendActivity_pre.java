@@ -120,7 +120,6 @@ public class SendActivity_pre extends AppCompatActivity {
 		arrFileTag[2] = MusicImageTagActivity.resultTagKind.getWeather() + 1;
 
 		if (MusicImageTagActivity.resultTagKind.getCDate() >= 0) {
-
 			// strDate = MusicImageTagActivity.resultTagKind.getRealDate();
 			strDate = "0000-00-00";
 		} else {
@@ -146,7 +145,7 @@ public class SendActivity_pre extends AppCompatActivity {
 		tvFirendPhone = (TextView) findViewById(R.id.tv_friend_phone);
 
 		tvFirendName.setText(strFriendName);
-		tvFirendPhone.setText(strFriendPhone);
+		tvFirendPhone.setText("0" + strFriendPhone);
 
 		ivTagSelected1 = (ImageView) findViewById(R.id.iv_conf_im1);
 		ivTagSelected2 = (ImageView) findViewById(R.id.iv_conf_im2);
@@ -183,6 +182,10 @@ public class SendActivity_pre extends AppCompatActivity {
 
 		tvSend.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/DINPRO-MEDIUM.ttf"));
+		tvFirendName.setTypeface(Typeface.createFromAsset(getAssets(),
+				"fonts/DINMed.ttf"));
+		tvFirendPhone.setTypeface(Typeface.createFromAsset(getAssets(),
+				"fonts/DINMed.ttf"));
 		btnSend.setTypeface(Typeface.createFromAsset(getAssets(),
 				"fonts/DINMed.ttf"));
 		editTitle.setTypeface(Typeface.createFromAsset(getAssets(),
@@ -826,9 +829,9 @@ public class SendActivity_pre extends AppCompatActivity {
 
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
-			
+
 			SharedPreferenceUtil pref = SignInActivity.pref;
-			
+
 			pref.put("first", false);
 			pref.put(Config.TAG_USER_ID, "");
 			pref.put(Config.TAG_PW, "");
@@ -837,9 +840,10 @@ public class SendActivity_pre extends AppCompatActivity {
 			pref.put(Config.TAG_PHONE, "");
 			pref.put(Config.TAG_PIC_PATH, "");
 			stopService(new Intent(SendActivity_pre.this, ServicePage.class));
-			
+
 			finish();
-			startActivity(new Intent(SendActivity_pre.this, SignInActivity.class));
+			startActivity(new Intent(SendActivity_pre.this,
+					SignInActivity.class));
 			break;
 		}
 	}

@@ -330,10 +330,14 @@ public class MessagePlayerActivity extends AppCompatActivity {
 		System.gc();
 	}
 
-	protected void GetSelectedPositions() {
+	protected void GetSelectedPositions() { // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		ArrayList<GroupItem> grouparray = adapter.getcheckedposition();
 		for (int i = 0; i < grouparray.size(); i++) {
-			//Log.d("REMOVE_PATH", grouparray.get(i).strFilePath);
+			Log.d("REMOVE_PATH", grouparray.get(i).strFilePath);
+			String path = Environment.getExternalStorageDirectory().getPath()
+					+ "/HeartHZ/";
+			path += grouparray.get(i).strFilePath;
+			new File(path).delete();
 		}
 		for (int i = grouparray.size() - 1; i >= 0; i--) {
 			items.remove(grouparray.get(i).iPosition);
@@ -437,7 +441,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			holder.tvSender.setText(item.strSender);
 			holder.tvTitle.setText(item.strTitle);
 			holder.tvTime.setText(duration);
-			holder.tvPath.setText(item.strFilePath);
 
 			if (mode == 1) {
 				holder.tvTime.setVisibility(View.INVISIBLE);
@@ -689,8 +692,6 @@ public class MessagePlayerActivity extends AppCompatActivity {
 			listView = (AnimatedExpandableListView) findViewById(R.id.expandlistview);
 			listView.setAdapter(adapter);
 
-			// deletePath =
-			// new File(deletePath).delete();
 		}
 	}
 
@@ -767,17 +768,21 @@ public class MessagePlayerActivity extends AppCompatActivity {
 							if (file.exists()) {
 
 								String strDate = c.getString(Config.TAG_DATE);
-								String strFileTitle = c.getString(Config.TAG_FILE_TITLE);
+								String strFileTitle = c
+										.getString(Config.TAG_FILE_TITLE);
 								String strFriendPic = c.getString("friend_pic");
-								String strFriendName = c.getString(Config.TAG_FRIEND_NAME);
-								String strFilePath	=	c.getString(Config.TAG_FILE_PATH);
-								
+								String strFriendName = c
+										.getString(Config.TAG_FRIEND_NAME);
+								String strFilePath = c
+										.getString(Config.TAG_FILE_PATH);
+
 								int arrTag[] = new int[3];
 								arrTag[0] = c.getInt(Config.TAG_EMOTION);
 								arrTag[1] = c.getInt(Config.TAG_WEATHER);
 								arrTag[2] = c.getInt(Config.TAG_TIME);
 
 								GroupItem item = new GroupItem();
+								item.iPosition = numbering - 1;
 
 								if (numbering / 10 < 10)
 									item.strNum = "0" + numbering;
@@ -788,7 +793,10 @@ public class MessagePlayerActivity extends AppCompatActivity {
 								item.strTitle = strFileTitle;
 								item.strSender = strFriendName;
 								item.strTime = "00:00";
-								
+								item.strFilePath = strFileNo + ".wav";
+
+								Log.d("TEST", "" + item.iPosition);
+
 								child = new ChildItem();
 								child.iTag = arrTag;
 								child.strPic = strFriendPic;

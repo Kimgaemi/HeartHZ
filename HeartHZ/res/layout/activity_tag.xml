@@ -51,8 +51,7 @@
                     android:layout_height="126px"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="345px"
-                    android:layout_marginTop="134px"
-                    android:src="@drawable/left_btn_01" />
+                    android:layout_marginTop="134px" />
 
                 <TextView
                     android:id="@+id/tv_tag_kind"
@@ -70,8 +69,7 @@
                     android:layout_height="126px"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="345px"
-                    android:layout_marginTop="134px"
-                    android:src="@drawable/right_btn_01" />
+                    android:layout_marginTop="134px" />
             </RelativeLayout>
 
             <LinearLayout

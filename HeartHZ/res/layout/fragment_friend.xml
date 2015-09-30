@@ -49,7 +49,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="650px"
+                        android:layout_marginTop="680px"
                         android:textSize="100px" />
 
                     <TextView
@@ -57,7 +57,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="760px"
+                        android:layout_marginTop="790px"
                         android:textSize="50px" />
                 </FrameLayout>
 

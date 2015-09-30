@@ -75,6 +75,8 @@ public class TaggingActivity extends AppCompatActivity {
 	private BitmapDrawable logoBitmap;
 	private BitmapDrawable toolbarBtnBitmap;
 	private BitmapDrawable toolbarBackBitmap;
+	private BitmapDrawable leftBtn;
+	private BitmapDrawable rightBtn;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -215,6 +217,12 @@ public class TaggingActivity extends AppCompatActivity {
 	@Override
 	public void onResume() {
 		View menu = (View) findViewById(R.id.tag_menu);
+		leftBtn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.left_btn_01));
+		rightBtn = new BitmapDrawable(getResources(),
+				BitmapFactory.decodeResource(getResources(),
+						R.drawable.right_btn_01));
 		logoBitmap = new BitmapDrawable(getResources(),
 				BitmapFactory.decodeResource(getResources(),
 						R.drawable.logo4_icon_01));
@@ -232,6 +240,8 @@ public class TaggingActivity extends AppCompatActivity {
 		logo.setBackground(logoBitmap);
 		menuBtn.setBackground(toolbarBtnBitmap);
 		backBtn.setBackground(toolbarBackBitmap);
+		left.setBackground(leftBtn);
+		right.setBackground(rightBtn);
 		super.onResume();
 	}
 
@@ -241,6 +251,8 @@ public class TaggingActivity extends AppCompatActivity {
 		logoBitmap.getBitmap().recycle();
 		toolbarBtnBitmap.getBitmap().recycle();
 		toolbarBackBitmap.getBitmap().recycle();
+		leftBtn.getBitmap().recycle();
+		rightBtn.getBitmap().recycle();
 		cur = 0;
 	}
 
@@ -308,9 +320,9 @@ public class TaggingActivity extends AppCompatActivity {
 
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
-			
+
 			SharedPreferenceUtil pref = SignInActivity.pref;
-			
+
 			pref.put("first", false);
 			pref.put(Config.TAG_USER_ID, "");
 			pref.put(Config.TAG_PW, "");
@@ -319,7 +331,7 @@ public class TaggingActivity extends AppCompatActivity {
 			pref.put(Config.TAG_PHONE, "");
 			pref.put(Config.TAG_PIC_PATH, "");
 			stopService(new Intent(TaggingActivity.this, ServicePage.class));
-			
+
 			finish();
 			startActivity(new Intent(TaggingActivity.this, SignInActivity.class));
 			break;
