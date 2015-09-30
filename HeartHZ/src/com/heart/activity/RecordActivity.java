@@ -117,12 +117,10 @@ public class RecordActivity extends AppCompatActivity {
 	private Toolbar toolbar;
 	private ActionBarDrawerToggle dtToggle;
 	private DrawerLayout dlDrawer;
-	
+
 	private BitmapDrawable logoBitmap;
 	private BitmapDrawable toolbarBtnBitmap;
 	private BitmapDrawable toolbarBackBitmap;
-	
-	
 
 	// TRIM
 	private int startPoint;
@@ -317,12 +315,6 @@ public class RecordActivity extends AppCompatActivity {
 					cutLine1_bar1.setVisibility(View.INVISIBLE);
 					cutLine1_bar2.setVisibility(View.INVISIBLE);
 
-					// 좌표 가져오기
-					Log.i("TRIM",
-							"CUTTING POINTER : "
-									+ String.valueOf(cutLine1.getX()) + " "
-									+ String.valueOf(cutLine2.getX()));
-
 					float BoxSize = (float) displayView.getBoxSize();
 					int MovingCur = displayView.getMovingCur();
 
@@ -334,20 +326,8 @@ public class RecordActivity extends AppCompatActivity {
 					finishPoint = (int) (BoxSize * 3584.0f * (fRate)) * 2
 							+ MovingCur;
 
-					Log.i("TRIM",
-							"CUTTING POINTER : " + String.valueOf(BoxSize)
-									+ " " + String.valueOf(MovingCur));
-
-					Log.i("TRIM", "CUTTING POINTER : " + String.valueOf(sRate)
-							+ " " + String.valueOf(fRate));
-					Log.i("TRIM",
-							"CUTTING POINTER : " + String.valueOf(startPoint)
-									+ " " + String.valueOf(finishPoint));
-
 					byte[] data = displayView.getAllWaveData();
-					Log.i("TRIM",
-							"CUTTING POINTER DATA LENGTH: "
-									+ String.valueOf(data.length));
+
 					// Short 이기 때문에 짝수 Index만 받음
 					if (startPoint % 2 != 0)
 						startPoint += 1;
@@ -359,10 +339,11 @@ public class RecordActivity extends AppCompatActivity {
 
 					final File file = new File(
 							convert.getTempFilename(Converter.AUDIO_RECORDER_TEMP_FILE));
-					saveSoundPcmFile(file, trimData);
-					// 트림 끝난뒤의 View는 어떻게?
 					displayView.clearWaveData();
 					displayView.fireInvalidate();
+					saveSoundPcmFile(file, trimData);
+					// 트림 끝난뒤의 View는 어떻게?
+
 				}
 			}
 		});
@@ -466,7 +447,7 @@ public class RecordActivity extends AppCompatActivity {
 		imageInit(this);
 
 		// MENU
-		if(sm == null) {
+		if (sm == null) {
 			Log.d("tag", "들어옴");
 			menuInit();
 		}
@@ -760,9 +741,9 @@ public class RecordActivity extends AppCompatActivity {
 
 		case R.id.ll_menu_logout:
 			dlDrawer.closeDrawers();
-			
+
 			SharedPreferenceUtil pref = SignInActivity.pref;
-			
+
 			pref.put("first", false);
 			pref.put(Config.TAG_USER_ID, "");
 			pref.put(Config.TAG_PW, "");
@@ -771,7 +752,7 @@ public class RecordActivity extends AppCompatActivity {
 			pref.put(Config.TAG_PHONE, "");
 			pref.put(Config.TAG_PIC_PATH, "");
 			stopService(new Intent(RecordActivity.this, ServicePage.class));
-			
+
 			finish();
 			startActivity(new Intent(RecordActivity.this, SignInActivity.class));
 			break;

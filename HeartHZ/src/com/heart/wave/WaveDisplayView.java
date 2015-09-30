@@ -23,7 +23,7 @@ public class WaveDisplayView extends View implements WaveDataStore,
 	private GestureDetector gestureDetector;
 	private final Handler handler;
 	private final ByteArrayOutputStream waveData = new ByteArrayOutputStream(
-			44100 * 120);
+			44100 * 240);
 	private final Paint waveBaseLine = new Paint();
 	private final Paint markerLine = new Paint();
 	private int unitSize = 3584;
